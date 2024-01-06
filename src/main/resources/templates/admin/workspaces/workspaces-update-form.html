@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns: th=”http://www.thymeleaf.org”>
+<head>
+    <title>BlazingDevs Calender!</title>
+    <link th:href="@{/css/create-form.css}" rel="stylesheet" />
+</head>
+<body>
+    <div th:replace="~{template/fragment/header :: workspaces_header ('워크스페이스수정')}" class="title">
+        <h1>워크스페이스 수정</h1>
+    </div>
+
+    <div class="container">
+        <form role="form" th:action="|/admin/workspaces/${workspaceId}/update|" method="post" th:object="${createWorkspaceRequest}">
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" th:field="*{name}" th:errorclass="field-error"
+                       class="form-control" placeholder="이름을 입력하세요">
+            </div>
+            <div class="error" th:errors="*{name}">
+                에러 메세지
+            </div>
+            <div class="form-group">
+                <label>유저</label>
+                <details>
+                    <summary> 유저 보기 </summary>
+                    <ul>
+                        <li th:each="user : ${userList}">
+                            <input type="checkbox" th:field="*{users}" th:text="${user}" th:value="${user}">
+                            <input type="hidden" th:name="userList" th:value="${user}">
+                        </li>
+                    </ul>
+                </details>
+            </div>
+            <button type="submit" class="btn">수정</button>
+        </form>
+    </div>
+</body>
+</html>

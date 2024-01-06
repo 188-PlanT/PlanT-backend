@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns: th=”http://www.thymeleaf.org”>
+<head>
+    <meta charset="utf-8">
+    <title>BlazingDevs Calender!</title>
+    <link th:href="@{/css/menu.css}" rel="stylesheet" />
+</head>
+<body>
+    <div th:replace="~{template/fragment/header :: schedules_header ('스케줄관리')}" class="title">
+        <h1>스케줄 관리</h1>
+    </div>
+
+    <div class="container">
+        <ol>
+            <li><a href="/admin/schedules/create-schedules">새 스케줄 생성</a></li>
+            <li><a href="/admin/schedules/read-schedules">스케줄 목록 조회</a></li>
+        </ol>
+    </div> <!-- /container -->
+</body>
+</html>
