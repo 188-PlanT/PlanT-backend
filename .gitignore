@@ -1,5 +1,5 @@
 # Gradle artifacts
-.gradle
+/.gradle
 .gradletasknamecache
 /build
 buildSrc/build
@@ -27,7 +27,7 @@ spring-test/test-output/
 *.rar
 
 # Properties #
-*.properties
+#*.properties
 *.yml
 
 # Goorm ide #
