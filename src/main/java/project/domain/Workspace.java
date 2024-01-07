@@ -1,12 +1,13 @@
 package project.domain;
 
-import javax.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
+import javax.persistence.*;
+import static java.util.stream.Collectors.toList;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "workspaces")
@@ -63,5 +64,19 @@ public class Workspace extends BaseEntity{
         for(User user : users){
             this.addUser(user);
         }
+    }
+    
+    public boolean checkUsers(List<User> users){
+        List<User> workspaceUserList = this.getUserWorkspaces().stream()
+                                                .map(uw -> uw.getUser())
+                                                .collect(toList());
+        
+        for (User u : users){
+            if (!workspaceUserList.contains(u)){
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

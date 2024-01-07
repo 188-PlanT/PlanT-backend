@@ -42,10 +42,6 @@ public class ScheduleService{
         return scheduleRepository.findAll(pageable);
     }
     
-    // @Override
-    // public List<Schedule> searchSchedule(String accountId){
-    //     return scheduleRepository.searchSchedulesByUserAccountId(accountId);        
-    // }
     
     @Transactional
     public Long createSchedule(CreateScheduleRequest request){
@@ -53,9 +49,14 @@ public class ScheduleService{
         Workspace workspace = workspaceRepository.findByName(request.getWorkspace())
             .orElseThrow(NoSuchWorkspaceException::new);
         
-        String name = request.getName();    
+        String name = request.getName();
 
         List <User> users = userRepository.findUsersByEmailList(request.getUsers());
+        
+        //유저 검증? -> 여기 리팩토링 필요할듯
+        if (!workspace.checkUsers(users)){
+            throw new NoSuchUserException();
+        }
         
         Schedule schedule = new Schedule(workspace, name, users);
         scheduleRepository.save(schedule);
