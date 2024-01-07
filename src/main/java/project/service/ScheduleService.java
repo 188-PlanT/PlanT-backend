@@ -93,7 +93,9 @@ public class ScheduleService{
         User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
-        validateUserInWorkspace(workspace, user);
+        if (!workspace.hasUser(user)){
+            throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
+        }
         
         schedule.addUser(user);
         return schedule;
@@ -115,12 +117,6 @@ public class ScheduleService{
             if(!workspace.hasUser(user)){
                 throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
             }
-        }
-    }
-    
-    private void validateUserInWorksapce(Workspace workspace, User user){
-        if (!workspace.hasUser(user)){
-            throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
         }
     }
 }

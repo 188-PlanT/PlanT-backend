@@ -84,9 +84,9 @@ public class Schedule extends BaseEntity{
         }
     }
     
-    public hasUser(User user){
+    public boolean hasUser(User user){
         return (this.userSchedules.stream()
-                                .filter(us -> user.getUser().equals(user))
+                                .filter(us -> us.getUser().equals(user))
                                 .count() == 1);
     }
 }
