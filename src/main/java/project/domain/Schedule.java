@@ -67,11 +67,11 @@ public class Schedule extends BaseEntity{
     }
     
     public List<String> getUserEmailList(){
-        List<String> accountIdList = this.getUserSchedules().stream()
+        List<String> emailList = this.getUserSchedules().stream()
             .map(us -> us.getUser().getEmail())
             .collect(toList());
         
-        return accountIdList;
+        return emailList;
     }
     
     //수정 메소드
@@ -82,5 +82,11 @@ public class Schedule extends BaseEntity{
         for (User user : users){
             this.addUser(user);
         }
+    }
+    
+    public hasUser(User user){
+        return (this.userSchedules.stream()
+                                .filter(us -> user.getUser().equals(user))
+                                .count() == 1);
     }
 }

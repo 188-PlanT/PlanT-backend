@@ -39,7 +39,7 @@ public class Workspace extends BaseEntity{
     // <== 비즈니스 로직 == > //
     
     public void addUser(User user){
-        if (this.userWorkspaces.stream().filter(us -> us.getUser().equals(user)).count() != 0){
+        if (this.hasUser(user)){
             throw new IllegalStateException("이미 존재하는 user 입니다");
         }
         
@@ -49,7 +49,7 @@ public class Workspace extends BaseEntity{
     }
     
     public void removeUser(User user){
-        if (this.userWorkspaces.stream().filter(us -> us.getUser().equals(user)).count() == 0){
+        if (!this.hasUser(user)){
             throw new IllegalStateException("존재하지 않는 user 입니다");
         }
         
@@ -66,17 +66,9 @@ public class Workspace extends BaseEntity{
         }
     }
     
-    public boolean checkUsers(List<User> users){
-        List<User> workspaceUserList = this.getUserWorkspaces().stream()
-                                                .map(uw -> uw.getUser())
-                                                .collect(toList());
-        
-        for (User u : users){
-            if (!workspaceUserList.contains(u)){
-                return false;
-            }
-        }
-        
-        return true;
+    public boolean hasUser(User user){
+        return (this.userWorkspaces.stream()
+                                .filter(uw -> uw.getUser().equals(user))
+                                .count() == 1);
     }
 }
