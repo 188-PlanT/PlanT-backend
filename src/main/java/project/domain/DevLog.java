@@ -2,6 +2,7 @@ package project.domain;
 
 import javax.persistence.*;
 import lombok.Getter;
+import lombok.Builder;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -25,8 +26,10 @@ public class DevLog extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
     
-    protected DevLog(){}
+    // <== 생성자 ==>
+    protected DevLog(){} //JPA용 생성자
     
+    @Builder //빌더 패턴 사용
     public DevLog(Schedule schedule, User user, String content){
         this.schedule = schedule;
         this.user = user;

@@ -32,12 +32,11 @@ public class WorkspaceService{
         
         String name = request.getName();
         //중복 이름 검증
-        validateWorkspace(name);
+        validateWorkspaceName(name);
         
         List<User> users = userRepository.findUsersByEmailList(request.getUsers());
         
-        //Workspace 생성
-        Workspace workspace = new Workspace(name, users);
+        Workspace workspace = Workspace.ofNameAndUsers(name, users);
         workspaceRepository.save(workspace);
         return workspace.getId();
     }
@@ -64,13 +63,11 @@ public class WorkspaceService{
         Workspace workspace = workspaceRepository.findById(id)
             .orElseThrow(NoSuchWorkspaceException::new);
         
+        List<User> users = userRepository.findUsersByEmailList(request.getUsers());
+        
         String name = request.getName();
         //중복 이름 검증
-        if (!workspace.getName().equals(name)){
-            validateWorkspace(name);
-        }
-        
-        List<User> users = userRepository.findUsersByEmailList(request.getUsers());
+        updateWorkspaceValidate(workspace, name);
         
         workspace.updateWorkspace(name, users);
         return workspace;
@@ -99,10 +96,16 @@ public class WorkspaceService{
         workspace.removeUser(user);
     }
     
-    //bool 형으로 바꿔서 검증 함수 만들면 재사용성 더 좋을듯
-    private void validateWorkspace(String name){
+    
+    private void validateWorkspaceName(String name){
         if (workspaceRepository.existsByName(name)){
             throw new IllegalStateException("이미 존재하는 Workspace 입니다");
+        }
+    }
+    
+    private void updateWorkspaceValidate(Workspace workspace, String name){
+        if (!workspace.getName().equals(name)){
+            validateWorkspaceName(name);
         }
     }
 }

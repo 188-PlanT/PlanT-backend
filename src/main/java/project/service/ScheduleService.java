@@ -49,13 +49,11 @@ public class ScheduleService{
         Workspace workspace = workspaceRepository.findByName(request.getWorkspace())
             .orElseThrow(NoSuchWorkspaceException::new);
 
-        List <User> users = userRepository.findUsersByEmailList(request.getUsers());
+        List <User> userList = userRepository.findUsersByEmailList(request.getUsers());
         
-        //유저 검증
-        validateUserInWorkspace(workspace, users);
+        String scheduleName = request.getName();
         
-        String name = request.getName();
-        Schedule schedule = new Schedule(workspace, name, users);
+        Schedule schedule = Schedule.create(workspace, scheduleName, userList);
         scheduleRepository.save(schedule);
         return schedule.getId();
     }
@@ -65,13 +63,11 @@ public class ScheduleService{
         
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(NoSuchScheduleException::new);
-        Workspace workspace = schedule.getWorkspace();
+
         List <User> users = userRepository.findUsersByEmailList(request.getUsers());
-        
-        //유저 검증
-        validateUserInWorkspace(workspace, users);
-        
+
         String name = request.getName();
+        
         schedule.update(name,users);
         return schedule;
     }
@@ -89,13 +85,8 @@ public class ScheduleService{
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(NoSuchScheduleException::new);
         
-        Workspace workspace = schedule.getWorkspace();
         User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
-        
-        if (!workspace.hasUser(user)){
-            throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
-        }
         
         schedule.addUser(user);
         return schedule;

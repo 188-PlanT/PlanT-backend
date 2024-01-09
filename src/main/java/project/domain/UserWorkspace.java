@@ -1,17 +1,17 @@
 package project.domain;
 
 import javax.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @Entity
 @Table(name = "user_workspace")
-@Getter @Setter
-@NoArgsConstructor
+@Getter
+@Setter
 public class UserWorkspace extends BaseEntity{
     
     @Id @GeneratedValue
@@ -26,10 +26,19 @@ public class UserWorkspace extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
     
-    public UserWorkspace(User user, Workspace workspace){
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole authority;
+    
+    // <== 생성자 ==>
+    
+    //JPA용 생성자
+    protected UserWorkspace () {} 
+    
+    @Builder //빌더 패턴 사용
+    public UserWorkspace(User user, Workspace workspace, UserRole authority){
         this.user = user;
         this.workspace = workspace;
+        this.authority = authority;
     }
-    
-    //AccounrId Field 추가하기
 }
