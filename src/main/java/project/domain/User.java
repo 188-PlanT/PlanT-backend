@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 public class User extends BaseEntity{
     
+    private static final DEFAULT_PROFILE_URL = "";
+    
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
@@ -22,7 +24,7 @@ public class User extends BaseEntity{
     @Column(unique = true, nullable = false)
     private String email;
     
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     private String nickName;
     
     @Column(nullable = true)
@@ -69,22 +71,50 @@ public class User extends BaseEntity{
         return User.builder()
             .name((String) attributes.get("name"))
             .email((String) attributes.get("email"))
+            .profile(User.DEFAULT_PROFILE_URL)
             .userRole(UserRole.USER)
             .build();
     }
     
+    public static User ofEmailPassword(String email, String password, String name){
+        String DEFAULT_PROFILE_URL = "";
+        
+        User user =  User.builder()
+                        .email(email)
+                        .password(password)
+                        .name(name)
+                        .profile(User.DEFAULT_PROFILE_URL)
+                        .userRole(UserRole.USER)
+                        .build();
+        
+        user.encodePassword();
+        return user;
+    }
+    
     
     // <== 비즈니스 로직 ==>
+    public boolean checkFinishSignUp(){
+        return (this.nickName == null);
+    }
+    
     public String getRoleKey(){
         return this.userRole.getKey();
     }
     
-    public void encodePassword(PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(this.password);
+    public void updateUserNickName(String nickName){
+        this.nickName = nickName;
     }
     
-    public void update(String password, String name, PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(password);
-        this.name = name;
+    public void updateUser(String nickName, String password, String name, String profile, PasswordEncoder passwordEncoder){
+        this.nickName = nickName;
+        this.password = password;
+        this.name =name;
+        this.profile = profile;
+        
+        this.encodePassword(PasswordEncoder passwordEncoder)
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(this.password);
     }
 }
