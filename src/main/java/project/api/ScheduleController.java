@@ -22,95 +22,95 @@ public class ScheduleController {
     
     private final ScheduleService scheduleService;
     
-    @GetMapping("/schedules")
-    public ResponseEntity<FindAllScheduleResponse> findAllSchedule(Pageable pageable){
-        // ,@RequestParam(value = "accountId", required = false) String accountId){
+    // @GetMapping("/schedules")
+    // public ResponseEntity<FindAllScheduleResponse> findAllSchedule(Pageable pageable){
+    //     // ,@RequestParam(value = "accountId", required = false) String accountId){
             
-        Page<Schedule> page = scheduleService.findSchedules(pageable);
+    //     Page<Schedule> page = scheduleService.findSchedules(pageable);
         
-        List<ScheduleDto> responseData = page.getContent()
-            .stream()
-            .map(ScheduleDto::new) 
-            .collect(toList());
+    //     List<ScheduleDto> responseData = page.getContent()
+    //         .stream()
+    //         .map(ScheduleDto::new) 
+    //         .collect(toList());
         
-        FindAllScheduleResponse response = new FindAllScheduleResponse(page.getTotalPages(), page.getNumber(), responseData);
+    //     FindAllScheduleResponse response = new FindAllScheduleResponse(page.getTotalPages(), page.getNumber(), responseData);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
-    @PostMapping("/schedules")
-    public ResponseEntity<Long> registerUser(@RequestBody CreateScheduleRequest request){
+    // @PostMapping("/schedules")
+    // public ResponseEntity<Long> registerUser(@RequestBody CreateScheduleRequest request){
         
-        Long scheduleId = scheduleService.createSchedule(request);
+    //     Long scheduleId = scheduleService.createSchedule(request);
         
-        return ResponseEntity.ok(scheduleId);
-    }
+    //     return ResponseEntity.ok(scheduleId);
+    // }
     
-    @GetMapping("/schedules/{scheduleId}") 
-    public ResponseEntity<FindSingleScheduleResponse> findSingleSchedule(@PathVariable Long scheduleId){
+    // @GetMapping("/schedules/{scheduleId}") 
+    // public ResponseEntity<FindSingleScheduleResponse> findSingleSchedule(@PathVariable Long scheduleId){
             
-        Schedule schedule = scheduleService.findOne(scheduleId);
+    //     Schedule schedule = scheduleService.findOne(scheduleId);
         
-        FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
+    //     FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
-    @PutMapping("/schedules/{scheduleId}") 
-    public ResponseEntity<FindSingleScheduleResponse> updateSchedule(@PathVariable Long scheduleId,
-                                                    @RequestBody UpdateScheduleRequest request){
+    // @PutMapping("/schedules/{scheduleId}") 
+    // public ResponseEntity<FindSingleScheduleResponse> updateSchedule(@PathVariable Long scheduleId,
+    //                                                 @RequestBody UpdateScheduleRequest request){
             
-        Schedule schedule = scheduleService.updateSchedule(scheduleId, request);
+    //     Schedule schedule = scheduleService.updateSchedule(scheduleId, request);
         
-        FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
+    //     FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
-    @DeleteMapping("/schedules/{scheduleId}")
-    public ResponseEntity<DeleteScheduleResponse> deleteSchedule(@PathVariable Long scheduleId){
+    // @DeleteMapping("/schedules/{scheduleId}")
+    // public ResponseEntity<DeleteScheduleResponse> deleteSchedule(@PathVariable Long scheduleId){
             
-        scheduleService.removeSchedule(scheduleId);
+    //     scheduleService.removeSchedule(scheduleId);
         
-        return ResponseEntity.ok(new DeleteScheduleResponse());
-    }
+    //     return ResponseEntity.ok(new DeleteScheduleResponse());
+    // }
     
-    @GetMapping("/schedules/{scheduleId}/users")
-    public ResponseEntity<FindScheduleUsersResponse> findScheduleUsers(@PathVariable Long scheduleId){
+    // @GetMapping("/schedules/{scheduleId}/users")
+    // public ResponseEntity<FindScheduleUsersResponse> findScheduleUsers(@PathVariable Long scheduleId){
             
-        Schedule schedule = scheduleService.findOne(scheduleId);
+    //     Schedule schedule = scheduleService.findOne(scheduleId);
         
-        FindScheduleUsersResponse response = new FindScheduleUsersResponse(schedule);
+    //     FindScheduleUsersResponse response = new FindScheduleUsersResponse(schedule);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
-    @PostMapping("/schedules/{scheduleId}/users")
-    public ResponseEntity<Long> addScheduleUsers(
-                                                        @PathVariable Long scheduleId,
-                                                        @RequestBody AddUserReqeust request){
+    // @PostMapping("/schedules/{scheduleId}/users")
+    // public ResponseEntity<Long> addScheduleUsers(
+    //                                                     @PathVariable Long scheduleId,
+    //                                                     @RequestBody AddUserReqeust request){
             
-        Schedule schedule = scheduleService.addUser(scheduleId,request.getEmail());
+    //     Schedule schedule = scheduleService.addUser(scheduleId,request.getEmail());
         
-        Long responseId = schedule.getId();
+    //     Long responseId = schedule.getId();
         
-        return ResponseEntity.ok(responseId);
-    }
+    //     return ResponseEntity.ok(responseId);
+    // }
     
-    @DeleteMapping("/schedules/{scheduleId}/users/{userId}")
-    public ResponseEntity<DeleteScheduleUserResponse> removeScheduleUsers(
-                                                        @PathVariable Long scheduleId,
-                                                        @PathVariable Long userId){
+    // @DeleteMapping("/schedules/{scheduleId}/users/{userId}")
+    // public ResponseEntity<DeleteScheduleUserResponse> removeScheduleUsers(
+    //                                                     @PathVariable Long scheduleId,
+    //                                                     @PathVariable Long userId){
             
-        scheduleService.removeUser(scheduleId, userId);
+    //     scheduleService.removeUser(scheduleId, userId);
         
-        DeleteScheduleUserResponse response = new DeleteScheduleUserResponse();
+    //     DeleteScheduleUserResponse response = new DeleteScheduleUserResponse();
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
-    @Getter
-    static class AddUserReqeust{
-        private String email;
-    }
+    // @Getter
+    // static class AddUserReqeust{
+    //     private String email;
+    // }
 }

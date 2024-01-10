@@ -49,11 +49,17 @@ public class ScheduleService{
         Workspace workspace = workspaceRepository.findByName(request.getWorkspace())
             .orElseThrow(NoSuchWorkspaceException::new);
 
-        List <User> userList = userRepository.findUsersByEmailList(request.getUsers());
+        List <User> users = userRepository.findUsersByEmailList(request.getUsers());
         
-        String scheduleName = request.getName();
-        
-        Schedule schedule = Schedule.create(workspace, scheduleName, userList);
+        Schedule schedule = Schedule.builder()
+                                        .workspace(workspace)
+                                        .name(request.getName())
+                                        .startDate(request.getStartDate())
+                                        .endDate(request.getEndDate())
+                                        .content(request.getContent())
+                                        .users(users)
+                                        .build();
+            
         scheduleRepository.save(schedule);
         return schedule.getId();
     }
@@ -65,10 +71,8 @@ public class ScheduleService{
             .orElseThrow(NoSuchScheduleException::new);
 
         List <User> users = userRepository.findUsersByEmailList(request.getUsers());
-
-        String name = request.getName();
         
-        schedule.update(name,users);
+        schedule.update(request.getName(), request.getStartDate(), request.getEndDate(), request.getContent(), users);
         return schedule;
     }
     
@@ -81,11 +85,11 @@ public class ScheduleService{
     }
     
     @Transactional
-    public Schedule addUser(Long scheduleId, String email){
+    public Schedule addUser(Long scheduleId, Long userId){
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(NoSuchScheduleException::new);
         
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
         schedule.addUser(user);
@@ -101,13 +105,5 @@ public class ScheduleService{
             .orElseThrow(NoSuchUserException::new);
         
         schedule.removeUser(user);
-    }
-    
-    private void validateUserInWorkspace(Workspace workspace, List<User> userList){
-        for (User user : userList){
-            if(!workspace.hasUser(user)){
-                throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
-            }
-        }
     }
 }

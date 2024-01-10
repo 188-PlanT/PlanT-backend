@@ -19,5 +19,13 @@ public class CreateScheduleRequest{
     @NotBlank
     private String name;
     
+    @NotBlank
+    private LocalDateTime startDate;
+    
+    @NotBlank
+    private LocalDateTime endDate;
+    
+    private String content;
+    
     private List<String> users;
 }
