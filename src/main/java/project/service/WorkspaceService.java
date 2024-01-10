@@ -97,6 +97,17 @@ public class WorkspaceService{
         workspace.removeUser(user);
     }
     
+    @Transactional
+    public void changeUserAuthority(Long workspaceId, Long userId, UserRole authority){
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+            .orElseThrow(NoSuchWorkspaceException::new);
+        
+        User user = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        workspace.giveAuthority(user, authority);
+    }
+    
     
     private void validateWorkspaceName(String name){
         if (workspaceRepository.existsByName(name)){
