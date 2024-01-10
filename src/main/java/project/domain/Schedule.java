@@ -7,7 +7,7 @@ import static java.util.stream.Collectors.toList;
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Builder;
+// import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 
@@ -37,24 +37,30 @@ public class Schedule extends BaseEntity{
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
     
-    //연관관계 삭제용
+    //Schedule이 UserSchedule 영속성 관리
     @OneToMany(mappedBy="schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList <> ();
-        
-    @OneToMany(mappedBy="schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    
+    //연관관계 삭제용
+    @OneToMany(mappedBy="schedule", orphanRemoval = true)
     private List<DevLog> devLogs = new ArrayList <> ();
     
     
     //< == 생성자 ==>
     protected Schedule() {} // JPA용 생성자
     
-    @Builder //빌더 패턴 사용
-    public Schedule(Workspace workspace, String name, LocalDateTime startDate, LocalDateTime endDate, String content){
-        this.workspace = workspace;
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.content = content;
+    
+    //@Builder //빌더 패턴 사용
+    private Schedule(Builder builder){
+        this.workspace = builder.workspace;
+        this.name = builder.name;
+        this.startDate = builder.startDate;
+        this.endDate = builder.endDate;
+        this.content = builder.content;
+        
+        for (User user : builder.users){
+            this.addUser(user);
+        }
     }
     
     // < == 비즈니스 로직 == >
@@ -88,19 +94,59 @@ public class Schedule extends BaseEntity{
         return emailList;
     }
     
-    //수정
-    public void update(String name, List<User> users){
+    //수정 로직 -> 이거 DTO로 묶는 방법 생각해보자
+    public void update(String name, LocalDateTime startDate, LocalDateTime endDate, String content, User<List> userList){
         this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.content = content;
         this.userSchedules.clear();
         
-        for (User user : users){
+        for (User user : userList){
             this.addUser(user);
         }
     }
     
     private boolean hasUser(User user){
-        return (this.userSchedules.stream()
-                                .filter(us -> us.getUser().equals(user))
-                                .count() == 1);
+        return this.userSchedules.contains(user);
+    }
+    
+    
+    // <=== Builder ===>
+    public static class Builder{
+        private Workspace workspace;
+        private String name;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
+        private String content;
+        private List<User> users;
+        
+        public Builder builder(){
+            return new Builder();
+        }
+        
+        public Builder workspace(Workspace workspace){
+            this.workspace = workspace;
+        }
+        
+        public Builder name(String name){
+            this.name = name;
+        }
+        
+        public Builder startDate(LocalDateTime startDate){
+            this.startDate = startDate;
+        }
+        
+        public Builder startDate(LocalDateTime endDate){
+            this.end = endDate;
+        }
+        
+        public Builder content(String content){
+            this.content = content;
+        }
+        
+        public Schedule build(){
+            return new Schedule(this);
+        }
     }
 }

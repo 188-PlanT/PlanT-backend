@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 public class User extends BaseEntity{
     
-    private static final DEFAULT_PROFILE_URL = "";
+    private static final String DEFAULT_PROFILE_URL = "";
     
     @Id @GeneratedValue
     @Column(name = "user_id")
@@ -77,7 +77,6 @@ public class User extends BaseEntity{
     }
     
     public static User ofEmailPassword(String email, String password, String name){
-        String DEFAULT_PROFILE_URL = "";
         
         User user =  User.builder()
                         .email(email)
@@ -108,10 +107,10 @@ public class User extends BaseEntity{
     public void updateUser(String nickName, String password, String name, String profile, PasswordEncoder passwordEncoder){
         this.nickName = nickName;
         this.password = password;
-        this.name =name;
+        this.name = name;
         this.profile = profile;
         
-        this.encodePassword(PasswordEncoder passwordEncoder)
+        this.encodePassword(passwordEncoder);
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder){

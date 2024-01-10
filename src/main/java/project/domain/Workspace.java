@@ -8,12 +8,14 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 import static java.util.stream.Collectors.toList;
 import lombok.Getter;
-import lombok.Builder;
+// import lombok.Builder;
 
 @Entity
 @Table(name = "workspaces")
 @Getter 
 public class Workspace extends BaseEntity{
+    
+    private static final String DEFAULT_PROFILE_URL = "";
     
     @Id @GeneratedValue
     @Column(name = "workspace_id")
@@ -26,10 +28,11 @@ public class Workspace extends BaseEntity{
     private String profile;
     
     
-    // 연관관계 삭제용
-    @OneToMany(mappedBy="workspace", orphanRemoval = true)
+    // Workspace가 UserWorkspace 영속성 관리
+    @OneToMany(mappedBy="workspace", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserWorkspace> userWorkspaces = new ArrayList<>();
     
+    // 연관관계 삭제용
     @OneToMany(mappedBy="workspace", orphanRemoval = true)
     private List<Schedule> schedules = new ArrayList<>();
     
@@ -38,23 +41,13 @@ public class Workspace extends BaseEntity{
     
     protected Workspace(){} //JPA용 생성자
     
-    @Builder //빌더 패턴용
-    public Workspace(String name, String proflie){
-        this.name = name;
-        this.proflie = proflie;
-    }
-    
-    // <== 정적 팩토리 메서드 ==> //
-    public static Workspace ofNameAndUsers(String name, String profile, List<User> users){
-        Workspace workspace = Workspace.builder()
-                                        .name(name)
-                                        .profile(profile);
+    //@Builder //빌더 패턴용
+    private Workspace(Builder builder){
+        this.name = builder.name;
+        this.proflie = builder.proflie;
         
-        for(User user : users){
-            workspace.addUser(user);
-        }
-        
-        return workspace;
+        workspace.addUser(builder.user);
+        workspace.giveAuthority(builder.user, UserRole.ADMIN);
     }
     
     // <== 비즈니스 로직 == > //
@@ -80,19 +73,52 @@ public class Workspace extends BaseEntity{
         this.userWorkspaces.removeIf(userWorkspace -> userWorkspace.getUser().equals(user));
     }
     
-    // 수정 로직
-    public void updateWorkspace(String name, List<User> users){
-        this.name = name;
-        this.userWorkspaces.clear();
-        
-        for(User user : users){
-            this.addUser(user);
+    public void giveAuthority(User user, UserRole authority){
+        if (!this.hasUser(user)){
+            throw new IllegalStateException("존재하지 않는 user 입니다");
         }
+        
+        this.userWorkspaces.stream()
+                            .filter(uw -> uw.getUser().equals(user))
+                            .forEach(uw -> uw.setAuthority(authority));
+    }
+
+    
+    // 수정 로직
+    public void updateWorkspace(String name, String profile){
+        this.name = name;
+        this.profile = profile;
     }
     
     public boolean hasUser(User user){
-        return (this.userWorkspaces.stream()
-                                .filter(uw -> uw.getUser().equals(user))
-                                .count() == 1);
+        return this.userWorkspaces.contains(user);
+    }
+    
+    
+    // <=== Builder 구현 ===>
+    public static class Builder{
+        private String name;
+        private String profile;
+        private User user;
+        
+        public Builder builder(){
+            return new Builder();
+        }
+        
+        public Builder name(String name){
+            this.name = name;
+        }
+        
+        public Builder profile(String profile){
+            this.profile = profile;
+        }
+        
+        public Builder User(User user){
+            this.user = user;
+        }
+        
+        public Workspace build(){
+            return new Workspace(this);
+        }
     }
 }
