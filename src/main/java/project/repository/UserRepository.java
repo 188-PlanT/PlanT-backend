@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     
     public Page<User> findAll(Pageable pageable);
     
+    public boolean existsByNickName(String nickName);
+    
     @Query("select u from User u where u.email in :userEmails")
     public List<User> findUsersByEmailList(@Param("userEmails") List<String> userEmails);
 }

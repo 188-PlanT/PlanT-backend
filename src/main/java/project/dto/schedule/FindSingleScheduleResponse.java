@@ -14,34 +14,34 @@ public class FindSingleScheduleResponse{
     private String workspace;
     private String name;
     private List<String> users = new ArrayList <> ();
-    private List<SimpleDevLogDto> devLogs = new ArrayList<>();
+    // private List<SimpleDevLogDto> devLogs = new ArrayList<>();
         
-    public FindSingleScheduleResponse(Schedule schedule){
-        this.schedule_id = schedule.getId();
-        this.workspace = schedule.getWorkspace().getName();
-        this.name = schedule.getName();
+    // public FindSingleScheduleResponse(Schedule schedule){
+    //     this.schedule_id = schedule.getId();
+    //     this.workspace = schedule.getWorkspace().getName();
+    //     this.name = schedule.getName();
         
-        for (UserSchedule userSchedule : schedule.getUserSchedules()){
-            users.add(userSchedule.getUser().getEmail());
-        }
+    //     for (UserSchedule userSchedule : schedule.getUserSchedules()){
+    //         users.add(userSchedule.getUser().getEmail());
+    //     }
         
-        this.devLogs.addAll(
-            schedule.getDevLogs().stream()
-                .map(SimpleDevLogDto::new)
-                .collect(toList())
-        );
-    }
+    //     this.devLogs.addAll(
+    //         schedule.getDevLogs().stream()
+    //             .map(SimpleDevLogDto::new)
+    //             .collect(toList())
+    //     );
+    // }
     
-    @Getter
-    static class SimpleDevLogDto{
-        private Long devLogId;
-        private String userEmail;
-        private String content;
+    // @Getter
+    // static class SimpleDevLogDto{
+    //     private Long devLogId;
+    //     private String userEmail;
+    //     private String content;
         
-        public SimpleDevLogDto(DevLog devLog){
-            this.devLogId = devLog.getId();
-            this.userEmail = devLog.getUser().getEmail();
-            this.content = devLog.getContent();
-        }
-    }
+    //     public SimpleDevLogDto(DevLog devLog){
+    //         this.devLogId = devLog.getId();
+    //         this.userEmail = devLog.getUser().getEmail();
+    //         this.content = devLog.getContent();
+    //     }
+    // }
 }

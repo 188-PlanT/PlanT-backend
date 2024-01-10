@@ -15,16 +15,16 @@ public class FindSingleUserResponse {
     private List<String> schedules;
     // private List<Long> devLogs;
         
-    public FindSingleUserResponse(User user){
-        this.email = user.getEmail();
-        this.name = user.getName();
+    // public FindSingleUserResponse(User user){
+    //     this.email = user.getEmail();
+    //     this.name = user.getName();
             
-        this.workspaces = user.getUserWorkspaces().stream()
-            .map(userWorkspace -> userWorkspace.getWorkspace().getName())
-            .collect(toList());
+    //     this.workspaces = user.getUserWorkspaces().stream()
+    //         .map(userWorkspace -> userWorkspace.getWorkspace().getName())
+    //         .collect(toList());
         
-        this.schedules = user.getUserSchedules().stream()
-            .map(userSchedule -> userSchedule.getSchedule().getName())
-            .collect(toList());
-    }
+    //     this.schedules = user.getUserSchedules().stream()
+    //         .map(userSchedule -> userSchedule.getSchedule().getName())
+    //         .collect(toList());
+    // }
 }

@@ -1,5 +1,7 @@
 package project.domain;
 
+import project.exception.user.NoSuchUserException;
+
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.Builder;
@@ -43,14 +45,14 @@ public class DevLog extends BaseEntity{
     
     
     // <=== Builder 구현 ===>
+    public static Builder builder(){
+        return new Builder();
+    }
+    
     public static class Builder {
         private Schedule schedule;
         private User user;
         private String content;
-        
-        public Builder builder(){
-            return new Builder();
-        }
         
         public Builder schedule(Schedule schedule){
             this.schedule = schedule;
@@ -72,7 +74,7 @@ public class DevLog extends BaseEntity{
                 throw new NoSuchUserException("스케줄에 존재하지 않는 유저입니다");
             }
             
-            DevLog devLog = new DevLog(this);
+            return new DevLog(this); 
         }
     }
 }

@@ -13,29 +13,29 @@ public class FindScheduleUsersResponse{
     private Long scheduleId;
     private String scheduleName;
     
-    private List<SimpleUserDto> users = new ArrayList<>();
+    // private List<SimpleUserDto> users = new ArrayList<>();
     
-    public FindScheduleUsersResponse(Schedule schedule){
-        this.scheduleId = schedule.getId();
-        this.scheduleName = schedule.getName();
+    // public FindScheduleUsersResponse(Schedule schedule){
+    //     this.scheduleId = schedule.getId();
+    //     this.scheduleName = schedule.getName();
         
-        this.users.addAll(
-            schedule.getUserSchedules().stream()
-                .map(userSchedule -> new SimpleUserDto(userSchedule.getUser()))
-                .collect(toList())
-        );
-    }
+    //     this.users.addAll(
+    //         schedule.getUserSchedules().stream()
+    //             .map(userSchedule -> new SimpleUserDto(userSchedule.getUser()))
+    //             .collect(toList())
+    //     );
+    // }
     
-    @Getter
-    static class SimpleUserDto{
-        private Long userId;
-        private String userEmail;
-        private String userName;
+    // @Getter
+    // static class SimpleUserDto{
+    //     private Long userId;
+    //     private String userEmail;
+    //     private String userName;
         
-        public SimpleUserDto(User user){
-            this.userId = user.getId();
-            this.userEmail = user.getEmail();
-            this.userName = user.getName();
-        }
-    }
+    //     public SimpleUserDto(User user){
+    //         this.userId = user.getId();
+    //         this.userEmail = user.getEmail();
+    //         this.userName = user.getName();
+    //     }
+    // }
 }

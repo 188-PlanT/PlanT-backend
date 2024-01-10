@@ -33,7 +33,7 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     private String name;
     
-    @Column(nullable = null)
+    @Column(nullable = true)
     private String profile;
     
     @Enumerated(EnumType.STRING)
@@ -55,15 +55,14 @@ public class User extends BaseEntity{
     // JPA용 생성자
     protected User () {} 
     
-    //Builder
-    @Builder
-    public User(String email, String nickName, String password, String name, String profile){        
+    @Builder //builder
+    public User(String email, String nickName, String password, String name, String profile, UserRole userRole){        
         this.email = email;
         this.nickName = nickName;
         this.password = password;
         this.name = name;
         this.profile = profile;
-        this.userRole = userRole.USER;
+        this.userRole = userRole;
     }
     
     // <== 정적 팩토리 메서드 ==>
@@ -76,7 +75,7 @@ public class User extends BaseEntity{
             .build();
     }
     
-    public static User ofEmailPassword(String email, String password, String name){
+    public static User ofEmailPassword(String email, String password, String name, PasswordEncoder passwordEncoder){
         
         User user =  User.builder()
                         .email(email)
@@ -86,7 +85,7 @@ public class User extends BaseEntity{
                         .userRole(UserRole.USER)
                         .build();
         
-        user.encodePassword();
+        user.encodePassword(passwordEncoder);
         return user;
     }
     
@@ -97,7 +96,7 @@ public class User extends BaseEntity{
     }
     
     public boolean checkFinishSignUp(){
-        return (!this.nickName == null);
+        return this.nickName != null;
     }
     
     public void encodePassword(PasswordEncoder passwordEncoder){
@@ -108,11 +107,11 @@ public class User extends BaseEntity{
         return passwordEncoder.matches(password, this.password);
     }
     
-    public void updateUserNickName(String nickName){
+    public void updateNickName(String nickName){
         this.nickName = nickName;
     }
     
-    public void updateUser(String nickName, String password, String name, String profile, PasswordEncoder passwordEncoder){
+    public void update(String nickName, String password, String name, String profile, PasswordEncoder passwordEncoder){
         this.nickName = nickName;
         this.password = password;
         this.name = name;

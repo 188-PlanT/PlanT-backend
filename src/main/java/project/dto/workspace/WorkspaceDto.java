@@ -13,11 +13,11 @@ public class WorkspaceDto{
     private String name;
     private List<String> users = new ArrayList<> ();
         
-    public WorkspaceDto(Workspace workspace){
-        this.id = workspace.getId();
-        this.name = workspace.getName();
+    // public WorkspaceDto(Workspace workspace){
+    //     this.id = workspace.getId();
+    //     this.name = workspace.getName();
         
-        workspace.getUserWorkspaces().stream()
-            .forEach(uw -> users.add(uw.getUser().getEmail()));
-    }
+    //     workspace.getUserWorkspaces().stream()
+    //         .forEach(uw -> users.add(uw.getUser().getEmail()));
+    // }
 }

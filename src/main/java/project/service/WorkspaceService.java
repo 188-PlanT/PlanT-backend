@@ -28,16 +28,16 @@ public class WorkspaceService{
         
     // 성능 개선 필요
     @Transactional
-    public Long makeWorkspace(CreateWorkspaceRequest request){
+    public Long makeWorkspace(CreateWorkspaceRequest request, User createUser){
         
         //중복 이름 검증
         validateWorkspaceName(request.getName());
         
-        List<User> users = userRepository.findUsersByEmailList(request.getUsers());
-        
         Workspace workspace = Workspace.builder()
                                         .name(request.getName())
-                                        .profile(request.getProfile());
+                                        .profile(request.getProfile())
+                                        .user(createUser)
+                                        .build();
         
         workspaceRepository.save(workspace);
         return workspace.getId();

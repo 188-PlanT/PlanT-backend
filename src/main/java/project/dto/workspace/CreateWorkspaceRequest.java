@@ -12,15 +12,15 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@AllArgsConstructor
 public class CreateWorkspaceRequest{
     @NotBlank
     private String name;
     
     private String profile;
     
-    public CreateWorkspaceRequest(Workspace workspace){
-        this.name = workspace.getName();
-        this.profile = workspace.getProfile();
-    }
+    // public CreateWorkspaceRequest(Workspace workspace){
+    //     this.name = workspace.getName();
+    //     this.profile = workspace.getProfile();
+    // }
 }

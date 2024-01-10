@@ -43,7 +43,7 @@ public class Workspace extends BaseEntity{
     //@Builder //빌더 패턴용
     private Workspace(Builder builder){
         this.name = builder.name;
-        this.proflie = builder.proflie;
+        this.profile = builder.profile;
     }
     
     // <== 비즈니스 로직 == > //
@@ -56,7 +56,8 @@ public class Workspace extends BaseEntity{
         UserWorkspace userWorkspace = UserWorkspace.builder()
                                                     .user(user)
                                                     .workspace(this)
-                                                    .authority(UserRole.USER);
+                                                    .userRole(UserRole.USER)
+                                                    .build();
         
         this.userWorkspaces.add(userWorkspace);
     }
@@ -66,17 +67,17 @@ public class Workspace extends BaseEntity{
             throw new IllegalStateException("존재하지 않는 user 입니다");
         }
         
-        this.userWorkspaces.removeIf(userWorkspace -> userWorkspace.getUser().equals(user));
+        this.userWorkspaces.removeIf(uw -> uw.getUser().equals(user));
     }
     
-    public void giveAuthority(User user, UserRole authority){
+    public void giveAuthority(User user, UserRole userRole){
         if (!this.hasUser(user)){
             throw new IllegalStateException("존재하지 않는 user 입니다");
         }
         
         this.userWorkspaces.stream()
                             .filter(uw -> uw.getUser().equals(user))
-                            .forEach(uw -> uw.setAuthority(authority));
+                            .forEach(uw -> uw.setUserRole(userRole));
     }
 
     
@@ -91,15 +92,16 @@ public class Workspace extends BaseEntity{
     }
     
     
+    public static Builder builder(){
+        return new Builder();
+    }
+    
     // <=== Builder 구현 ===>
     public static class Builder{
         private String name;
         private String profile = Workspace.DEFAULT_PROFILE_URL;
         private User user;
-        
-        public Builder builder(){
-            return new Builder();
-        }
+
         
         public Builder name(String name){
             this.name = name;
@@ -111,7 +113,7 @@ public class Workspace extends BaseEntity{
             return this;
         }
         
-        public Builder User(User user){
+        public Builder user(User user){
             this.user = user;
             return this;
         }
@@ -119,8 +121,8 @@ public class Workspace extends BaseEntity{
         public Workspace build(){
             Workspace workspace = new Workspace(this);
                     
-            workspace.addUser(builder.user);
-            workspace.giveAuthority(builder.user, UserRole.ADMIN);
+            workspace.addUser(this.user);
+            workspace.giveAuthority(this.user, UserRole.ADMIN);
             
             return workspace;
         }

@@ -28,7 +28,7 @@ public class UserWorkspace extends BaseEntity{
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole authority;
+    private UserRole userRole;
     
     // <== 생성자 ==>
     
@@ -36,9 +36,9 @@ public class UserWorkspace extends BaseEntity{
     protected UserWorkspace () {} 
     
     @Builder //빌더 패턴 사용
-    public UserWorkspace(User user, Workspace workspace, UserRole authority){
+    public UserWorkspace(User user, Workspace workspace, UserRole userRole){
         this.user = user;
         this.workspace = workspace;
-        this.authority = authority;
+        this.userRole = userRole;
     }
 }

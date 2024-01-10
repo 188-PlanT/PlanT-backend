@@ -1,5 +1,7 @@
 package project.domain;
 
+import project.exception.user.NoSuchUserException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -61,7 +63,7 @@ public class Schedule extends BaseEntity{
     
     // < == 비즈니스 로직 == >
     public void addUser(User user){
-        if(!user.workspace.hasUser(user)){
+        if(!this.workspace.hasUser(user)){
             throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
         }
         
@@ -109,6 +111,10 @@ public class Schedule extends BaseEntity{
     
     
     // <=== Builder ===>
+    public static Builder builder(){
+        return new Builder();
+    }
+    
     public static class Builder{
         private Workspace workspace;
         private String name;
@@ -116,10 +122,6 @@ public class Schedule extends BaseEntity{
         private LocalDateTime endDate;
         private String content;
         private List<User> users;
-        
-        public Builder builder(){
-            return new Builder();
-        }
         
         public Builder workspace(Workspace workspace){
             this.workspace = workspace;
@@ -137,12 +139,17 @@ public class Schedule extends BaseEntity{
         }
         
         public Builder endDate(LocalDateTime endDate){
-            this.end = endDate;
+            this.endDate = endDate;
             return this;
         }
         
         public Builder content(String content){
             this.content = content;
+            return this;
+        }
+        
+        public Builder users(List<User> users){
+            this.users = users;
             return this;
         }
         

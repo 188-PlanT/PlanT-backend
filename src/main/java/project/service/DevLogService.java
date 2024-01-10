@@ -31,12 +31,12 @@ public class DevLogService{
     private final DevLogRepository devLogRepository;
     
     @Transactional
-    public Long createDevLog(CreateDevLogRequest createDevLogRequest){
+    public Long createDevLog(CreateDevLogRequest request){
         
-        Schedule schedule = scheduleRepository.findById(createDevLogRequest.getScheduleId())
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
             .orElseThrow(NoSuchScheduleException::new);
         
-        User user = userRepository.findById(createDevLogRequest.getUserId())
+        User user = userRepository.findById(request.getUserId())
             .orElseThrow(NoSuchUserException::new);
         
         validateDevLog(schedule, user);
@@ -44,7 +44,9 @@ public class DevLogService{
         DevLog devLog = DevLog.builder()
                                 .schedule(schedule)
                                 .user(user)
-                                .content(content);
+                                .content(request.getContent())
+                                .build();
+        
         devLogRepository.save(devLog);
         
         return devLog.getId(); // id만 반환하는거 맞을까?
