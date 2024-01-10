@@ -92,12 +92,12 @@ public class User extends BaseEntity{
     
     
     // <== 비즈니스 로직 ==>
-    public boolean checkFinishSignUp(){
-        return (!this.nickName == null);
-    }
-    
     public String getRoleKey(){
         return this.userRole.getKey();
+    }
+    
+    public boolean checkFinishSignUp(){
+        return (!this.nickName == null);
     }
     
     public void encodePassword(PasswordEncoder passwordEncoder){

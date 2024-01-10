@@ -68,7 +68,7 @@ public class UserService{
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
-        if (findUser.checkPassword(password)){
+        if (findUser.checkPassword(password)){ //이부분도 고쳐보는게 좋을듯 -> User에서 Exception 날리기
             return findUser;
         }
         else{
