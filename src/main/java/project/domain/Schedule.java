@@ -91,7 +91,7 @@ public class Schedule extends BaseEntity{
     }
     
     //수정 로직 -> 이거 DTO로 묶는 방법 생각해보자
-    public void update(String name, LocalDateTime startDate, LocalDateTime endDate, String content, User<List> userList){
+    public void update(String name, LocalDateTime startDate, LocalDateTime endDate, String content, List<User> userList){
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -136,7 +136,7 @@ public class Schedule extends BaseEntity{
             return this;
         }
         
-        public Builder startDate(LocalDateTime endDate){
+        public Builder endDate(LocalDateTime endDate){
             this.end = endDate;
             return this;
         }
