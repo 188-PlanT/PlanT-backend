@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService{
+public class UserService{
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,6 +42,18 @@ public class UserService implements UserDetailsService{
         return user.getId();
     }
     
+    //유저 정보 추가, 회원가입 마무리
+    public Long finishRegister(User user, String nickName){
+        if (user.checkFinishSignUp()){
+            throw new IllegalStateException("이미 회원가입이 완료되었습니다");
+        }
+        
+        validateUserNickName(nickName);
+        
+        user.updateNickName(nickName);
+        
+    }
+    
     //유저 단건 조회
     public User findOne(Long id){
         User findUser = userRepository.findById(id)
@@ -56,7 +68,7 @@ public class UserService implements UserDetailsService{
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
-        if (passwordEncoder.matches(password, findUser.getPassword())){
+        if (findUser.checkPassword(password)){
             return findUser;
         }
         else{
@@ -71,11 +83,15 @@ public class UserService implements UserDetailsService{
     
     //유저 정보 수정
     @Transactional
-    public User updateUser(Long id, String password, String name){
+    public User updateUser(Long id, String nickName, String password, String name, String profile){
         User user = userRepository.findById(id)
             .orElseThrow(NoSuchUserException::new);
         
-        user.update(password, name, passwordEncoder);
+        if(!user.getNickName().equals(nickName)){
+            validateUserNickName(nickName);
+        }
+        
+        user.update(nickName, password, name, profile, passwordEncoder);
 
         return user;
     }
@@ -97,21 +113,9 @@ public class UserService implements UserDetailsService{
         }
     }
     
-    //<== security 설정 ==> //
-    @Transactional(readOnly = true)
-    public User findByEmail(String email){
-        
-        return userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+    private void validateUserNickName(String nickName){
+        if (userRepository.existsByNickName(nickName)){
+            throw new UserAlreadyExistException();
+        }
     }
-    
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
-        
-        User findUser = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다"));
-        
-        return UserInfo.from(findUser);
-    }
-    
 }

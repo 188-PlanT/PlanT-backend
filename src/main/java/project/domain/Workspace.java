@@ -38,7 +38,6 @@ public class Workspace extends BaseEntity{
     
     
     // <== 생성자 ==>
-    
     protected Workspace(){} //JPA용 생성자
     
     //@Builder //빌더 패턴용

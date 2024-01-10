@@ -93,11 +93,19 @@ public class User extends BaseEntity{
     
     // <== 비즈니스 로직 ==>
     public boolean checkFinishSignUp(){
-        return (this.nickName == null);
+        return (!this.nickName == null);
     }
     
     public String getRoleKey(){
         return this.userRole.getKey();
+    }
+    
+    public void encodePassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(this.password);
+    }
+    
+    public boolean checkPassword(String password, PasswordEncoder passwordEncoder){
+        return passwordEncoder.matches(password, this.password);
     }
     
     public void updateUserNickName(String nickName){
@@ -111,9 +119,5 @@ public class User extends BaseEntity{
         this.profile = profile;
         
         this.encodePassword(passwordEncoder);
-    }
-
-    public void encodePassword(PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(this.password);
     }
 }
