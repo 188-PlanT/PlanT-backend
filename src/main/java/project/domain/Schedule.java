@@ -57,10 +57,6 @@ public class Schedule extends BaseEntity{
         this.startDate = builder.startDate;
         this.endDate = builder.endDate;
         this.content = builder.content;
-        
-        for (User user : builder.users){
-            this.addUser(user);
-        }
     }
     
     // < == 비즈니스 로직 == >
@@ -107,7 +103,7 @@ public class Schedule extends BaseEntity{
         }
     }
     
-    private boolean hasUser(User user){
+    public boolean hasUser(User user){
         return this.userSchedules.contains(user);
     }
     
@@ -127,26 +123,37 @@ public class Schedule extends BaseEntity{
         
         public Builder workspace(Workspace workspace){
             this.workspace = workspace;
+            return this;
         }
         
         public Builder name(String name){
             this.name = name;
+            return this;
         }
         
         public Builder startDate(LocalDateTime startDate){
             this.startDate = startDate;
+            return this;
         }
         
         public Builder startDate(LocalDateTime endDate){
             this.end = endDate;
+            return this;
         }
         
         public Builder content(String content){
             this.content = content;
+            return this;
         }
         
         public Schedule build(){
-            return new Schedule(this);
+            Schedule schedule = new Schedule(this);
+                    
+            for (User user : users){
+                schedule.addUser(user);
+            }
+            
+            return schedule;
         }
     }
 }

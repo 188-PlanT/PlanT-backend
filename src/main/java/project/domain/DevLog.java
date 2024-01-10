@@ -29,15 +29,50 @@ public class DevLog extends BaseEntity{
     // <== 생성자 ==>
     protected DevLog(){} //JPA용 생성자
     
-    @Builder //빌더 패턴 사용
-    public DevLog(Schedule schedule, User user, String content){
-        this.schedule = schedule;
-        this.user = user;
-        this.content = content;
+    //@Builder //빌더 패턴 사용
+    private DevLog(Builder builder){
+        this.schedule = builder.schedule;
+        this.user = builder.user;
+        this.content = builder.content;
     }
     
     // < == 수정 로직 ==>
     public void updateContent(String content){
         this.content = content;
+    }
+    
+    
+    // <=== Builder 구현 ===>
+    public static class Builder {
+        private Schedule schedule;
+        private User user;
+        private String content;
+        
+        public Builder builder(){
+            return new Builder();
+        }
+        
+        public Builder schedule(Schedule schedule){
+            this.schedule = schedule;
+            return this;
+        }
+        
+        public Builder user(User user){
+            this.user = user;
+            return this;
+        }
+        
+        public Builder content(String content){
+            this.content = content;
+            return this;
+        }
+        
+        public DevLog build(){
+            if (!schedule.hasUser(user)){
+                throw new NoSuchUserException("스케줄에 존재하지 않는 유저입니다");
+            }
+            
+            DevLog devLog = new DevLog(this);
+        }
     }
 }

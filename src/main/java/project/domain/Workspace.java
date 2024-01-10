@@ -45,9 +45,6 @@ public class Workspace extends BaseEntity{
     private Workspace(Builder builder){
         this.name = builder.name;
         this.proflie = builder.proflie;
-        
-        workspace.addUser(builder.user);
-        workspace.giveAuthority(builder.user, UserRole.ADMIN);
     }
     
     // <== 비즈니스 로직 == > //
@@ -98,7 +95,7 @@ public class Workspace extends BaseEntity{
     // <=== Builder 구현 ===>
     public static class Builder{
         private String name;
-        private String profile;
+        private String profile = Workspace.DEFAULT_PROFILE_URL;
         private User user;
         
         public Builder builder(){
@@ -107,18 +104,26 @@ public class Workspace extends BaseEntity{
         
         public Builder name(String name){
             this.name = name;
+            return this;
         }
         
         public Builder profile(String profile){
             this.profile = profile;
+            return this;
         }
         
         public Builder User(User user){
             this.user = user;
+            return this;
         }
         
         public Workspace build(){
-            return new Workspace(this);
+            Workspace workspace = new Workspace(this);
+                    
+            workspace.addUser(builder.user);
+            workspace.giveAuthority(builder.user, UserRole.ADMIN);
+            
+            return workspace;
         }
     }
 }
