@@ -34,100 +34,100 @@ public class AdminDevLogController{
     private final DevLogService devLogService;
 
     // 메뉴 화면
-    @GetMapping("/admin/devLogs")
-    public String devLogMenu(){
-        return "admin/devLogs/devLogs-menu";
-    }
+    // @GetMapping("/admin/devLogs")
+    // public String devLogMenu(){
+    //     return "admin/devLogs/devLogs-menu";
+    // }
     
-    // 전체 개발일지 리스트
-    @GetMapping("/admin/devLogs/read-devLogs")
-    public String readDevLogList(Model model){
+    // // 전체 개발일지 리스트
+    // @GetMapping("/admin/devLogs/read-devLogs")
+    // public String readDevLogList(Model model){
         
-        Pageable pageable = PageRequest.of(0,20);
+    //     Pageable pageable = PageRequest.of(0,20);
         
-        List<DevLog> devLogList = devLogService.findAllBySearch(pageable, null, null).getContent();
+    //     List<DevLog> devLogList = devLogService.findAllBySearch(pageable, null, null).getContent();
         
-        model.addAttribute("devLogList", devLogList);
+    //     model.addAttribute("devLogList", devLogList);
 
-        return "admin/devLogs/devLogs-list";
-    }
+    //     return "admin/devLogs/devLogs-list";
+    // }
     
-    // 개발일지 생성 화면
-    @GetMapping("/admin/devLogs/create-devLogs")
-    public String createDevLogForm(Model model){
+    // // 개발일지 생성 화면
+    // @GetMapping("/admin/devLogs/create-devLogs")
+    // public String createDevLogForm(Model model){
         
-        Pageable pageable = PageRequest.of(0,20);
-        List<Schedule> scheduleList = scheduleService.findSchedules(pageable).getContent();
-        List<User> users = userService.findAllUsers(pageable).getContent();
+    //     Pageable pageable = PageRequest.of(0,20);
+    //     List<Schedule> scheduleList = scheduleService.findSchedules(pageable).getContent();
+    //     List<User> users = userService.findAllUsers(pageable).getContent();
         
-        List<String> userList = users.stream()
-            .map(u -> u.getEmail())
-            .collect(toList());
+    //     List<String> userList = users.stream()
+    //         .map(u -> u.getEmail())
+    //         .collect(toList());
         
-        model.addAttribute("scheduleList", scheduleList);
-        model.addAttribute("userList", userList);
-        model.addAttribute("createDevLogRequest", new CreateDevLogRequest());
+    //     model.addAttribute("scheduleList", scheduleList);
+    //     model.addAttribute("userList", userList);
+    //     model.addAttribute("createDevLogRequest", new CreateDevLogRequest());
         
-        return "admin/devLogs/devLogs-create-form";
-    }
+    //     return "admin/devLogs/devLogs-create-form";
+    // }
     
-    // 개발일지 생성
-    @PostMapping("/admin/devLogs/create-devLogs")
-    public String createDevLog(@Valid CreateDevLogRequest createDevLogRequest,
-                              BindingResult bindingResult,
-                              @RequestParam List<String> userList,
-                              Model model){
+    // // 개발일지 생성
+    // @PostMapping("/admin/devLogs/create-devLogs")
+    // public String createDevLog(@Valid CreateDevLogRequest createDevLogRequest,
+    //                           BindingResult bindingResult,
+    //                           @RequestParam List<String> userList,
+    //                           Model model){
         
-        if(bindingResult.hasErrors()){ // 검증 실패
-            Pageable pageable = PageRequest.of(0,20);
-            List<Schedule> scheduleList = scheduleService.findSchedules(pageable).getContent();
+    //     if(bindingResult.hasErrors()){ // 검증 실패
+    //         Pageable pageable = PageRequest.of(0,20);
+    //         List<Schedule> scheduleList = scheduleService.findSchedules(pageable).getContent();
             
-            model.addAttribute("scheduleList", scheduleList);
-            model.addAttribute("userList", userList);
-            return "admin/devLogs/devLogs-create-form";
-        }
-        else { //검증 성공
-            devLogService.createDevLog(createDevLogRequest);
+    //         model.addAttribute("scheduleList", scheduleList);
+    //         model.addAttribute("userList", userList);
+    //         return "admin/devLogs/devLogs-create-form";
+    //     }
+    //     else { //검증 성공
+    //         devLogService.createDevLog(createDevLogRequest);
         
-            return "redirect:/admin/devLogs/read-devLogs";
-        }      
-    }
+    //         return "redirect:/admin/devLogs/read-devLogs";
+    //     }      
+    // }
     
-    // 개발일지 수정 화면
-    @GetMapping("/admin/devLogs/{devLogId}/update")
-    public String updateDevLogForm(@PathVariable Long devLogId, Model model){
+    // // 개발일지 수정 화면
+    // @GetMapping("/admin/devLogs/{devLogId}/update")
+    // public String updateDevLogForm(@PathVariable Long devLogId, Model model){
         
-        DevLog devLog = devLogService.findOne(devLogId);
-        model.addAttribute("devLogId", devLogId);
-        model.addAttribute("content",devLog.getContent());
+    //     DevLog devLog = devLogService.findOne(devLogId);
+    //     model.addAttribute("devLogId", devLogId);
+    //     model.addAttribute("content",devLog.getContent());
         
-        return "admin/devLogs/devLogs-update-form";
-    }
+    //     return "admin/devLogs/devLogs-update-form";
+    // }
     
-    //개발일지 수정
-    @PostMapping("/admin/devLogs/{devLogId}/update")
-    public String updateDevLog(@PathVariable Long devLogId, @RequestParam String content, Model model){
+    // //개발일지 수정
+    // @PostMapping("/admin/devLogs/{devLogId}/update")
+    // public String updateDevLog(@PathVariable Long devLogId, @RequestParam String content, Model model){
         
-        //Validate 로직
-        if (!StringUtils.hasText(content)){
-            model.addAttribute("devLogId", devLogId);
-            model.addAttribute("content_error", "필수 값입니다");
-            return "admin/devLogs/devLogs-update-form"; 
-        }
-        else{
-            devLogService.updateDevLog(devLogId, content);
+    //     //Validate 로직
+    //     if (!StringUtils.hasText(content)){
+    //         model.addAttribute("devLogId", devLogId);
+    //         model.addAttribute("content_error", "필수 값입니다");
+    //         return "admin/devLogs/devLogs-update-form"; 
+    //     }
+    //     else{
+    //         devLogService.updateDevLog(devLogId, content);
         
-            return "redirect:/admin/devLogs/read-devLogs";     
-        } 
-    }
+    //         return "redirect:/admin/devLogs/read-devLogs";     
+    //     } 
+    // }
     
     
-    // 개발일지 삭제 화면
-    @PostMapping("/admin/devLogs/{devLogId}/delete")
-    public String deleteDevLog(@PathVariable Long devLogId){
+    // // 개발일지 삭제 화면
+    // @PostMapping("/admin/devLogs/{devLogId}/delete")
+    // public String deleteDevLog(@PathVariable Long devLogId){
         
-        devLogService.deleteDevLog(devLogId);
+    //     devLogService.deleteDevLog(devLogId);
         
-        return "redirect:/admin/devLogs/read-devLogs";  
-    }
+    //     return "redirect:/admin/devLogs/read-devLogs";  
+    // }
 }

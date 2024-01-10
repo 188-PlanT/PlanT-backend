@@ -17,7 +17,7 @@ public class CreateDevLogRequest{
     private Long scheduleId;
     
     @NotBlank
-    private String userEmail;
+    private Long userId;
     
     @NotBlank
     private String content;

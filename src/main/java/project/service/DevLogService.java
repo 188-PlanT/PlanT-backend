@@ -36,14 +36,15 @@ public class DevLogService{
         Schedule schedule = scheduleRepository.findById(createDevLogRequest.getScheduleId())
             .orElseThrow(NoSuchScheduleException::new);
         
-        User user = userRepository.findByEmail(createDevLogRequest.getUserEmail())
+        User user = userRepository.findById(createDevLogRequest.getUserId())
             .orElseThrow(NoSuchUserException::new);
-        
-        String content = createDevLogRequest.getContent();
         
         validateDevLog(schedule, user);
         
-        DevLog devLog = new DevLog(schedule,user,content);
+        DevLog devLog = DevLog.builder()
+                                .schedule(schedule)
+                                .user(user)
+                                .content(content);
         devLogRepository.save(devLog);
         
         return devLog.getId(); // id만 반환하는거 맞을까?
@@ -71,6 +72,7 @@ public class DevLogService{
     public DevLog updateDevLog(Long devLogId, String content){
         DevLog findDevLog = devLogRepository.findById(devLogId)
             .orElseThrow(NoSuchDevLogException::new);
+        
         findDevLog.updateContent(content);
         
         return findDevLog;
