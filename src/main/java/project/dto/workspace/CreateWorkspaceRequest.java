@@ -12,24 +12,15 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@NoArgsConstructor
 public class CreateWorkspaceRequest{
     @NotBlank
     private String name;
     
-    private List<String> users = new ArrayList<> ();
-    
-    public CreateWorkspaceRequest(){
-        this.name = null;
-    }
+    private String profile;
     
     public CreateWorkspaceRequest(Workspace workspace){
         this.name = workspace.getName();
-        
-        List<String> userEmailList = workspace.getUserWorkspaces().stream()
-            .map(uw -> uw.getUser().getEmail())
-            .collect(toList());
-        
-        this.users.addAll(userEmailList);
+        this.profile = workspace.getProfile();
     }
 }

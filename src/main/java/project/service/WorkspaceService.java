@@ -30,13 +30,15 @@ public class WorkspaceService{
     @Transactional
     public Long makeWorkspace(CreateWorkspaceRequest request){
         
-        String name = request.getName();
         //중복 이름 검증
-        validateWorkspaceName(name);
+        validateWorkspaceName(request.getName());
         
         List<User> users = userRepository.findUsersByEmailList(request.getUsers());
         
-        Workspace workspace = Workspace.ofNameAndUsers(name, users);
+        Workspace workspace = Workspace.builder()
+                                        .name(request.getName())
+                                        .profile(request.getProfile());
+        
         workspaceRepository.save(workspace);
         return workspace.getId();
     }
@@ -63,22 +65,21 @@ public class WorkspaceService{
         Workspace workspace = workspaceRepository.findById(id)
             .orElseThrow(NoSuchWorkspaceException::new);
         
-        List<User> users = userRepository.findUsersByEmailList(request.getUsers());
-        
-        String name = request.getName();
         //중복 이름 검증
-        updateWorkspaceValidate(workspace, name);
+        if (!request.getName().equals(workspace.getName())){
+            validateWorkspaceName(request.getName());
+        }
         
-        workspace.updateWorkspace(name, users);
+        workspace.updateWorkspace(request.getName(), request.getProfile());
         return workspace;
     }
     
     @Transactional
-    public Workspace addUser(Long workspaceId, String userEmail){
+    public Workspace addUser(Long workspaceId, Long userId){
         Workspace workspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
         
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
         workspace.addUser(user);
@@ -103,9 +104,4 @@ public class WorkspaceService{
         }
     }
     
-    private void updateWorkspaceValidate(Workspace workspace, String name){
-        if (!workspace.getName().equals(name)){
-            validateWorkspaceName(name);
-        }
-    }
 }
