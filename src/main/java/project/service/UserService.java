@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService{
+public class UserService implements UserDetailsService{
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -117,5 +117,22 @@ public class UserService{
         if (userRepository.existsByNickName(nickName)){
             throw new UserAlreadyExistException();
         }
+    }
+    
+    //<== security 설정 ==> //
+    @Transactional(readOnly = true)
+    public User findByEmail(String email){
+        
+        return userRepository.findByEmail(email)
+            .orElseThrow(NoSuchUserException::new);
+    }
+    
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
+        
+        User findUser = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다"));
+        
+        return UserInfo.from(findUser);
     }
 }

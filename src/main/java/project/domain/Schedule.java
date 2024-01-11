@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 import static java.util.stream.Collectors.toList;
 import javax.persistence.*;
+import lombok.extern.slf4j.Slf4j;
 import lombok.Getter;
 import lombok.Setter;
 // import lombok.Builder;
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "schedules")
 @Getter
+@Slf4j
 public class Schedule extends BaseEntity{
     
     @Id @GeneratedValue
@@ -39,6 +41,10 @@ public class Schedule extends BaseEntity{
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Progress progress;
+    
     //Schedule이 UserSchedule 영속성 관리
     @OneToMany(mappedBy="schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList <> ();
@@ -59,10 +65,12 @@ public class Schedule extends BaseEntity{
         this.startDate = builder.startDate;
         this.endDate = builder.endDate;
         this.content = builder.content;
+        this.progress = builder.progress;
     }
     
     // < == 비즈니스 로직 == >
     public void addUser(User user){
+        
         if(!this.workspace.hasUser(user)){
             throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
         }
@@ -84,12 +92,16 @@ public class Schedule extends BaseEntity{
         this.userSchedules.removeIf(us -> us.getUser().equals(user));
     }
     
-    public List<String> getUserEmailList(){
-        List<String> emailList = this.getUserSchedules().stream()
-            .map(us -> us.getUser().getEmail())
-            .collect(toList());
+    // public List<String> getUserEmailList(){
+    //     List<String> emailList = this.getUserSchedules().stream()
+    //         .map(us -> us.getUser().getEmail())
+    //         .collect(toList());
         
-        return emailList;
+    //     return emailList;
+    // }
+    
+    public void moveProgress(Progress progress){
+        this.progress = progress;
     }
     
     //수정 로직 -> 이거 DTO로 묶는 방법 생각해보자
@@ -106,7 +118,9 @@ public class Schedule extends BaseEntity{
     }
     
     public boolean hasUser(User user){
-        return this.userSchedules.contains(user);
+        return (this.userSchedules.stream()
+                                    .filter(uw -> uw.getUser().equals(user))
+                                    .count() == 1);
     }
     
     
@@ -122,6 +136,7 @@ public class Schedule extends BaseEntity{
         private LocalDateTime endDate;
         private String content;
         private List<User> users;
+        private Progress progress = Progress.TODO;
         
         public Builder workspace(Workspace workspace){
             this.workspace = workspace;
@@ -150,6 +165,11 @@ public class Schedule extends BaseEntity{
         
         public Builder users(List<User> users){
             this.users = users;
+            return this;
+        }
+        
+        public Builder progress(Progress progress){
+            this.progress = progress;
             return this;
         }
         

@@ -1,5 +1,7 @@
 package project.dto.schedule;
 
+import project.domain.Progress;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,9 @@ public class CreateScheduleRequest{
     
     @NotBlank
     private LocalDateTime endDate;
+    
+    @NotBlank
+    private Progress progress;
     
     private String content;
     

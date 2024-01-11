@@ -38,23 +38,23 @@ public class ScheduleController {
     //     return ResponseEntity.ok(response);
     // }
     
-    // @PostMapping("/schedules")
-    // public ResponseEntity<Long> registerUser(@RequestBody CreateScheduleRequest request){
+    @PostMapping("/schedules")
+    public ResponseEntity<Long> registerUser(@RequestBody CreateScheduleRequest request){
         
-    //     Long scheduleId = scheduleService.createSchedule(request);
+        Long scheduleId = scheduleService.createSchedule(request);
         
-    //     return ResponseEntity.ok(scheduleId);
-    // }
+        return ResponseEntity.ok(scheduleId);
+    }
     
-    // @GetMapping("/schedules/{scheduleId}") 
-    // public ResponseEntity<FindSingleScheduleResponse> findSingleSchedule(@PathVariable Long scheduleId){
+    @GetMapping("/schedules/{scheduleId}") 
+    public ResponseEntity<FindSingleScheduleResponse> findSingleSchedule(@PathVariable Long scheduleId){
             
-    //     Schedule schedule = scheduleService.findOne(scheduleId);
+        Schedule schedule = scheduleService.findOne(scheduleId);
         
-    //     FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
+        FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
         
-    //     return ResponseEntity.ok(response);
-    // }
+        return ResponseEntity.ok(response);
+    }
     
     // @PutMapping("/schedules/{scheduleId}") 
     // public ResponseEntity<FindSingleScheduleResponse> updateSchedule(@PathVariable Long scheduleId,

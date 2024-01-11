@@ -88,7 +88,10 @@ public class Workspace extends BaseEntity{
     }
     
     public boolean hasUser(User user){
-        return this.userWorkspaces.contains(user);
+        return (this.userWorkspaces.stream()
+                                    .filter(uw -> uw.getUser().equals(user))
+                                    .count() == 1);
+        // return this.userWorkspaces.contains(user);
     }
     
     
