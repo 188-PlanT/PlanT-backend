@@ -45,28 +45,32 @@ public class UserController{
     // }
     
     // //유저 추가
-    // @PostMapping("/users")
-    // public ResponseEntity<Object> registerUser(@Valid @RequestBody CreateUserRequest request){
+    @PostMapping("/users")
+    public ResponseEntity<Long> registerUser(@Valid @RequestBody CreateUserRequest request){
         
-    //     User user = User.ofEmailPassword(request.email, request.password, request.name);
+        Long userId = userService.register(request);
         
-    //     Long userId = userService.register(user);
-        
-    //     return ResponseEntity.ok(userId);    
-    // }
+        return ResponseEntity.ok(userId);    
+    }
     
-    // //유저 상세 정보 확인
-    // @GetMapping("/users/{userId}")
-    // public ResponseEntity<FindSingleUserResponse> findUserDetail(@PathVariable("userId") Long userId){
+    @PostMapping("/users/{userId}")
+    public ResponseEntity<Long> setNickNameUser(@PathVariable("userId") Long userId, @RequestBody FinishUserRegisterRequest request){
+
+        userService.finishRegister(userId, request.getNickName());
         
-    //     //본인이지 확인하는 로직 필요
+        return ResponseEntity.ok(userId);
+    }
+    
+    //유저 상세 정보 확인
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<FindSingleUserResponse> findUserDetail(@PathVariable("userId") Long userId){
         
-    //     User findUser = userService.findOne(userId);
+        User findUser = userService.findOne(userId);
         
-    //     FindSingleUserResponse response = new FindSingleUserResponse(findUser);
+        FindSingleUserResponse response = new FindSingleUserResponse(findUser);
         
-    //     return ResponseEntity.ok(response);
-    // }
+        return ResponseEntity.ok(response);
+    }
     
     // @PutMapping("/users/{userId}")
     // public ResponseEntity<FindSingleUserResponse> updateUser(@PathVariable("userId") Long userId,

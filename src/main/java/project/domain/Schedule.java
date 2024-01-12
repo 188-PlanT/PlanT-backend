@@ -92,14 +92,6 @@ public class Schedule extends BaseEntity{
         this.userSchedules.removeIf(us -> us.getUser().equals(user));
     }
     
-    // public List<String> getUserEmailList(){
-    //     List<String> emailList = this.getUserSchedules().stream()
-    //         .map(us -> us.getUser().getEmail())
-    //         .collect(toList());
-        
-    //     return emailList;
-    // }
-    
     public void moveProgress(Progress progress){
         this.progress = progress;
     }

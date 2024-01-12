@@ -23,12 +23,4 @@ public class CreateUserRequest{
     
     @NotBlank
     private String name;
-    
-    // public User toUser(){
-    //     return User.builder()
-    //         .password(password)
-    //         .name(name)
-    //         .email(email)
-    //         .build();
-    // }
 }

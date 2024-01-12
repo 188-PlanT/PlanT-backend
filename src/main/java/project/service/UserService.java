@@ -32,10 +32,10 @@ public class UserService implements UserDetailsService{
     
     //회원가입
     @Transactional
-    public Long register(User user){
-        validateUserEmail(user.getEmail());
+    public Long register(CreateUserRequest request){
+        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), request.getName(), passwordEncoder);
         
-        user.encodePassword(passwordEncoder);
+        validateUserEmail(user.getEmail());
         
         userRepository.save(user);
         
@@ -43,7 +43,16 @@ public class UserService implements UserDetailsService{
     }
     
     //유저 정보 추가, 회원가입 마무리
-    public Long finishRegister(User user, String nickName){
+    @Transactional
+    public Long finishRegister(Long userId, String nickName){
+        
+        log.info("nickName == {}", nickName);
+        
+        //여기 메서드 분리??
+        User user = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        
         if (user.checkFinishSignUp()){
             throw new IllegalStateException("이미 회원가입이 완료되었습니다");
         }
@@ -55,6 +64,7 @@ public class UserService implements UserDetailsService{
     }
     
     //유저 단건 조회
+    @Transactional(readOnly = true)
     public User findOne(Long id){
         User findUser = userRepository.findById(id)
             .orElseThrow(NoSuchUserException::new);
@@ -63,6 +73,7 @@ public class UserService implements UserDetailsService{
     }
     
     //유저 로그인
+    @Transactional(readOnly = true)
     public User signIn(String email, String password){
         
         User findUser = userRepository.findByEmail(email)
@@ -77,6 +88,7 @@ public class UserService implements UserDetailsService{
     }
     
     // 유저 리스트 조회
+    @Transactional(readOnly = true)
     public Page<User> findAllUsers(Pageable pageable){
         return userRepository.findAll(pageable);
     }

@@ -7,6 +7,7 @@ import lombok.Builder;
 import java.util.*;
 import static java.util.stream.Collectors.toList;
 
+import org.springframework.util.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -96,7 +97,7 @@ public class User extends BaseEntity{
     }
     
     public boolean checkFinishSignUp(){
-        return this.nickName != null;
+        return StringUtils.hasText(this.nickName);
     }
     
     public void encodePassword(PasswordEncoder passwordEncoder){
@@ -117,6 +118,6 @@ public class User extends BaseEntity{
         this.name = name;
         this.profile = profile;
         
-        this.encodePassword(passwordEncoder);
+        encodePassword(passwordEncoder);
     }
 }
