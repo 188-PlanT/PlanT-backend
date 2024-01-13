@@ -49,7 +49,20 @@ public class JwtProvider {
         secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
     }
     
-    //Access Token 생성
+    //RefreshToken으로 AccesToken 생성
+    public String createAccessToken(String refreshToken){
+        
+        validateRefreshToken(refreshToken);
+        
+        String email = getEmailByToken(refreshToken);
+        
+        User user = userRepository.findByEmail(email)
+                                    .orElseThrow(NoSuchUserException::new);
+        
+        return createAccessToken(user);
+    }
+    
+    // User정보로 Access Token 생성
     public String createAccessToken(User user){
         
         String email = user.getEmail();
@@ -57,7 +70,7 @@ public class JwtProvider {
         String authorities = user.getRoleKey();
         
         Date expiration = new Date(System.currentTimeMillis() + ACCESS_EXP_TIME);
-
+        
         return Jwts.builder()
                 .claim("email", email)
                 .claim("authorities", authorities)
@@ -66,7 +79,7 @@ public class JwtProvider {
                 .compact();
     }
     
-    //Refresh Token 생성
+    //User 정보로 Refresh Token 생성
     public String createRefreshToken(User user){
         String email = user.getEmail();
         
@@ -84,92 +97,79 @@ public class JwtProvider {
         
         return refreshToken;
     }
+
     
-    public boolean validateAccessToken(String accessToken){
-        
-        if (!accessToken.startsWith("Bearer")){
-            log.info("Token not start with Bearer");
-            return false;
-        }
-        
-        accessToken = accessToken.replace("Bearer ", "");
-        
-        try{
-            Claims claims = parseClaims(accessToken);
-            
-            if (claims.get("email") != null && claims.get("authorities") != null){
-                return true;    
-            }
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
-        }
-        return false;
-    }
-    
-    //Token -> Authentication 
-    //여기서 OAuth2인지 아닌지 구분하는 로직 필요
+    //AccessToken -> Authentication 
     public Authentication getAuthentication(String accessToken){
         
-        accessToken = accessToken.replace("Bearer ", "");
+        validateAccessToken(accessToken);
         
-        Claims claims = parseClaims(accessToken);
+        String email = getEmailByToken(accessToken);
         
-        Collection<? extends GrantedAuthority> authorities = getAuthorityList(claims);
-        
-        User findUser = userRepository.findByEmail((String) claims.get("email"))
+        User findUser = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
         UserInfo principal = UserInfo.from(findUser);
         
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
+
     }
     
-    public boolean validateRefreshToken(String refreshToken){
+    private void validateAccessToken(String accessToken){
         
-        if (!refreshToken.startsWith("Bearer")){
-            log.info("Token not start with Bearer");
-            return false;
+        Claims claims = parseClaims(accessToken);
+        
+        if (claims.get("email") == null || claims.get("authorities") == null){
+            throw new IllegalArgumentException("JWT claims string is empty.");    
         }
+    }
+    
+    private void validateRefreshToken(String refreshToken){
         
-        refreshToken = refreshToken.replace("Bearer ", "");
+        Claims claims = parseClaims(refreshToken);
         
+        if (claims.get("email") == null){
+            throw new IllegalArgumentException("JWT claims string is empty.");    
+        }
+    }
+    
+    private String getEmailByToken(String tokenString){
+        Claims claims = parseClaims(tokenString);
+        
+        return (String) claims.get("email");
+    }
+    
+    private Claims parseClaims(String tokenString){
         try{
-            Claims claims = parseClaims(refreshToken);
+            String tokenWithoutBearer = removeBearer(tokenString);
             
-            String email = claims.get("email").toString();
-            
-            if (email != null && redisService.getValues(email) != null){
-                return true;    
-            }
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(tokenWithoutBearer)
+                .getBody();
+        } 
+        catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
+        } 
+        catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
+        } 
+        catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
+        } 
+        catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty.", e);
         }
-        return false;
+        
+        throw new IllegalArgumentException("Unvalid JWT TOKEN");
     }
     
-    public Claims parseClaims(String tokenString){
-        return Jwts.parserBuilder()
-            .setSigningKey(secretKey)
-            .build()
-            .parseClaimsJws(tokenString)
-            .getBody();
-    }
-    
-    private List<GrantedAuthority> getAuthorityList(Claims claims){
-        return Arrays.stream(claims.get("authorities").toString().split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+    private String removeBearer(String tokenString){
+        if (!tokenString.startsWith("Bearer")){
+            throw new IllegalArgumentException("Token not start with Bearer");
+        }
+        
+        return tokenString.replace("Bearer ", "");
     }
 }

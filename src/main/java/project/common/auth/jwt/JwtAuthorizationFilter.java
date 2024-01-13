@@ -32,15 +32,23 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
         
         String accessToken = request.getHeader("Authorization");
         
-        if (accessToken == null){
+        if (accessToken== null){
             chain.doFilter(request, response);
             return;
         }
         
-        if (jwtProvider.validateAccessToken(accessToken)){
-            Authentication authentication = jwtProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);    
-        }
+        // AccessToken accessToken = jwtProvider.getAccessToken(accessTokenString);
+        
+        // if (jwtProvider.validateToken(accessToken)){
+        //     Authentication authentication = jwtProvider.getAuthentication(accessToken);
+        //     SecurityContextHolder.getContext().setAuthentication(authentication);    
+        // }
+        
+        // jwtProvider.validateToken(accessToken);
+            
+        Authentication authentication = jwtProvider.getAuthentication(accessToken);
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication); 
         
         chain.doFilter(request, response);
     }

@@ -55,9 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/v1/login").permitAll()
             .antMatchers("/v1/refresh").permitAll()
             .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-            .antMatchers("/admin/**", "/css/**", "/*.ico", "/error").permitAll()
-            // .anyRequest().authenticated()
-            .anyRequest().permitAll()
+            .antMatchers("/css/**", "/*.ico", "/error").permitAll()
+            .antMatchers("/admin/**").permitAll() // interceptor로 인가 구현
+            .anyRequest().authenticated()
+            // .anyRequest().permitAll()
             .and()
             .oauth2Login()
                 .userInfoEndpoint()

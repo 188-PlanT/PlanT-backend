@@ -33,16 +33,16 @@ public class AdminController{
     
     private final UserService userService;
     
-    // @GetMapping("/admin") //홈 화면
-    // public String newHome(@Login User findUser, Model model){
+    @GetMapping("/admin") //홈 화면
+    public String newHome(@Login User findUser, Model model){
         
-    //     if (findUser == null){
-    //         return "admin/home";
-    //     }
+        if (findUser == null){
+            return "admin/home";
+        }
         
-    //     model.addAttribute("userName", findUser.getName());    
-    //     return "admin/menu";
-    // }
+        model.addAttribute("userName", findUser.getName());    
+        return "admin/menu";
+    }
     
     // @GetMapping("/admin/login") //로그인 폼
     // public String loginForm(Model model) {

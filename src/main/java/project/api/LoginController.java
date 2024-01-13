@@ -24,41 +24,37 @@ public class LoginController{
     private final UserService userService;
     private final JwtProvider jwtProvider;
     
-    // //String으로 토큰 반환하기
-    // @PostMapping("/v1/login")
-    // public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest request){ 
-    //     User loginUser = userService.signIn(request.getEmail(), request.getPassword());
+    //String으로 토큰 반환하기
+    @PostMapping("/v1/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest request){ 
+        User loginUser = userService.signIn(request.getEmail(), request.getPassword());
 
-    //     String accessToken = jwtProvider.createAccessToken(loginUser);
+        String accessToken = jwtProvider.createAccessToken(loginUser);
         
-    //     String refreshToken = jwtProvider.createRefreshToken(loginUser);
+        String refreshToken = jwtProvider.createRefreshToken(loginUser);
         
-    //     LoginResponse response = new LoginResponse(accessToken, refreshToken);
+        LoginResponse response = new LoginResponse(accessToken, refreshToken);
 
-    //     return ResponseEntity.ok(response);
-    // }
+        return ResponseEntity.ok(response);
+    }
 
-    // @PostMapping("/v1/refresh")
-    // public ResponseEntity<String> refreshToken(@RequestHeader("Refresh-Token") String refreshToken){
+    @PostMapping("/v1/refresh")
+    public ResponseEntity<String> refreshToken(@RequestHeader("Refresh-Token") String refreshToken){
         
-    //     if(jwtProvider.validateRefreshToken(refreshToken)){
+        // if(jwtProvider.validateRefreshToken(refreshToken)){
             
-    //         String email = getUserEmail(refreshToken);
+        //     String email = getUserEmail(refreshToken);
             
-    //         User user = userService.findByEmail(email);
+        //     User user = userService.findByEmail(email);
             
-    //         String accessToken = jwtProvider.createAccessToken(user);
+        //     String accessToken = jwtProvider.createAccessToken(user);
             
-    //         return ResponseEntity.ok(accessToken);
-    //     }
-    //     return ResponseEntity.ok("Unvalid Refresh-Token");
-    // }
-    
-    // private String getUserEmail(String refreshToken){
-    //     refreshToken = refreshToken.replace("Bearer ", "");
+        //     return ResponseEntity.ok(accessToken);
+        // }
+        // return ResponseEntity.ok("Unvalid Refresh-Token");
         
-    //     return jwtProvider.parseClaims(refreshToken)
-    //             .get("email")
-    //             .toString();
-    // }
+        String accessToken = jwtProvider.createAccessToken(refreshToken);
+        
+        return ResponseEntity.ok(accessToken);
+    }
 }
