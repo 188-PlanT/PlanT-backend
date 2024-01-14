@@ -32,17 +32,39 @@ public class UserService implements UserDetailsService{
     
     //회원가입
     @Transactional
-    public Long register(User user){
-        validateUserEmail(user.getEmail());
+    public Long register(CreateUserRequest request){
+        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), request.getName(), passwordEncoder);
         
-        user.encodePassword(passwordEncoder);
+        validateUserEmail(user.getEmail());
         
         userRepository.save(user);
         
         return user.getId();
     }
     
+    //유저 정보 추가, 회원가입 마무리
+    @Transactional
+    public Long finishRegister(Long userId, String nickName){
+        
+        log.info("nickName == {}", nickName);
+        
+        //여기 메서드 분리??
+        User user = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        
+        if (user.checkFinishSignUp()){
+            throw new IllegalStateException("이미 회원가입이 완료되었습니다");
+        }
+        
+        validateUserNickName(nickName);
+        
+        user.updateNickName(nickName);
+        return user.getId();
+    }
+    
     //유저 단건 조회
+    @Transactional(readOnly = true)
     public User findOne(Long id){
         User findUser = userRepository.findById(id)
             .orElseThrow(NoSuchUserException::new);
@@ -51,12 +73,13 @@ public class UserService implements UserDetailsService{
     }
     
     //유저 로그인
+    @Transactional(readOnly = true)
     public User signIn(String email, String password){
         
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
-        if (passwordEncoder.matches(password, findUser.getPassword())){
+        if (findUser.checkPassword(password, passwordEncoder)){ //이부분도 고쳐보는게 좋을듯 -> User에서 Exception 날리기
             return findUser;
         }
         else{
@@ -65,17 +88,22 @@ public class UserService implements UserDetailsService{
     }
     
     // 유저 리스트 조회
+    @Transactional(readOnly = true)
     public Page<User> findAllUsers(Pageable pageable){
         return userRepository.findAll(pageable);
     }
     
     //유저 정보 수정
     @Transactional
-    public User updateUser(Long id, String password, String name){
+    public User updateUser(Long id, String nickName, String password, String name, String profile){
         User user = userRepository.findById(id)
             .orElseThrow(NoSuchUserException::new);
         
-        user.update(password, name, passwordEncoder);
+        if(!user.getNickName().equals(nickName)){
+            validateUserNickName(nickName);
+        }
+        
+        user.update(nickName, password, name, profile, passwordEncoder);
 
         return user;
     }
@@ -97,6 +125,12 @@ public class UserService implements UserDetailsService{
         }
     }
     
+    private void validateUserNickName(String nickName){
+        if (userRepository.existsByNickName(nickName)){
+            throw new UserAlreadyExistException();
+        }
+    }
+    
     //<== security 설정 ==> //
     @Transactional(readOnly = true)
     public User findByEmail(String email){
@@ -113,5 +147,4 @@ public class UserService implements UserDetailsService{
         
         return UserInfo.from(findUser);
     }
-    
 }

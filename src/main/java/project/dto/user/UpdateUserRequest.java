@@ -18,9 +18,4 @@ public class UpdateUserRequest{
     
     @NotBlank
     private String name;
-    
-    public UpdateUserRequest(User user){
-        this.password = user.getPassword();
-        this.name = user.getName();
-    }
 }

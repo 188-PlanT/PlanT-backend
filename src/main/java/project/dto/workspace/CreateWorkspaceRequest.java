@@ -17,19 +17,10 @@ public class CreateWorkspaceRequest{
     @NotBlank
     private String name;
     
-    private List<String> users = new ArrayList<> ();
+    private String profile;
     
-    public CreateWorkspaceRequest(){
-        this.name = null;
-    }
-    
-    public CreateWorkspaceRequest(Workspace workspace){
-        this.name = workspace.getName();
-        
-        List<String> userEmailList = workspace.getUserWorkspaces().stream()
-            .map(uw -> uw.getUser().getEmail())
-            .collect(toList());
-        
-        this.users.addAll(userEmailList);
-    }
+    // public CreateWorkspaceRequest(Workspace workspace){
+    //     this.name = workspace.getName();
+    //     this.profile = workspace.getProfile();
+    // }
 }

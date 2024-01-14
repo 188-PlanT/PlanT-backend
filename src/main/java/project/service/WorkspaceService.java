@@ -28,16 +28,17 @@ public class WorkspaceService{
         
     // 성능 개선 필요
     @Transactional
-    public Long makeWorkspace(CreateWorkspaceRequest request){
+    public Long makeWorkspace(CreateWorkspaceRequest request, User createUser){
         
-        String name = request.getName();
         //중복 이름 검증
-        validateWorkspace(name);
+        validateWorkspaceName(request.getName());
         
-        List<User> users = userRepository.findUsersByEmailList(request.getUsers());
+        Workspace workspace = Workspace.builder()
+                                        .name(request.getName())
+                                        .profile(request.getProfile())
+                                        .user(createUser)
+                                        .build();
         
-        //Workspace 생성
-        Workspace workspace = new Workspace(name, users);
         workspaceRepository.save(workspace);
         return workspace.getId();
     }
@@ -64,24 +65,21 @@ public class WorkspaceService{
         Workspace workspace = workspaceRepository.findById(id)
             .orElseThrow(NoSuchWorkspaceException::new);
         
-        String name = request.getName();
         //중복 이름 검증
-        if (!workspace.getName().equals(name)){
-            validateWorkspace(name);
+        if (!request.getName().equals(workspace.getName())){
+            validateWorkspaceName(request.getName());
         }
         
-        List<User> users = userRepository.findUsersByEmailList(request.getUsers());
-        
-        workspace.updateWorkspace(name, users);
+        workspace.updateWorkspace(request.getName(), request.getProfile());
         return workspace;
     }
     
     @Transactional
-    public Workspace addUser(Long workspaceId, String userEmail){
+    public Workspace addUser(Long workspaceId, Long userId){
         Workspace workspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
         
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
         workspace.addUser(user);
@@ -99,10 +97,22 @@ public class WorkspaceService{
         workspace.removeUser(user);
     }
     
-    //bool 형으로 바꿔서 검증 함수 만들면 재사용성 더 좋을듯
-    private void validateWorkspace(String name){
+    @Transactional
+    public void changeUserAuthority(Long workspaceId, Long userId, UserRole authority){
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+            .orElseThrow(NoSuchWorkspaceException::new);
+        
+        User user = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        workspace.giveAuthority(user, authority);
+    }
+    
+    
+    private void validateWorkspaceName(String name){
         if (workspaceRepository.existsByName(name)){
             throw new IllegalStateException("이미 존재하는 Workspace 입니다");
         }
     }
+    
 }

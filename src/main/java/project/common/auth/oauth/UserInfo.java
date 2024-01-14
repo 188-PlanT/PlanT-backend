@@ -12,8 +12,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+//OAuth2 유저 반환을 위한 프록시 객체
 @Getter
-public class UserInfo implements UserDetails, OAuth2User{
+public class UserInfo implements OAuth2User, UserDetails{
 
     private User user;
     private Map<String, Object> attributes;

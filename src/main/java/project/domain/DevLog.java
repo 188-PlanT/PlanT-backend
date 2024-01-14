@@ -1,7 +1,10 @@
 package project.domain;
 
+import project.exception.user.NoSuchUserException;
+
 import javax.persistence.*;
 import lombok.Getter;
+import lombok.Builder;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -25,16 +28,53 @@ public class DevLog extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
     
-    protected DevLog(){}
+    // <== 생성자 ==>
+    protected DevLog(){} //JPA용 생성자
     
-    public DevLog(Schedule schedule, User user, String content){
-        this.schedule = schedule;
-        this.user = user;
-        this.content = content;
+    //@Builder //빌더 패턴 사용
+    private DevLog(Builder builder){
+        this.schedule = builder.schedule;
+        this.user = builder.user;
+        this.content = builder.content;
     }
     
     // < == 수정 로직 ==>
     public void updateContent(String content){
         this.content = content;
+    }
+    
+    
+    // <=== Builder 구현 ===>
+    public static Builder builder(){
+        return new Builder();
+    }
+    
+    public static class Builder {
+        private Schedule schedule;
+        private User user;
+        private String content;
+        
+        public Builder schedule(Schedule schedule){
+            this.schedule = schedule;
+            return this;
+        }
+        
+        public Builder user(User user){
+            this.user = user;
+            return this;
+        }
+        
+        public Builder content(String content){
+            this.content = content;
+            return this;
+        }
+        
+        public DevLog build(){
+            if (!schedule.hasUser(user)){
+                throw new NoSuchUserException("스케줄에 존재하지 않는 유저입니다");
+            }
+            
+            return new DevLog(this); 
+        }
     }
 }

@@ -41,24 +41,20 @@ public class LoginController{
     @PostMapping("/v1/refresh")
     public ResponseEntity<String> refreshToken(@RequestHeader("Refresh-Token") String refreshToken){
         
-        if(jwtProvider.validateRefreshToken(refreshToken)){
+        // if(jwtProvider.validateRefreshToken(refreshToken)){
             
-            String email = getUserEmail(refreshToken);
+        //     String email = getUserEmail(refreshToken);
             
-            User user = userService.findByEmail(email);
+        //     User user = userService.findByEmail(email);
             
-            String accessToken = jwtProvider.createAccessToken(user);
+        //     String accessToken = jwtProvider.createAccessToken(user);
             
-            return ResponseEntity.ok(accessToken);
-        }
-        return ResponseEntity.ok("Unvalid Refresh-Token");
-    }
-    
-    private String getUserEmail(String refreshToken){
-        refreshToken = refreshToken.replace("Bearer ", "");
+        //     return ResponseEntity.ok(accessToken);
+        // }
+        // return ResponseEntity.ok("Unvalid Refresh-Token");
         
-        return jwtProvider.parseClaims(refreshToken)
-                .get("email")
-                .toString();
+        String accessToken = jwtProvider.createAccessToken(refreshToken);
+        
+        return ResponseEntity.ok(accessToken);
     }
 }

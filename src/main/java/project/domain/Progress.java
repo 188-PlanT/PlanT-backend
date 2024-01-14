@@ -1,15 +1,15 @@
 package project.domain;
 
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserRole {
+public enum Progress {
     
-    USER("ROLE_USER", "사용자"),
-    ADMIN("ROLE_ADMIN", "어드민");
+    TODO("TO_DO", "실행전"),
+    INPROGRESS("IN_PROGRESS", "실행중"),
+    DONE("DONE", "완료");
     
     private final String key;
     private final String title;

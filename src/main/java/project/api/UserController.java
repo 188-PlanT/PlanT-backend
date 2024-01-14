@@ -28,32 +28,40 @@ public class UserController{
     
     private final UserService userService;
     
-    //근데 accountId로 검색이 굳이 필요할까..?
-    @GetMapping("/users")
-    public ResponseEntity<FindAllUserResponse> findAllUsers(Pageable pageable){
+    // //개발용 기능 , 유저 목록 확인
+    // @GetMapping("/users")
+    // public ResponseEntity<FindAllUserResponse> findAllUsers(Pageable pageable){
         
-        Page<User> page = userService.findAllUsers(pageable);
+    //     Page<User> page = userService.findAllUsers(pageable);
         
-        List<UserDto> responseData = page.getContent()
-            .stream()
-            .map(UserDto::new)
-            .collect(toList());
+    //     List<UserDto> responseData = page.getContent()
+    //         .stream()
+    //         .map(UserDto::new)
+    //         .collect(toList());
         
-        FindAllUserResponse response = new FindAllUserResponse(page.getTotalPages(), page.getNumber(), responseData);
+    //     FindAllUserResponse response = new FindAllUserResponse(page.getTotalPages(), page.getNumber(), responseData);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
+    // //유저 추가
     @PostMapping("/users")
-    public ResponseEntity<Object> registerUser(@Valid @RequestBody CreateUserRequest request){
+    public ResponseEntity<Long> registerUser(@Valid @RequestBody CreateUserRequest request){
         
-        User user = request.toUser();
-        
-        Long userId = userService.register(user);
+        Long userId = userService.register(request);
         
         return ResponseEntity.ok(userId);    
     }
     
+    @PostMapping("/users/{userId}")
+    public ResponseEntity<Long> setNickNameUser(@PathVariable("userId") Long userId, @RequestBody FinishUserRegisterRequest request){
+
+        userService.finishRegister(userId, request.getNickName());
+        
+        return ResponseEntity.ok(userId);
+    }
+    
+    //유저 상세 정보 확인
     @GetMapping("/users/{userId}")
     public ResponseEntity<FindSingleUserResponse> findUserDetail(@PathVariable("userId") Long userId){
         
@@ -64,21 +72,21 @@ public class UserController{
         return ResponseEntity.ok(response);
     }
     
-    @PutMapping("/users/{userId}")
-    public ResponseEntity<FindSingleUserResponse> updateUser(@PathVariable("userId") Long userId,
-                                                            @RequestBody UpdateUserRequest request){
+    // @PutMapping("/users/{userId}")
+    // public ResponseEntity<FindSingleUserResponse> updateUser(@PathVariable("userId") Long userId,
+    //                                                         @RequestBody UpdateUserRequest request){
         
-        User updateUser = userService.updateUser(userId, request.getPassword(), request.getName());
+    //     User updateUser = userService.updateUser(userId, request.getPassword(), request.getName());
         
-        FindSingleUserResponse response = new FindSingleUserResponse(updateUser);
+    //     FindSingleUserResponse response = new FindSingleUserResponse(updateUser);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
     
-    @DeleteMapping("/users/{userId}")
-    public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable("userId") Long userId){
-        userService.deleteUser(userId);
+    // @DeleteMapping("/users/{userId}")
+    // public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable("userId") Long userId){
+    //     userService.deleteUser(userId);
         
-        return ResponseEntity.ok(new DeleteUserResponse());
-    }
+    //     return ResponseEntity.ok(new DeleteUserResponse());
+    // }
 }

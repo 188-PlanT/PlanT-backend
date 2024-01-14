@@ -48,32 +48,32 @@ public class ScheduleService{
     
         Workspace workspace = workspaceRepository.findByName(request.getWorkspace())
             .orElseThrow(NoSuchWorkspaceException::new);
-        
-        String name = request.getName();
 
         List <User> users = userRepository.findUsersByEmailList(request.getUsers());
         
-        //유저 검증? -> 여기 리팩토링 필요할듯
-        if (!workspace.checkUsers(users)){
-            throw new NoSuchUserException();
-        }
-        
-        Schedule schedule = new Schedule(workspace, name, users);
+        Schedule schedule = Schedule.builder()
+                                        .workspace(workspace)
+                                        .name(request.getName())
+                                        .startDate(request.getStartDate())
+                                        .endDate(request.getEndDate())
+                                        .content(request.getContent())
+                                        .users(users)
+                                        .progress(request.getProgress())
+                                        .build();
+            
         scheduleRepository.save(schedule);
         return schedule.getId();
     }
     
     @Transactional
     public Schedule updateSchedule(Long scheduleId, UpdateScheduleRequest request){
+        
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(NoSuchScheduleException::new);
-        
-        String name = request.getName();
-        
+
         List <User> users = userRepository.findUsersByEmailList(request.getUsers());
         
-        schedule.update(name,users);
-        
+        schedule.update(request.getName(), request.getStartDate(), request.getEndDate(), request.getContent(), users);
         return schedule;
     }
     
@@ -86,15 +86,14 @@ public class ScheduleService{
     }
     
     @Transactional
-    public Schedule addUser(Long scheduleId, String email){
+    public Schedule addUser(Long scheduleId, Long userId){
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(NoSuchScheduleException::new);
-
-        User user = userRepository.findByEmail(email)
+        
+        User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
         schedule.addUser(user);
-        
         return schedule;
     }
     

@@ -12,11 +12,11 @@ public class DevLogDto{
     private String userEmail;
     private String content;
     
-    public DevLogDto (DevLog devLog){
-        this.devLogId = devLog.getId();
-        this.scheduleId = devLog.getSchedule().getId();
-        this.userEmail = devLog.getUser().getEmail();
-        this.content = devLog.getContent();
-    }
+    // public DevLogDto (DevLog devLog){
+    //     this.devLogId = devLog.getId();
+    //     this.scheduleId = devLog.getSchedule().getId();
+    //     this.userEmail = devLog.getUser().getEmail();
+    //     this.content = devLog.getContent();
+    // }
 }
 
