@@ -32,3 +32,6 @@ spring-test/test-output/
 
 # Goorm ide #
 goorm.manifest
+
+# vscode #
+.vscode
