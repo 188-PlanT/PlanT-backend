@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns: th=”http://www.thymeleaf.org”>
+<head>
+    <title>BlazingDevs Calender!</title>
+    <link th:href="@{/css/create-form.css}" rel="stylesheet" />
+</head>
+<body>
+    <div th:replace="~{template/fragment/header :: devLogs_header ('개발일지생성')}" class="title">
+        <h1>개발일지 생성</h1>
+    </div>
+
+    <div class="container">
+        <form role="form" th:action="@{/admin/devLogs/create-devLogs}" method="post" th:object="${createDevLogRequest}">
+            <div class="form-group">
+                <label>스케줄</label>
+                <select th:field="*{scheduleId}">
+                    <option th:each="schedule: ${scheduleList}" th:text="${schedule.name}" th:value="${schedule.id}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>유저</label>
+                <select th:field="*{userEmail}">
+                    <option th:each="user: ${userList}" th:text="${user}" th:value="${user}"></option>
+                    <input type="hidden" th:each="user: ${userList}" th:name="userList" th:value="${user}">
+                </select>
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <input type="text" th:field="*{content}" class="form-control" placeholder="내용을 입력하세요"/>
+            </div>
+            <div class="error" th:errors="*{content}">
+                에러 메세지
+            </div>
+            <button type="submit" class="btn">생성</button>
+        </form>
+    </div>
+</body>
+</html>

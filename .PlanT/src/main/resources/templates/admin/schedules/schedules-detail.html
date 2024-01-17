@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns: th=”http://www.thymeleaf.org”>
+<head>
+    <meta charset="utf-8">
+    <title>BlazingDevs Calender!</title>
+    <link th:href="@{/css/detail.css}" rel="stylesheet"/>
+</head>
+<body>
+    <div th:replace="~{template/fragment/header :: schedules_header ('스케줄관리')}" class="title">
+        <h1>스케줄 관리</h1>
+    </div>
+
+    <div class="container">
+        <ul>
+            <li th:text="|워크스페이스 : ${schedule.workspace}|"></li>
+            <li th:text="|이름 : ${schedule.name}|"></li>
+            <li>참여중인 유저</li>
+            <ul class="lists">
+                <li th:each="user : ${schedule.users}" th:text="${user}"></li>
+            </ul>
+            <li>개발일지</li>
+            <ul class="lists">
+                <li class="devLog" th:each="devLog : ${schedule.devLogs}">
+                    <br th:text="${devLog.userEmail}">
+                    <br th:text="${devLog.content}">
+                </li>
+            </ul>
+        </ul>
+        
+        <div class="btns">
+            <form th:action="|/admin/schedules/${schedule.schedule_id}/update|" method="get">
+                <button type="submit">수정</button>
+            </form>
+            <form th:action="|/admin/schedules/${schedule.schedule_id}/delete|" method="post">
+                <button type="submit">삭제</button>
+            </form>
+            <form th:action="|/admin/schedules/${schedule.schedule_id}/devLogs|" method="get">
+                <button type="submit">개발일지 추가</button>
+            </form>
+        </div>
+    </div> <!-- /container -->
+</body>
+</html>

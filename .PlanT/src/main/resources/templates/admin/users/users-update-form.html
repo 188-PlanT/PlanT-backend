@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns: th=”http://www.thymeleaf.org”>
+<head>
+    <title>BlazingDevs Calender!</title>
+    <link th:href="@{/css/create-form.css}" rel="stylesheet" />
+</head>
+<body>
+    <div th:replace="~{template/fragment/header :: users_header ('유저수정')}" class="title">
+        <h1>유저 수정</h1>
+    </div>
+
+    <div class="container">
+    <form role="form" th:action="|/admin/users/${userId}/update|" method="post" th:object="${updateUserRequest}">
+        <div class="form-group">
+            <label>이름</label>
+            <input type="text" th:field="*{name}" th:errorclass="field-error"
+                   class="form-control" placeholder="이름을 입력하세요">
+        </div>
+        <div class="error" th:errors="*{name}">
+            에러 메세지
+        </div>
+        <div class="form-group">
+             <label>비밀번호</label>
+             <input type="password" th:field="*{password}"  th:errorclass="field-error"
+                    class="form-control" placeholder="비밀번호를 입력하세요">
+        </div>
+        <div class="error" th:errors="*{password}">
+            에러 메세지
+        </div>
+        <button type="submit" class="btn">수정</button>
+    </form>
+    <br/>
+    </div> <!-- /container -->
+</body>
+</html>
