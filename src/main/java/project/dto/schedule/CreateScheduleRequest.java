@@ -29,7 +29,7 @@ public class CreateScheduleRequest{
     private LocalDateTime endDate;
     
     @NotBlank
-    private Progress progress;
+    private Progress state;
     
     private String content;
     

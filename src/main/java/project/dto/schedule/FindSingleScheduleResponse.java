@@ -20,7 +20,7 @@ public class FindSingleScheduleResponse{
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String content;
-    private Progress progress;
+    private Progress state;
     
     // private List<String> users = new ArrayList <> ();
     // private List<SimpleDevLogDto> devLogs = new ArrayList<>();
@@ -32,7 +32,7 @@ public class FindSingleScheduleResponse{
         this.startDate = schedule.getStartDate();
         this.endDate = schedule.getEndDate();
         this.content = schedule.getContent();
-        this.progress = schedule.getProgress();
+        this.state = schedule.getState();
     }
     
     // @Getter

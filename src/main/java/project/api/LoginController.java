@@ -41,18 +41,6 @@ public class LoginController{
     @PostMapping("/v1/refresh")
     public ResponseEntity<String> refreshToken(@RequestHeader("Refresh-Token") String refreshToken){
         
-        // if(jwtProvider.validateRefreshToken(refreshToken)){
-            
-        //     String email = getUserEmail(refreshToken);
-            
-        //     User user = userService.findByEmail(email);
-            
-        //     String accessToken = jwtProvider.createAccessToken(user);
-            
-        //     return ResponseEntity.ok(accessToken);
-        // }
-        // return ResponseEntity.ok("Unvalid Refresh-Token");
-        
         String accessToken = jwtProvider.createAccessToken(refreshToken);
         
         return ResponseEntity.ok(accessToken);

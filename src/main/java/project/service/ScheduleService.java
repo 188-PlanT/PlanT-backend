@@ -58,7 +58,7 @@ public class ScheduleService{
                                         .endDate(request.getEndDate())
                                         .content(request.getContent())
                                         .users(users)
-                                        .progress(request.getProgress())
+                                        .state(request.getState())
                                         .build();
             
         scheduleRepository.save(schedule);

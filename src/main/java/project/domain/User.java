@@ -72,7 +72,7 @@ public class User extends BaseEntity{
             .name((String) attributes.get("name"))
             .email((String) attributes.get("email"))
             .profile(User.DEFAULT_PROFILE_URL)
-            .userRole(UserRole.USER)
+            .userRole(UserRole.PENDING)
             .build();
     }
     
@@ -83,7 +83,7 @@ public class User extends BaseEntity{
                         .password(password)
                         .name(name)
                         .profile(User.DEFAULT_PROFILE_URL)
-                        .userRole(UserRole.USER)
+                        .userRole(UserRole.PENDING)
                         .build();
         
         user.encodePassword(passwordEncoder);
@@ -97,7 +97,8 @@ public class User extends BaseEntity{
     }
     
     public boolean checkFinishSignUp(){
-        return StringUtils.hasText(this.nickName);
+        // return StringUtils.hasText(this.nickName);
+        return this.userRole.equals(UserRole.PENDING);
     }
     
     public void encodePassword(PasswordEncoder passwordEncoder){

@@ -56,14 +56,14 @@ public class FindSingleUserResponse {
         private String name;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
-        private Progress progress;
+        private Progress state;
 
         public ScheduleDto(Schedule schedule){
             this.id = schedule.getId();
             this.name = schedule.getName();
             this.startDate = schedule.getStartDate();
             this.endDate = schedule.getEndDate();
-            this.progress = schedule.getProgress();
+            this.state = schedule.getState();
         }
     }
 }

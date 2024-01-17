@@ -43,7 +43,7 @@ public class Schedule extends BaseEntity{
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Progress progress;
+    private Progress state;
     
     //Schedule이 UserSchedule 영속성 관리
     @OneToMany(mappedBy="schedule", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -65,7 +65,7 @@ public class Schedule extends BaseEntity{
         this.startDate = builder.startDate;
         this.endDate = builder.endDate;
         this.content = builder.content;
-        this.progress = builder.progress;
+        this.state = builder.state;
     }
     
     // < == 비즈니스 로직 == >
@@ -92,8 +92,8 @@ public class Schedule extends BaseEntity{
         this.userSchedules.removeIf(us -> us.getUser().equals(user));
     }
     
-    public void moveProgress(Progress progress){
-        this.progress = progress;
+    public void moveProgress(Progress state){
+        this.state = state;
     }
     
     //수정 로직 -> 이거 DTO로 묶는 방법 생각해보자
@@ -128,7 +128,7 @@ public class Schedule extends BaseEntity{
         private LocalDateTime endDate;
         private String content;
         private List<User> users;
-        private Progress progress = Progress.TODO;
+        private Progress state = Progress.TODO;
         
         public Builder workspace(Workspace workspace){
             this.workspace = workspace;
@@ -160,8 +160,8 @@ public class Schedule extends BaseEntity{
             return this;
         }
         
-        public Builder progress(Progress progress){
-            this.progress = progress;
+        public Builder state(Progress state){
+            this.state = state;
             return this;
         }
         
