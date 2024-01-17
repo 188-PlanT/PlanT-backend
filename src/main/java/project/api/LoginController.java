@@ -2,10 +2,7 @@ package project.api;
 
 import project.domain.*;
 import project.dto.login.*;
-import project.dto.ErrorResponse;
 import project.service.UserService;
-import project.exception.user.NoSuchUserException;
-import project.exception.ValidateException;
 import project.common.auth.jwt.JwtProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -13,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 
 

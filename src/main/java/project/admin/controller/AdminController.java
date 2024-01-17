@@ -40,7 +40,7 @@ public class AdminController{
             return "admin/home";
         }
         
-        model.addAttribute("userName", findUser.getName());    
+        model.addAttribute("userName", findUser.getNickName());    
         return "admin/menu";
     }
     

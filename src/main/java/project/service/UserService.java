@@ -32,14 +32,18 @@ public class UserService implements UserDetailsService{
     
     //회원가입
     @Transactional
-    public Long register(CreateUserRequest request){
-        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), request.getName(), passwordEncoder);
+    public User register(CreateUserRequest request){
+        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), passwordEncoder);   
         
         validateUserEmail(user.getEmail());
         
         userRepository.save(user);
         
-        return user.getId();
+        //LazyLoding
+        user.getId();
+        user.getEmail();
+        
+        return user;
     }
     
     //유저 정보 추가, 회원가입 마무리
@@ -103,7 +107,7 @@ public class UserService implements UserDetailsService{
             validateUserNickName(nickName);
         }
         
-        user.update(nickName, password, name, profile, passwordEncoder);
+        user.update(nickName, password, profile, passwordEncoder);
 
         return user;
     }
@@ -118,14 +122,14 @@ public class UserService implements UserDetailsService{
     }
     
     // < == validate logic ==> //
-    private void validateUserEmail(String email){
+    public void validateUserEmail(String email){
         
         if (userRepository.existsByEmail(email)){
             throw new UserAlreadyExistException();
         }
     }
     
-    private void validateUserNickName(String nickName){
+    public void validateUserNickName(String nickName){
         if (userRepository.existsByNickName(nickName)){
             throw new UserAlreadyExistException();
         }

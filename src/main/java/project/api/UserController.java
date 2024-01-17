@@ -3,7 +3,7 @@ package project.api;
 import project.domain.*;
 import project.dto.user.*;
 import project.service.UserService;
-import project.exception.user.NoSuchUserException;
+import project.exception.user.*;
 import project.dto.ErrorResponse;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.AllArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController{
@@ -43,14 +43,43 @@ public class UserController{
         
     //     return ResponseEntity.ok(response);
     // }
-    
+
+    // 유저 이메일 인증
+    @PostMapping("/v1/users/email")
+    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@RequestBody EmailCheckRequest request){
+        
+        try{
+            userService.validateUserEmail(request.getEmail());
+        } 
+        catch (UserAlreadyExistException e){
+            return ResponseEntity.ok(new EmailCheckResponse(false));
+        }
+
+        return ResponseEntity.ok(new EmailCheckResponse(true));
+    }
+
+    // // 유저 닉네임 인증
+    // @PostMapping("/v1/users/email")
+    // public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@RequestBody String email){
+        
+    //     try{
+    //         userService.validateUserEmail(email);
+    //         return ResponseEntity.ok(new EmailCheckResponse(true));
+    //     } 
+    //     catch (UserAlreadyExistException e){
+    //         return ResponseEntity.ok(new EmailCheckResponse(false));
+    //     }
+    // }
+
     // //유저 추가
-    @PostMapping("/users")
-    public ResponseEntity<Long> registerUser(@Valid @RequestBody CreateUserRequest request){
+    @PostMapping("/v1/users")
+    public ResponseEntity<CreateUserResponse> registerUser(@Valid @RequestBody CreateUserRequest request){
         
-        Long userId = userService.register(request);
+        User user = userService.register(request);
         
-        return ResponseEntity.ok(userId);    
+        CreateUserResponse response = new CreateUserResponse(user.getId(), user.getEmail());
+
+        return ResponseEntity.ok(response);    
     }
     
     @PostMapping("/users/{userId}")

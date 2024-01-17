@@ -17,17 +17,17 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
     private final JPAQueryFactory qf;
     
     @Override
-    public Page<User> searchUsers(Pageable pageable, String email, String name){
+    public Page<User> searchUsers(Pageable pageable, String email){
         
         List<User> content =  qf.selectFrom(user)
-            .where(emailEq(email), nameEq(name))
+            .where(emailEq(email))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();  
         
         Long count = qf.select(user.count())
             .from(user)
-            .where(emailEq(email), nameEq(name))
+            .where(emailEq(email))
             .fetchOne();
         
         return new PageImpl<>(content, pageable, count);
@@ -41,10 +41,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
         return user.email.eq(email);
     }
     
-    private BooleanExpression nameEq(String name){
-        if (name == null){
-            return null;
-        }
-        return user.name.eq(name);
-    }
+    // private BooleanExpression nameEq(String name){
+    //     if (name == null){
+    //         return null;
+    //     }
+    //     return user.name.eq(name);
+    // }
 }

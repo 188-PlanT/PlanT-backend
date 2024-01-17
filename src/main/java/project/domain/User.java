@@ -31,9 +31,6 @@ public class User extends BaseEntity{
     @Column(nullable = true)
     private String password;
     
-    @Column(nullable = false)
-    private String name;
-    
     @Column(nullable = true)
     private String profile;
     
@@ -57,11 +54,10 @@ public class User extends BaseEntity{
     protected User () {} 
     
     @Builder //builder
-    public User(String email, String nickName, String password, String name, String profile, UserRole userRole){        
+    public User(String email, String nickName, String password,  String profile, UserRole userRole){        
         this.email = email;
         this.nickName = nickName;
         this.password = password;
-        this.name = name;
         this.profile = profile;
         this.userRole = userRole;
     }
@@ -69,19 +65,17 @@ public class User extends BaseEntity{
     // <== 정적 팩토리 메서드 ==>
     public static User fromOAuth2Attributes(Map<String,Object> attributes){
         return User.builder()
-            .name((String) attributes.get("name"))
             .email((String) attributes.get("email"))
             .profile(User.DEFAULT_PROFILE_URL)
             .userRole(UserRole.PENDING)
             .build();
     }
     
-    public static User ofEmailPassword(String email, String password, String name, PasswordEncoder passwordEncoder){
+    public static User ofEmailPassword(String email, String password, PasswordEncoder passwordEncoder){
         
         User user =  User.builder()
                         .email(email)
                         .password(password)
-                        .name(name)
                         .profile(User.DEFAULT_PROFILE_URL)
                         .userRole(UserRole.PENDING)
                         .build();
@@ -113,10 +107,9 @@ public class User extends BaseEntity{
         this.nickName = nickName;
     }
     
-    public void update(String nickName, String password, String name, String profile, PasswordEncoder passwordEncoder){
+    public void update(String nickName, String password, String profile, PasswordEncoder passwordEncoder){
         this.nickName = nickName;
         this.password = password;
-        this.name = name;
         this.profile = profile;
         
         encodePassword(passwordEncoder);

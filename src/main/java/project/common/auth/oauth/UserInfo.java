@@ -42,7 +42,7 @@ public class UserInfo implements OAuth2User, UserDetails{
     }
 
     public String getUsername(){
-        return user.getName();
+        return user.getNickName();
     }
 
     public boolean isAccountNonExpired(){
@@ -63,7 +63,7 @@ public class UserInfo implements OAuth2User, UserDetails{
     
     //<== Oauth2User ==>
     public String getName(){
-        return user.getName();
+        return user.getNickName();
     }
     
     public Map<String, Object> getAttributes() {
