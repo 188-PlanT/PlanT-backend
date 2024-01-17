@@ -1,4 +1,5 @@
 # Gradle artifacts
+/bin
 /.gradle
 .gradletasknamecache
 /build
