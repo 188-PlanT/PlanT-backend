@@ -94,13 +94,14 @@ public class UserController{
     
     //유저 상세 정보 확인
     @GetMapping("/users/{userId}")
-    public ResponseEntity<FindSingleUserResponse> findUserDetail(@PathVariable("userId") Long userId){
+    public ResponseEntity<Long> findUserDetail(@PathVariable("userId") Long userId){
         
         User findUser = userService.findOne(userId);
         
-        FindSingleUserResponse response = new FindSingleUserResponse(findUser);
-        
-        return ResponseEntity.ok(response);
+        return  ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+    
     }
     
     // @PutMapping("/users/{userId}")

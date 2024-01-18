@@ -9,12 +9,14 @@ import project.domain.User;
 import project.domain.UserRole;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Email;
 
 @Getter 
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateUserRequest{
+    @Email
     @NotBlank
     private String email;
     

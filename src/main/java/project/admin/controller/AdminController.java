@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 
 import project.service.UserService;
 import project.exception.user.*;
-import project.exception.ValidateException;
 import project.domain.User;
 import project.domain.UserRole;
 import project.admin.util.*;
