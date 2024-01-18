@@ -79,7 +79,9 @@ public class UserController{
         
         CreateUserResponse response = new CreateUserResponse(user.getId(), user.getEmail());
 
-        return ResponseEntity.ok(response);    
+        return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);    
     }
     
     @PostMapping("/users/{userId}")
