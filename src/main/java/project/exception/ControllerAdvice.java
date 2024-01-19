@@ -11,6 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 
 import project.exception.user.*;
+import project.exception.security.*;
 import project.exception.auth.UnIdentifiedUserException;
 import project.dto.ErrorResponse;
 import project.dto.ErrorCode;
@@ -56,6 +57,18 @@ public class ControllerAdvice{
             .body(response);
     }
     
+    // <== 403 ==>
+    @ExceptionHandler(InvalidAuthorityException.class) // 비밀번호 검증 실패 예외
+    public ResponseEntity<ErrorResponse> ValidateErrorHandler(InvalidAuthorityException e){
+        log.info("InvalidAuthorityException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.FORBIDDEN, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(response);
+    }
+    
     
     // <== 404 ==>
     @ExceptionHandler(NoSuchUserException.class)
@@ -83,6 +96,17 @@ public class ControllerAdvice{
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponse> invalidUserHandler(HttpRequestMethodNotSupportedException e){
         log.info("Http Method 오류");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+    
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> invalidUserHandler(InvalidTokenException e){
+        log.info("InvalidTokenException");
         
         ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
         

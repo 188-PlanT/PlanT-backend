@@ -36,15 +36,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
             chain.doFilter(request, response);
             return;
         }
-        
-        // AccessToken accessToken = jwtProvider.getAccessToken(accessTokenString);
-        
-        // if (jwtProvider.validateToken(accessToken)){
-        //     Authentication authentication = jwtProvider.getAuthentication(accessToken);
-        //     SecurityContextHolder.getContext().setAuthentication(authentication);    
-        // }
-        
-        // jwtProvider.validateToken(accessToken);
             
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
         

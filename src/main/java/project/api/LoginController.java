@@ -37,10 +37,12 @@ public class LoginController{
     }
 
     @PostMapping("/v1/refresh")
-    public ResponseEntity<String> refreshToken(@RequestHeader("Refresh-Token") String refreshToken){
+    public ResponseEntity<AccessTokenResponse> refreshToken(@RequestHeader("Refresh-Token") String refreshToken){
         
         String accessToken = jwtProvider.createAccessToken(refreshToken);
         
-        return ResponseEntity.ok(accessToken);
+        AccessTokenResponse response = new AccessTokenResponse(accessToken);
+        
+        return ResponseEntity.ok(response);
     }
 }

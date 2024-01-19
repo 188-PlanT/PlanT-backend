@@ -3,11 +3,8 @@ package project.dto.login;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
 
-@Getter 
+@Getter
 @AllArgsConstructor
-public class LoginResponse{
-    
+public class AccessTokenResponse{
     private String accessToken;
-    private String refreshToken;
-    
 }

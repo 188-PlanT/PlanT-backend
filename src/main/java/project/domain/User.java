@@ -91,8 +91,7 @@ public class User extends BaseEntity{
     }
     
     public boolean checkFinishSignUp(){
-        // return StringUtils.hasText(this.nickName);
-        return this.userRole.equals(UserRole.PENDING);
+        return !this.userRole.equals(UserRole.PENDING);
     }
     
     public void encodePassword(PasswordEncoder passwordEncoder){
@@ -103,8 +102,9 @@ public class User extends BaseEntity{
         return passwordEncoder.matches(password, this.password);
     }
     
-    public void updateNickName(String nickName){
+    public void setNickName(String nickName){
         this.nickName = nickName;
+        this.userRole = UserRole.USER;
     }
     
     public void update(String nickName, String password, String profile, PasswordEncoder passwordEncoder){

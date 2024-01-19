@@ -1,19 +1,27 @@
 package project.dto.user;
 
+import lombok.Setter;
 import lombok.Getter;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import project.domain.User;
 
+@Setter
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
-    private Long id;
+    private Long userId;
+    private String nickName;
     private String email;
-    private String name;
+    private String profile;
     
-    // public UserDto(User user){
-    //     this.id = user.getId();
-    //     this.email = user.getEmail();
-    //     this.name = user.getName();
-    // }
+    public static UserDto from(User user){
+        UserDto dto = new UserDto();
+
+        dto.setUserId(user.getId());
+        dto.setNickName(user.getNickName());
+        dto.setEmail(user.getEmail());
+        dto.setProfile(user.getProfile());
+        
+        return dto;
+    }
 }

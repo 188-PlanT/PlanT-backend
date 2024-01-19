@@ -5,7 +5,7 @@ import project.service.RedisService;
 import project.common.auth.oauth.UserInfo;
 import project.repository.UserRepository;
 import project.exception.user.*;
-import project.exception.security.UnvalidTokenException;
+import project.exception.security.InvalidTokenException;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -120,7 +120,7 @@ public class JwtProvider {
         Claims claims = parseClaims(accessToken);
         
         if (claims.get("email") == null || claims.get("authorities") == null){
-            throw new IllegalArgumentException("JWT claims string is empty.");    
+            throw new InvalidTokenException("토큰 값이 올바르지 않습니다");    
         }
     }
     
@@ -129,7 +129,7 @@ public class JwtProvider {
         Claims claims = parseClaims(refreshToken);
         
         if (claims.get("email") == null){
-            throw new IllegalArgumentException("JWT claims string is empty.");    
+            throw new InvalidTokenException("토큰 값이 올바르지 않습니다");    
         }
     }
     
@@ -162,12 +162,12 @@ public class JwtProvider {
             log.info("JWT claims string is empty.", e);
         }
         
-        throw new IllegalArgumentException("Unvalid JWT TOKEN");
+        throw new InvalidTokenException("올바르지 않은 토큰입니다");
     }
     
     private String removeBearer(String tokenString){
         if (!tokenString.startsWith("Bearer")){
-            throw new IllegalArgumentException("Token not start with Bearer");
+            throw new InvalidTokenException("Token not start with Bearer");
         }
         
         return tokenString.replace("Bearer ", "");

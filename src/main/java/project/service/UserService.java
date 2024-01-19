@@ -44,32 +44,21 @@ public class UserService implements UserDetailsService{
         
         userRepository.save(user);
         
-        //LazyLoding
-        user.getId();
-        user.getEmail();
-        
         return user;
     }
     
     //유저 정보 추가, 회원가입 마무리
     @Transactional
-    public Long finishRegister(Long userId, String nickName){
+    public User finishRegister(Long userId, String nickName){
         
-        log.info("nickName == {}", nickName);
-        
-        //여기 메서드 분리??
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
-        
-        if (user.checkFinishSignUp()){
-            throw new IllegalStateException("이미 회원가입이 완료되었습니다");
-        }
-        
         validateUserNickName(nickName);
         
-        user.updateNickName(nickName);
-        return user.getId();
+        user.setNickName(nickName);
+        
+        return user;
     }
     
     //유저 단건 조회

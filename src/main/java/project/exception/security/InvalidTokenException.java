@@ -1,15 +1,13 @@
 package project.exception.security;
 
-import org.springframework.http.HttpStatus;
-
-public class UnvalidTokenException extends RuntimeException{
+public class InvalidTokenException extends RuntimeException{
     private static final String DEFAULT_MESSAGE = "올바르지 않은 토큰입니다";
     
-    public UnvalidTokenException() {
+    public InvalidTokenException() {
         super(DEFAULT_MESSAGE);
     }
     
-    public UnvalidTokenException(String message) {
+    public InvalidTokenException(String message) {
         super(message);
     }
 }  
