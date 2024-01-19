@@ -1,12 +1,16 @@
 package project.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class ErrorResponse{
-    private String code;
+    private int code;
     private String message;
     private String details;
+    
+    public ErrorResponse(ErrorCode errorCode, String details){
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
+        this.details = details;
+    }
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 import static java.util.stream.Collectors.toList;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,15 +28,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService{
     
+    public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
+    
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     
     //회원가입
     @Transactional
     public User register(CreateUserRequest request){
-        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), passwordEncoder);   
+        validateUserEmail(request.getEmail());
         
-        validateUserEmail(user.getEmail());
+        validateUserPassword(request.getPassword());
+        
+        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), passwordEncoder);   
         
         userRepository.save(user);
         
@@ -132,6 +137,14 @@ public class UserService implements UserDetailsService{
     public void validateUserNickName(String nickName){
         if (userRepository.existsByNickName(nickName)){
             throw new UserAlreadyExistException();
+        }
+    }
+    
+    private void validateUserPassword(String password){
+        
+        int length = password.length();
+        if (!Pattern.matches(PASSWORD_PATTERN, password)){
+            throw new InvalidPasswordException(); 
         }
     }
     

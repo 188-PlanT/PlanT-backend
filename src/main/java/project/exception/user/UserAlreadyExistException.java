@@ -1,24 +1,14 @@
 package project.exception.user;
 
-import org.springframework.http.HttpStatus;
-
 public class UserAlreadyExistException extends RuntimeException {
-    private HttpStatus status;
+    
+    private static final String DEFAULT_MESSAGE = "이미 존재하는 유저입니다";
     
     public UserAlreadyExistException() {
-        super();
+        super(DEFAULT_MESSAGE);
     }
     
     public UserAlreadyExistException(String message){
         super(message);
-    }
-    
-    public UserAlreadyExistException(String message, HttpStatus status){
-        super(message);
-        this.status = status;
-    }
-    
-    public UserAlreadyExistException(HttpStatus status){
-        this.status = status;
     }
 }  

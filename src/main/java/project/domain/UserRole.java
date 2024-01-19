@@ -1,6 +1,5 @@
 package project.domain;
 
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

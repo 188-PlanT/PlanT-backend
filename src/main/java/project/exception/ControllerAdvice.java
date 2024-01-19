@@ -13,6 +13,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import project.exception.user.*;
 import project.exception.auth.UnIdentifiedUserException;
 import project.dto.ErrorResponse;
+import project.dto.ErrorCode;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -24,10 +25,31 @@ public class ControllerAdvice{
     // <== 400 ==>
     @ExceptionHandler(MethodArgumentNotValidException.class) // spring Valid Exception
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(MethodArgumentNotValidException e){
+        log.info("MethodArgumentNotValidException");
         
-        String message = "올바르지 않은 입력입니다";
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
         
-        ErrorResponse response = new ErrorResponse("400", message, e.getMessage());
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(response);
+    }
+    
+    @ExceptionHandler(UserAlreadyExistException.class) // 중복 유저 예외
+    public ResponseEntity<ErrorResponse> ValidateErrorHandler(UserAlreadyExistException e){
+        log.info("UserAlreadyExistException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(response);
+    }
+    
+    @ExceptionHandler(InvalidPasswordException.class) // 비밀번호 검증 실패 예외
+    public ResponseEntity<ErrorResponse> ValidateErrorHandler(InvalidPasswordException e){
+        log.info("InvalidPasswordException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
         
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -40,9 +62,7 @@ public class ControllerAdvice{
     public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchUserException e){
         log.info("NoSuchUserException");
         
-        String message = "리소스를 찾을 수 없습니다";
-        
-        ErrorResponse response = new ErrorResponse("404", message, e.getMessage());
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
         
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -53,9 +73,7 @@ public class ControllerAdvice{
     public ResponseEntity<ErrorResponse> invalidUserHandler(NoHandlerFoundException e){
         log.info("url 오류");
         
-        String message = "리소스를 찾을 수 없습니다";
-        
-        ErrorResponse response = new ErrorResponse("404", message, e.getMessage());
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
         
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -66,9 +84,7 @@ public class ControllerAdvice{
     public ResponseEntity<ErrorResponse> invalidUserHandler(HttpRequestMethodNotSupportedException e){
         log.info("Http Method 오류");
         
-        String message = "리소스를 찾을 수 없습니다";
-        
-        ErrorResponse response = new ErrorResponse("404", message, e.getMessage());
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
         
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -84,26 +100,14 @@ public class ControllerAdvice{
     //         .status(HttpStatus.UNAUTHORIZED)
     //         .body(response);
     // }
-    
-    // @ExceptionHandler(ValidateException.class)
-    // public ResponseEntity<ErrorResponse> ValidateErrorHandler(ValidateException e){
-        
-    //     ErrorResponse response = new ErrorResponse("404", e.getMessage());
-        
-    //     return ResponseEntity
-    //         .status(HttpStatus.NOT_FOUND)
-    //         .body(response);
-    // }
 
     @ExceptionHandler(RuntimeException.class) // 500 ERROR
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(RuntimeException e){
         //에러가 여러개면 첫번째 에러만 반환하도록
         
-        String message = "서버에서 처리할 수 없는 에러가 발생했습니다";
-        
         e.printStackTrace();
         
-        ErrorResponse response = new ErrorResponse("500", message, e.getMessage());
+        ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
         
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
