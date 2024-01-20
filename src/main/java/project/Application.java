@@ -12,7 +12,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
     basePackageClasses = {Jsr310JpaConverters.class},
 	basePackages = {"project"})
 @SpringBootApplication
-@OpenAPIDefinition(servers = {@Server(url = "https://blazingdevs-calendar-ubvam.run.goorm.site", description = "Default url")})
+// @OpenAPIDefinition(servers = {@Server(url = "https://blazingdevs-calendar-ubvam.run.goorm.site", description = "Default url")})
+// @OpenAPIDefinition(servers = {@Server(url = "https://blazingdevs-calendar-ubvam.run.goorm.site", description = "Default url")})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
