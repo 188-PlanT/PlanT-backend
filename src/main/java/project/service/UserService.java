@@ -5,6 +5,7 @@ import project.dto.user.*;
 import project.dto.login.SignUpRequest;
 import project.exception.user.*;
 import project.repository.UserRepository;
+import project.repository.UserWorkspaceRepository;
 import project.common.auth.oauth.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class UserService implements UserDetailsService{
     public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
     
     private final UserRepository userRepository;
+    private final UserWorkspaceRepository userWorkspaceRepository;
     private final PasswordEncoder passwordEncoder;
     
     //회원가입
@@ -86,10 +88,18 @@ public class UserService implements UserDetailsService{
         }
     }
     
-    // 유저 리스트 조회
+    // 워크스페이스 조회
     @Transactional(readOnly = true)
-    public Page<User> findAllUsers(Pageable pageable){
-        return userRepository.findAll(pageable);
+    public Page<UserWorkspace> findWorkspaces(User user, Pageable pageable){
+        Page<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user, pageable);
+        
+        //lazy loding
+        userWorkspaces.getContent().stream().forEach(uw -> uw.getWorkspace().getName());
+        
+        // List<Workspace> workspaces = userWorkspaces.getContent().stream()
+        //                                                             .map(uw -> uw.getWorkspace())
+        //                                                             .collect(toList());
+        return userWorkspaces;
     }
     
     //유저 정보 수정

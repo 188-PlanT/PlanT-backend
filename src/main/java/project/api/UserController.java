@@ -71,7 +71,7 @@ public class UserController{
     
     // <== 유저 정보 확인 ==>
     @GetMapping("/v1/users")
-    public ResponseEntity<UserDto> findAllUsers(@AuthenticationPrincipal UserInfo userInfo){
+    public ResponseEntity<UserDto> findUserDetails(@AuthenticationPrincipal UserInfo userInfo){
         
         User loginUser = userInfo.getUser();
         
@@ -91,17 +91,23 @@ public class UserController{
         return ResponseEntity.ok(UserDto.from(updateUser));
     }
     
-    //유저 상세 정보 확인
-    // @GetMapping("/users/{userId}")
-    // public ResponseEntity<Long> findUserDetail(@PathVariable("userId") Long userId){
+    // <== 유저 워크스페이스 리스트 조회 ==>
+    @GetMapping("/v1/users/workspaces")
+    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(@AuthenticationPrincipal UserInfo userInfo, Pageable pageable){
         
-    //     User findUser = userService.findOne(userId);
+        User loginUser = userInfo.getUser();
         
-    //     return  ResponseEntity
-    //                     .status(HttpStatus.BAD_REQUEST)
-    //                     .body(null);
-    
-    // }
+        Page<UserWorkspace> page = userService.findWorkspaces(loginUser, pageable);
+        
+        List<Workspace> workspaces = page.getContent()
+                                        .stream()
+                                        .map(uw -> uw.getWorkspace())
+                                        .collect(toList());
+        
+        UserWorkspacesResponse response = UserWorkspacesResponse.of(loginUser, page.getTotalPages(), page.getNumber(), workspaces);
+        
+        return ResponseEntity.ok(response);
+    }
     
     // @PutMapping("/users/{userId}")
     // public ResponseEntity<FindSingleUserResponse> updateUser(@PathVariable("userId") Long userId,
