@@ -13,8 +13,6 @@ import lombok.Setter;
 // import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Table(name = "schedules")
 @Getter

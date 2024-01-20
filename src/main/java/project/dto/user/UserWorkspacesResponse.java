@@ -23,8 +23,8 @@ public class UserWorkspacesResponse {
         UserWorkspacesResponse response = new UserWorkspacesResponse();
         
         response.setUserId(user.getId());
-        response.setTotalPages(totalPage - 1);
-        response.setPageNumber(pageNumber);
+        response.setTotalPages(totalPage);
+        response.setPageNumber(pageNumber + 1);
         
         response.setWorkspaces(workspaces.stream()
                                             .map(WorkspaceDto::new)

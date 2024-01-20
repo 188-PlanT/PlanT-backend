@@ -5,6 +5,7 @@ import project.common.auth.oauth.UserInfo;
 import project.dto.user.*;
 import project.service.UserService;
 import project.exception.user.*;
+import project.exception.schedule.DateFormatException;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -13,6 +14,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +103,8 @@ public class UserController{
         
         User loginUser = userInfo.getUser();
         
+        
+        
         Page<UserWorkspace> page = userService.findWorkspaces(loginUser, pageable);
         
         List<Workspace> workspaces = page.getContent()
@@ -107,6 +115,38 @@ public class UserController{
         UserWorkspacesResponse response = UserWorkspacesResponse.of(loginUser, page.getTotalPages(), page.getNumber(), workspaces);
         
         return ResponseEntity.ok(response);
+    }
+    
+    // <== 유저 스케줄 리스트 조회 ==>
+    @GetMapping("/v1/users/schedules")
+    public ResponseEntity<UserSchedulesResponse> readUserSchedules(@AuthenticationPrincipal UserInfo userInfo, 
+                                                                    @RequestParam String date,
+                                                                    Pageable pageable){
+        
+        User loginUser = userInfo.getUser();
+        
+        LocalDateTime dateTime = parseDateString(date);
+        
+        Page<UserSchedule> page = userService.findSchedules(loginUser, dateTime, pageable);
+        
+        List<Schedule> schedules = page.getContent()
+                                        .stream()
+                                        .map(us -> us.getSchedule())
+                                        .collect(toList());
+        
+        UserSchedulesResponse response = UserSchedulesResponse.of(loginUser, page.getTotalPages(), page.getNumber(), schedules);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    private LocalDateTime parseDateString(String dateStr){
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            return LocalDate.parse(dateStr, formatter).atStartOfDay();
+        }
+        catch (DateTimeParseException e){
+            throw new DateFormatException();
+        }
     }
     
     // @PutMapping("/users/{userId}")

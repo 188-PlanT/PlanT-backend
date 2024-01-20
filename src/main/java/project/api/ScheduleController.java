@@ -39,7 +39,7 @@ public class ScheduleController {
     // }
     
     @PostMapping("/schedules")
-    public ResponseEntity<Long> registerUser(@RequestBody CreateScheduleRequest request){
+    public ResponseEntity<Long> createSchedule(@RequestBody CreateScheduleRequest request){
         
         Long scheduleId = scheduleService.createSchedule(request);
         

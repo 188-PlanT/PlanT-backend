@@ -6,6 +6,7 @@ import project.dto.login.SignUpRequest;
 import project.exception.user.*;
 import project.repository.UserRepository;
 import project.repository.UserWorkspaceRepository;
+import project.repository.UserScheduleRepository;
 import project.common.auth.oauth.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import java.util.regex.Pattern;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class UserService implements UserDetailsService{
     
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
+    private final UserScheduleRepository userScheduleRepository;
     private final PasswordEncoder passwordEncoder;
     
     //회원가입
@@ -96,10 +99,18 @@ public class UserService implements UserDetailsService{
         //lazy loding
         userWorkspaces.getContent().stream().forEach(uw -> uw.getWorkspace().getName());
         
-        // List<Workspace> workspaces = userWorkspaces.getContent().stream()
-        //                                                             .map(uw -> uw.getWorkspace())
-        //                                                             .collect(toList());
         return userWorkspaces;
+    }
+    
+    // 스케줄 조회
+    @Transactional(readOnly = true)
+    public Page<UserSchedule> findSchedules(User user, LocalDateTime date, Pageable pageable){
+        Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(user, date, pageable);
+        
+        //lazy loding
+        userSchedules.getContent().stream().forEach(uw -> uw.getSchedule().getWorkspace().getName());
+
+        return userSchedules;
     }
     
     //유저 정보 수정

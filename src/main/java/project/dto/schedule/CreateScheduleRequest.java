@@ -10,6 +10,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Setter
@@ -23,9 +24,11 @@ public class CreateScheduleRequest{
     private String name;
     
     @NotBlank
+    @JsonFormat(pattern = "yyyyMMdd:HH:mm")
     private LocalDateTime startDate;
     
     @NotBlank
+    @JsonFormat(pattern = "yyyyMMdd:HH:mm")
     private LocalDateTime endDate;
     
     @NotBlank

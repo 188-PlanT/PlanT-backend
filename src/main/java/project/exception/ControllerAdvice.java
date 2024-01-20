@@ -12,6 +12,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import project.exception.user.*;
 import project.exception.auth.*;
+import project.exception.schedule.*;
 import project.exception.auth.UnIdentifiedUserException;
 import project.dto.ErrorResponse;
 import project.dto.ErrorCode;
@@ -49,6 +50,17 @@ public class ControllerAdvice{
     @ExceptionHandler(InvalidPasswordException.class) // 비밀번호 검증 실패 예외
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(InvalidPasswordException e){
         log.info("InvalidPasswordException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(response);
+    }
+    
+    @ExceptionHandler(DateFormatException.class) // 비밀번호 검증 실패 예외
+    public ResponseEntity<ErrorResponse> ValidateErrorHandler(DateFormatException e){
+        log.info("DateFormatException");
         
         ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
         
