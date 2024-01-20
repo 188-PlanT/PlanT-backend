@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,30 +41,10 @@ public class UserController{
 
         return ResponseEntity.ok(new EmailCheckResponse(true));
     }
-    
-    // <==유저 추가==>
-    @PostMapping("/v1/users")
-    public ResponseEntity<CreateUserResponse> registerUser(@Valid @RequestBody CreateUserRequest request){
-        
-        User user = userService.register(request);
-        
-        CreateUserResponse response = new CreateUserResponse(user.getId(), user.getEmail());
 
-        return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(response);    
-    }
-
-    // <==유저 이메일 인증==>
-    @PostMapping("/v1/users/nickname")
-    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@AuthenticationPrincipal UserInfo userInfo, 
-                                                                     @RequestBody NickNameCheckRequest request){
-        
-        User loginUser = userInfo.getUser();
-        
-        if (loginUser.checkFinishSignUp()){
-            throw new InvalidAuthorityException("이미 로그인이 완료된 유저입니다");
-        }
+    // <==유저 닉네임 인증==>
+    @PostMapping("/v1/users/nickname") //응답 결과 양식은 이메일과 같으므로 공유함
+    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@RequestBody NickNameCheckRequest request){
         
         try{
             userService.validateUserNickName(request.getNickName());
@@ -76,16 +55,12 @@ public class UserController{
         }
     }
     
+    // <== 유저 닉네임 추가 ==>
     @PutMapping("/v1/users/nickname")
     public ResponseEntity<UserDto> setNickNameUser(@AuthenticationPrincipal UserInfo userInfo, 
                                                  @RequestBody FinishUserRegisterRequest request){
         
-        //여기 함수로 분리?
         User loginUser = userInfo.getUser();
-        
-        if (loginUser.checkFinishSignUp()){
-            throw new InvalidAuthorityException("이미 로그인이 완료된 유저입니다");
-        }
         
         User user = userService.finishRegister(loginUser.getId(), request.getNickName());
         
@@ -93,21 +68,28 @@ public class UserController{
         return ResponseEntity.ok(UserDto.from(user));
     }
     
-    // //개발용 기능 , 유저 목록 확인
-    // @GetMapping("/users")
-    // public ResponseEntity<FindAllUserResponse> findAllUsers(Pageable pageable){
+    
+    // <== 유저 정보 확인 ==>
+    @GetMapping("/v1/users")
+    public ResponseEntity<UserDto> findAllUsers(@AuthenticationPrincipal UserInfo userInfo){
         
-    //     Page<User> page = userService.findAllUsers(pageable);
+        User loginUser = userInfo.getUser();
         
-    //     List<UserDto> responseData = page.getContent()
-    //         .stream()
-    //         .map(UserDto::new)
-    //         .collect(toList());
+        return ResponseEntity.ok(UserDto.from(loginUser));
+    }
+    
+    
+    // <== 유저 정보 수정 ==>
+    @PutMapping("/v1/users")
+    public ResponseEntity<UserDto> updateUser(@AuthenticationPrincipal UserInfo userInfo,
+                                                            @RequestBody UpdateUserRequest request){
         
-    //     FindAllUserResponse response = new FindAllUserResponse(page.getTotalPages(), page.getNumber(), responseData);
+        User loginUser = userInfo.getUser();
         
-    //     return ResponseEntity.ok(response);
-    // }
+        User updateUser = userService.updateUser(loginUser.getId(), request.getNickName(), request.getPassword(), request.getProfile());
+        
+        return ResponseEntity.ok(UserDto.from(updateUser));
+    }
     
     //유저 상세 정보 확인
     // @GetMapping("/users/{userId}")

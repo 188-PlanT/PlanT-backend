@@ -58,7 +58,7 @@ public class ControllerAdvice{
     }
     
     // <==401==>
-    @ExceptionHandler(UnIdentifiedUserException.class) // 비밀번호 검증 실패 예외
+    @ExceptionHandler(UnIdentifiedUserException.class) // 토큰 인증 예외
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(UnIdentifiedUserException e){
         log.info("UnIdentifiedUserException");
         
@@ -71,7 +71,7 @@ public class ControllerAdvice{
     
     
     // <== 403 ==>
-    @ExceptionHandler(InvalidAuthorityException.class) // 비밀번호 검증 실패 예외
+    @ExceptionHandler(InvalidAuthorityException.class) // 유저 권한 없음 예외
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(InvalidAuthorityException e){
         log.info("InvalidAuthorityException");
         
@@ -127,16 +127,6 @@ public class ControllerAdvice{
             .status(HttpStatus.NOT_FOUND)
             .body(response);
     }
-    
-    // @ExceptionHandler(UnIdentifiedUserException.class)
-    // public ResponseEntity<ErrorResponse> UnAuthUserHandler(UnIdentifiedUserException e){
-        
-    //     ErrorResponse response = new ErrorResponse("401", e.getMessage());
-        
-    //     return ResponseEntity
-    //         .status(HttpStatus.UNAUTHORIZED)
-    //         .body(response);
-    // }
 
     @ExceptionHandler(RuntimeException.class) // 500 ERROR
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(RuntimeException e){

@@ -12,12 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.http.MediaType;
 
 @Slf4j
-public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
+public class CustomExceptionHandlerFilter extends OncePerRequestFilter { // 필터에터 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러 처리
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -26,12 +25,10 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         try{
-            log.info("ExceptionHandler do filter");
             filterChain.doFilter(request, response);
             
         }
         catch (InvalidTokenException e){
-            log.info("catch ERROR");
             setErrorResponse(response, ErrorCode.NOT_FOUND);
         }
     }

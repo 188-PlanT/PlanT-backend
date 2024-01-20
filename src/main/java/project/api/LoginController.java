@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 
 @Slf4j
@@ -45,6 +46,20 @@ public class LoginController{
         AccessTokenResponse response = new AccessTokenResponse(accessToken);
         
         return ResponseEntity.ok(response);
+    }
+    
+    
+    // <==유저 추가==>
+    @PostMapping("/v1/sign-up")
+    public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request){
+        
+        User user = userService.register(request);
+        
+        SignUpResponse response = new SignUpResponse(user.getId(), user.getEmail());
+
+        return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);    
     }
     
     @GetMapping("/noToken")

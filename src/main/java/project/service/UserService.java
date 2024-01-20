@@ -2,6 +2,7 @@ package project.service;
 
 import project.domain.*;
 import project.dto.user.*;
+import project.dto.login.SignUpRequest;
 import project.exception.user.*;
 import project.repository.UserRepository;
 import project.common.auth.oauth.UserInfo;
@@ -35,7 +36,7 @@ public class UserService implements UserDetailsService{
     
     //회원가입
     @Transactional
-    public User register(CreateUserRequest request){
+    public User register(SignUpRequest request){
         validateUserEmail(request.getEmail());
         
         validateUserPassword(request.getPassword());
@@ -93,13 +94,15 @@ public class UserService implements UserDetailsService{
     
     //유저 정보 수정
     @Transactional
-    public User updateUser(Long id, String nickName, String password, String name, String profile){
+    public User updateUser(Long id, String nickName, String password, String profile){
         User user = userRepository.findById(id)
             .orElseThrow(NoSuchUserException::new);
         
         if(!user.getNickName().equals(nickName)){
             validateUserNickName(nickName);
         }
+        
+        validateUserPassword(password);
         
         user.update(nickName, password, profile, passwordEncoder);
 
@@ -131,7 +134,6 @@ public class UserService implements UserDetailsService{
     
     private void validateUserPassword(String password){
         
-        int length = password.length();
         if (!Pattern.matches(PASSWORD_PATTERN, password)){
             throw new InvalidPasswordException(); 
         }

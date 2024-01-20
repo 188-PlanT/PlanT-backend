@@ -1,4 +1,4 @@
-package project.dto.user;
+package project.dto.login;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import javax.validation.constraints.Email;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserRequest{
+public class SignUpRequest{
     @Email
     @NotBlank
     private String email;
