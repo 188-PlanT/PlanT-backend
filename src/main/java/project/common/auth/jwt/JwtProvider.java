@@ -5,7 +5,7 @@ import project.service.RedisService;
 import project.common.auth.oauth.UserInfo;
 import project.repository.UserRepository;
 import project.exception.user.*;
-import project.exception.security.InvalidTokenException;
+import project.exception.auth.InvalidTokenException;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -150,16 +150,16 @@ public class JwtProvider {
                 .getBody();
         } 
         catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            log.info("Invalid JWT Token");
         } 
         catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            log.info("Expired JWT Token");
         } 
         catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            log.info("Unsupported JWT Token");
         } 
         catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            log.info("JWT claims string is empty.");
         }
         
         throw new InvalidTokenException("올바르지 않은 토큰입니다");

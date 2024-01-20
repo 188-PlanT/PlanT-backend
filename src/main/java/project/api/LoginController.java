@@ -4,6 +4,7 @@ import project.domain.*;
 import project.dto.login.*;
 import project.service.UserService;
 import project.common.auth.jwt.JwtProvider;
+import project.exception.auth.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,5 +45,10 @@ public class LoginController{
         AccessTokenResponse response = new AccessTokenResponse(accessToken);
         
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/noToken")
+    public ResponseEntity<String> noTokenError(){
+        throw new UnIdentifiedUserException("로그인이 필요한 요청입니다");    
     }
 }

@@ -1,15 +1,18 @@
 package project.common.auth.jwt;
 
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import project.exception.auth.*;
+
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -36,11 +39,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
             chain.doFilter(request, response);
             return;
         }
-            
+        
+        log.info("Authentication logic");
         Authentication authentication = jwtProvider.getAuthentication(accessToken);
         
         SecurityContextHolder.getContext().setAuthentication(authentication); 
         
+        log.info("Authentication do filter");
         chain.doFilter(request, response);
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 
 import project.exception.user.*;
-import project.exception.security.*;
+import project.exception.auth.*;
 import project.exception.auth.UnIdentifiedUserException;
 import project.dto.ErrorResponse;
 import project.dto.ErrorCode;
@@ -56,6 +56,19 @@ public class ControllerAdvice{
             .status(HttpStatus.BAD_REQUEST)
             .body(response);
     }
+    
+    // <==401==>
+    @ExceptionHandler(UnIdentifiedUserException.class) // 비밀번호 검증 실패 예외
+    public ResponseEntity<ErrorResponse> ValidateErrorHandler(UnIdentifiedUserException e){
+        log.info("UnIdentifiedUserException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.UNAUTHORIZED, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(response);
+    }
+    
     
     // <== 403 ==>
     @ExceptionHandler(InvalidAuthorityException.class) // 비밀번호 검증 실패 예외
