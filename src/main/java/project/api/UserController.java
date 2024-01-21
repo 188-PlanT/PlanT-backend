@@ -149,21 +149,13 @@ public class UserController{
         }
     }
     
-    // @PutMapping("/users/{userId}")
-    // public ResponseEntity<FindSingleUserResponse> updateUser(@PathVariable("userId") Long userId,
-    //                                                         @RequestBody UpdateUserRequest request){
+    // <== 유저 검색 ==>
+    @GetMapping("/v1/users/search")
+    public ResponseEntity<UserDto> searchUser(@RequestParam(required = false) String email,
+                                             @RequestParam(required = false) String nickName){
         
-    //     User updateUser = userService.updateUser(userId, request.getPassword(), request.getName());
+        User loginUser = userService.searchUser(email, nickName);
         
-    //     FindSingleUserResponse response = new FindSingleUserResponse(updateUser);
-        
-    //     return ResponseEntity.ok(response);
-    // }
-    
-    // @DeleteMapping("/users/{userId}")
-    // public ResponseEntity<DeleteUserResponse> deleteUser(@PathVariable("userId") Long userId){
-    //     userService.deleteUser(userId);
-        
-    //     return ResponseEntity.ok(new DeleteUserResponse());
-    // }
+        return ResponseEntity.ok(UserDto.from(loginUser));
+    }
 }

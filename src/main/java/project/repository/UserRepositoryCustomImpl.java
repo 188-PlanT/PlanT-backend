@@ -1,15 +1,15 @@
 package project.repository;
 
-import java.util.List;
 import project.domain.*;
+
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+
 import com.querydsl.core.types.dsl.BooleanExpression;
 import static project.domain.QUser.user;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
 public class UserRepositoryCustomImpl implements UserRepositoryCustom{
@@ -17,20 +17,13 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
     private final JPAQueryFactory qf;
     
     @Override
-    public Page<User> searchUsers(Pageable pageable, String email){
+    public Optional<User> searchUser(String email, String nickName){
         
-        List<User> content =  qf.selectFrom(user)
-            .where(emailEq(email))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();  
+        User findUser = qf.selectFrom(user)
+                        .where(emailEq(email), nickNameEq(nickName))
+                        .fetchFirst();
         
-        Long count = qf.select(user.count())
-            .from(user)
-            .where(emailEq(email))
-            .fetchOne();
-        
-        return new PageImpl<>(content, pageable, count);
+        return Optional.ofNullable(findUser);
     }
     
     // < == eq method == >
@@ -41,10 +34,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
         return user.email.eq(email);
     }
     
-    // private BooleanExpression nameEq(String name){
-    //     if (name == null){
-    //         return null;
-    //     }
-    //     return user.name.eq(name);
-    // }
+    private BooleanExpression nickNameEq(String nickName){
+        if (nickName == null){
+            return null;
+        }
+        return user.nickName.eq(nickName);
+    }
 }

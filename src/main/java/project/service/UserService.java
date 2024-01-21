@@ -83,7 +83,7 @@ public class UserService implements UserDetailsService{
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
-        if (findUser.checkPassword(password, passwordEncoder)){ //이부분도 고쳐보는게 좋을듯 -> User에서 Exception 날리기
+        if (findUser.checkPassword(password, passwordEncoder)){
             return findUser;
         }
         else{
@@ -130,7 +130,7 @@ public class UserService implements UserDetailsService{
         return user;
     }
     
-    //유저 삭제
+    // 유저 삭제
     @Transactional
     public void deleteUser(Long id){
         User user = userRepository.findById(id)
@@ -138,6 +138,19 @@ public class UserService implements UserDetailsService{
         
         userRepository.delete(user);
     }
+    
+    // 유저 검색
+    @Transactional(readOnly = true)
+    public User searchUser(String email, String nickName){
+        
+        if (email == null && nickName == null){
+            throw new NoSuchUserException();
+        }
+        
+        return userRepository.searchUser(email, nickName)
+            .orElseThrow(NoSuchUserException::new);
+    }
+    
     
     // < == validate logic ==> //
     public void validateUserEmail(String email){
@@ -159,6 +172,7 @@ public class UserService implements UserDetailsService{
             throw new InvalidPasswordException(); 
         }
     }
+    
     
     //<== security 설정 ==> //
     @Transactional(readOnly = true)

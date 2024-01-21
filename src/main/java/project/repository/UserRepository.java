@@ -12,14 +12,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom{
     
-    
     public boolean existsByEmail(String email);
     
     public Optional<User> findByEmail(String email);
     
     public Optional<User> findByNickName(String nickName);
-    
-    // public Page<User> findAll(Pageable pageable);
     
     public boolean existsByNickName(String nickName);
     
