@@ -2,6 +2,7 @@ package project.api;
 
 import project.domain.*;
 import project.dto.workspace.*;
+import project.common.auth.oauth.UserInfo;
 import project.service.WorkspaceService;
 
 import java.util.List;
@@ -15,12 +16,42 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RequiredArgsConstructor
 @RestController
 public class WorkspaceController{
     
     private final WorkspaceService workspaceService;
+    
+    // <== 워크스페이스 생성 ==>
+    @PostMapping("/v1/workspaces")
+    public ResponseEntity<WorkspaceDto> createWorkspace(@AuthenticationPrincipal UserInfo userInfo,
+                                                        @RequestBody CreateWorkspaceRequest request){
+        
+        User loginUser = userInfo.getUser();
+        
+        Workspace workspace = workspaceService.makeWorkspace(request, loginUser.getId());
+        
+        WorkspaceDto response = WorkspaceDto.from(workspace);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    // <== 워크스페이스 수정 ==>
+    @PutMapping("/v1/workspaces/{workspaceId}")
+    public ResponseEntity<WorkspaceDto> findAllWorkspaces(@PathVariable Long workspaceId,
+                                                        @AuthenticationPrincipal UserInfo userInfo,
+                                                        @RequestBody UpdateWorkspaceRequest request){
+        
+        User loginUser = userInfo.getUser();
+        
+        Workspace workspace = workspaceService.updateWorkspace(workspaceId, loginUser.getId(), request);
+        
+        WorkspaceDto response = WorkspaceDto.from(workspace);
+        
+        return ResponseEntity.ok(response);
+    }
     
     // @GetMapping("/workspaces")
     // public ResponseEntity<FindAllWorkspacesResponse> findAllWorkspaces(Pageable pageable){
@@ -40,30 +71,10 @@ public class WorkspaceController{
     //     return ResponseEntity.ok(response);
     // }
     
-    // @PostMapping("/workspaces")
-    // public ResponseEntity<Long> createWorkspace(@RequestBody CreateWorkspaceRequest request){
-        
-    //     Long workspaceId = workspaceService.makeWorkspace(request);
-        
-    //     return ResponseEntity.ok(workspaceId);
-    // }
-    
     // @GetMapping("/workspaces/{workspaceId}")
     // public ResponseEntity<FindSingleWorkspaceResponse> findOneWorkspace(@PathVariable Long workspaceId){
         
     //     Workspace findWorkspace = workspaceService.findOne(workspaceId);
-        
-    //     FindSingleWorkspaceResponse response = new FindSingleWorkspaceResponse(findWorkspace);
-        
-    //     return ResponseEntity.ok(response);
-    // }
-    
-    // //수정됨
-    // @PutMapping("/workspaces/{workspaceId}")
-    // public ResponseEntity<FindSingleWorkspaceResponse> findAllWorkspaces(@PathVariable Long workspaceId,
-    //                                                      @RequestBody CreateWorkspaceRequest request){
-        
-    //     Workspace findWorkspace = workspaceService.updateWorkspace(workspaceId, request);
         
     //     FindSingleWorkspaceResponse response = new FindSingleWorkspaceResponse(findWorkspace);
         

@@ -1,6 +1,7 @@
 package project.service;
 
 import project.domain.*;
+import project.common.auth.oauth.UserInfo;
 import project.dto.workspace.*;
 import project.repository.WorkspaceRepository;
 import project.repository.UserRepository;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WorkspaceService{
@@ -26,21 +29,26 @@ public class WorkspaceService{
     private final WorkspaceRepository workspaceRepository;
     private final UserRepository userRepository;
         
-    // 성능 개선 필요
     @Transactional
-    public Long makeWorkspace(CreateWorkspaceRequest request, User createUser){
+    public Workspace makeWorkspace(CreateWorkspaceRequest request, Long createUserId){
+                
+        User createUser = userRepository.findById(createUserId)
+            .orElseThrow(NoSuchUserException::new);
         
-        //중복 이름 검증
-        validateWorkspaceName(request.getName());
+        List<User> userList = userRepository.findByIdIn(request.getUsers());
         
+        validateUserList(request.getUsers(), userList);
+
         Workspace workspace = Workspace.builder()
                                         .name(request.getName())
                                         .profile(request.getProfile())
                                         .user(createUser)
                                         .build();
         
+        workspace.addUserByList(userList);        
         workspaceRepository.save(workspace);
-        return workspace.getId();
+        
+        return workspace;
     }
     
     @Transactional
@@ -61,14 +69,15 @@ public class WorkspaceService{
     }
 
     @Transactional
-    public Workspace updateWorkspace(Long id, CreateWorkspaceRequest request){
+    public Workspace updateWorkspace(Long id, Long userId, UpdateWorkspaceRequest request){
+        
+        User loginUser = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
         Workspace workspace = workspaceRepository.findById(id)
             .orElseThrow(NoSuchWorkspaceException::new);
         
-        //중복 이름 검증
-        if (!request.getName().equals(workspace.getName())){
-            validateWorkspaceName(request.getName());
-        }
+        workspace.checkAdmin(loginUser);
         
         workspace.updateWorkspace(request.getName(), request.getProfile());
         return workspace;
@@ -109,9 +118,15 @@ public class WorkspaceService{
     }
     
     
-    private void validateWorkspaceName(String name){
-        if (workspaceRepository.existsByName(name)){
-            throw new IllegalStateException("이미 존재하는 Workspace 입니다");
+    // private void validateWorkspaceName(String name){
+    //     if (workspaceRepository.existsByName(name)){
+    //         throw new IllegalStateException("이미 존재하는 Workspace 입니다");
+    //     }
+    // }
+    
+    private void validateUserList(List<Long> userIds, List<User> userList){
+        if (userIds.size() != userList.size()){
+            throw new NoSuchUserException();
         }
     }
     

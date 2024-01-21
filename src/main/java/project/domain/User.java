@@ -10,7 +10,6 @@ import static java.util.stream.Collectors.toList;
 import org.springframework.util.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 @Entity
 @Table(name = "users")
 @Getter

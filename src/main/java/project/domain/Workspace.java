@@ -1,6 +1,6 @@
 package project.domain;
 
-import project.exception.user.NoSuchUserException;
+import project.exception.user.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 import static java.util.stream.Collectors.toList;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 // import lombok.Builder;
 
+@Slf4j
 @Entity
 @Table(name = "workspaces")
 @Getter 
@@ -21,7 +23,7 @@ public class Workspace extends BaseEntity{
     @Column(name = "workspace_id")
     private Long id;
     
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
     
     @Column(nullable = false)
@@ -47,10 +49,11 @@ public class Workspace extends BaseEntity{
     }
     
     // <== 비즈니스 로직 == > //
+    //유저 추가
     public void addUser(User user){
         
         if (this.hasUser(user)){
-            throw new IllegalStateException("이미 존재하는 user 입니다");
+            throw new UserAlreadyExistException();
         }
         
         UserWorkspace userWorkspace = UserWorkspace.builder()
@@ -62,24 +65,46 @@ public class Workspace extends BaseEntity{
         this.userWorkspaces.add(userWorkspace);
     }
     
+    //유저 목록 추가
+    public void addUserByList(List<User> userList){
+        for (User user : userList){
+            this.addUser(user);
+        }
+    }
+    
+    // 유저 삭제
     public void removeUser(User user){
         if (!this.hasUser(user)){
-            throw new IllegalStateException("존재하지 않는 user 입니다");
+            throw new NoSuchUserException();
         }
         
         this.userWorkspaces.removeIf(uw -> uw.getUser().equals(user));
     }
     
+    public void checkAdmin(User user){
+        if (!this.hasUser(user)){
+            throw new NoSuchUserException();
+        }
+        
+        for (UserWorkspace uw : this.userWorkspaces){
+            if (uw.getUser().equals(user) && uw.getUserRole().equals(UserRole.ADMIN)){
+                return;
+            }
+        }
+        
+        throw new InvalidAuthorityException();
+    }
+    
+    // 유저 권한 변경
     public void giveAuthority(User user, UserRole userRole){
         if (!this.hasUser(user)){
-            throw new IllegalStateException("존재하지 않는 user 입니다");
+            throw new NoSuchUserException();
         }
         
         this.userWorkspaces.stream()
                             .filter(uw -> uw.getUser().equals(user))
                             .forEach(uw -> uw.setUserRole(userRole));
     }
-
     
     // 수정 로직
     public void updateWorkspace(String name, String profile){
@@ -87,19 +112,19 @@ public class Workspace extends BaseEntity{
         this.profile = profile;
     }
     
+    
+    // 유저 검증
     public boolean hasUser(User user){
         return (this.userWorkspaces.stream()
                                     .filter(uw -> uw.getUser().equals(user))
                                     .count() == 1);
-        // return this.userWorkspaces.contains(user);
     }
     
-    
+    // <=== Builder 구현 ===>
     public static Builder builder(){
         return new Builder();
     }
     
-    // <=== Builder 구현 ===>
     public static class Builder{
         private String name;
         private String profile = Workspace.DEFAULT_PROFILE_URL;
