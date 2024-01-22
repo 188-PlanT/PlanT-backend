@@ -3,22 +3,13 @@ package project.exception.workspace;
 import org.springframework.http.HttpStatus;
 
 public class NoSuchWorkspaceException extends RuntimeException {
-    private HttpStatus status;
+    private static final String DEFAULT_MESSAGE = "존재하지 않는 워크스페이스입니다";
     
     public NoSuchWorkspaceException() {
-        super();
+        super(DEFAULT_MESSAGE);
     }
     
     public NoSuchWorkspaceException(String message){
         super(message);
-    }
-    
-    public NoSuchWorkspaceException(String message, HttpStatus status){
-        super(message);
-        this.status = status;
-    }
-    
-    public NoSuchWorkspaceException(HttpStatus status){
-        this.status = status;
     }
 }  

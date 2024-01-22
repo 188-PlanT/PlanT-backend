@@ -53,7 +53,78 @@ public class WorkspaceController{
         return ResponseEntity.ok(response);
     }
     
-    // @GetMapping("/workspaces")
+    // <== 워크스페이스 삭제 ==>
+    @DeleteMapping("/v1/workspaces/{workspaceId}")
+    public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId,
+                                                                    @AuthenticationPrincipal UserInfo userInfo){
+        
+        User loginUser = userInfo.getUser();
+        
+        workspaceService.removeWorkspace(workspaceId, loginUser.getId());
+        
+        return ResponseEntity.ok(new DeleteWorkspaceResponse());
+    }
+    
+    // <== 워크스페이스 유저 조회 ==>
+    @GetMapping("/v1/workspaces/{workspaceId}/users")
+    public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId,
+                                                               @AuthenticationPrincipal UserInfo userInfo){
+        
+        User loginUser = userInfo.getUser();                                                        
+        
+        Workspace workspace = workspaceService.findOne(workspaceId, loginUser.getId());
+        
+        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/v1/workspaces/{workspaceId}/users")
+    public ResponseEntity<FindWorkspaceUsersResponse> addUser(@PathVariable Long workspaceId,
+                                        @AuthenticationPrincipal UserInfo userInfo,
+                                        @RequestBody AddUserRequest request){
+        
+        User loginUser = userInfo.getUser(); 
+        
+        Workspace workspace = workspaceService.addUser(workspaceId, loginUser.getId(), request.getUserId());
+        
+        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @PutMapping("/v1/workspaces/{workspaceId}/users")
+    public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
+                                        @AuthenticationPrincipal UserInfo userInfo,
+                                        @RequestBody UpdateUserRequest request){
+        
+        User loginUser = userInfo.getUser(); 
+        
+        Workspace workspace = workspaceService.changeUserAuthority(workspaceId, 
+                                                                   loginUser.getId(), 
+                                                                   request.getUserId(), 
+                                                                   request.getAuthority());
+        
+        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @DeleteMapping("/v1/workspaces/{workspaceId}/users")
+    public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
+                                                        @AuthenticationPrincipal UserInfo userInfo,
+                                                         @RequestBody AddUserRequest request){
+        
+        User loginUser = userInfo.getUser(); 
+        
+        workspaceService.removeUser(workspaceId, loginUser.getId(), request.getUserId());
+        
+        RemoveUserResponse response = new RemoveUserResponse();
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    // @GetMapping("/v1/workspaces")
     // public ResponseEntity<FindAllWorkspacesResponse> findAllWorkspaces(Pageable pageable){
         
     //     Page<Workspace> page = workspaceService.findAll(pageable);
@@ -81,35 +152,6 @@ public class WorkspaceController{
     //     return ResponseEntity.ok(response);
     // }
     
-    // @DeleteMapping("/workspaces/{workspaceId}")
-    // public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId){
-        
-    //     workspaceService.removeWorkspace(workspaceId);
-        
-    //     return ResponseEntity.ok(new DeleteWorkspaceResponse());
-    // }
-    
-    // @GetMapping("/workspaces/{workspaceId}/users")
-    // public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId){
-        
-    //     Workspace workspace = workspaceService.findOne(workspaceId);
-        
-    //     FindWorkspaceUsersResponse response = new FindWorkspaceUsersResponse(workspace);
-        
-    //     return ResponseEntity.ok(response);
-    // }
-    
-    // @PostMapping("/workspaces/{workspaceId}/users")
-    // public ResponseEntity<Long> addUser(@PathVariable Long workspaceId,
-    //                                     @RequestBody AddUserRequest request){
-        
-    //     Workspace workspace = workspaceService.addUser(workspaceId, request.getEmail());
-        
-    //     Long responseId = workspace.getId();
-        
-    //     return ResponseEntity.ok(responseId);
-    // }
-    
     // @DeleteMapping("/workspaces/{workspaceId}/users/{userId}")
     // public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
     //                                                     @PathVariable Long userId){
@@ -121,8 +163,14 @@ public class WorkspaceController{
     //     return ResponseEntity.ok(response);
     // }
     
-    // @Getter
-    // static class AddUserRequest{
-    //     private Long userId;
-    // }
+    @Getter
+    static class AddUserRequest{
+        private Long userId;
+    }
+    
+    @Getter
+    static class UpdateUserRequest{
+        private Long userId;
+        private UserRole authority;
+    }
 }

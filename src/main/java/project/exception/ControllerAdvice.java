@@ -13,6 +13,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import project.exception.user.*;
 import project.exception.auth.*;
 import project.exception.schedule.*;
+import project.exception.workspace.*;
 import project.exception.auth.UnIdentifiedUserException;
 import project.dto.ErrorResponse;
 import project.dto.ErrorCode;
@@ -99,6 +100,17 @@ public class ControllerAdvice{
     @ExceptionHandler(NoSuchUserException.class)
     public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchUserException e){
         log.info("NoSuchUserException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+    
+    @ExceptionHandler(NoSuchWorkspaceException.class)
+    public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchWorkspaceException e){
+        log.info("NoSuchWorkspaceException");
         
         ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
         

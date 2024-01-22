@@ -52,16 +52,38 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public void removeWorkspace(Long id){
-        Workspace findWorkspace = workspaceRepository.findById(id)
+    public void removeWorkspace(Long workspaceId, Long userId){
+        User loginUser = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Workspace findWorkspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
+        
+        findWorkspace.checkAdmin(loginUser);
         
         workspaceRepository.delete(findWorkspace);
     }
     
-    public Workspace findOne(Long id){
-        return workspaceRepository.findById(id)
+    @Transactional(readOnly = true)
+    public Workspace findOne(Long workspaceId, Long userId){
+        User loginUser = userRepository.findById(userId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Workspace findWorkspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
+        
+        findWorkspace.checkUser(loginUser);
+        
+        // Lazy Loding
+        findWorkspace.getUserWorkspaces().stream()
+            .forEach(uw -> {
+                // User u = uw.getUser();
+                // Long id = u.getId();
+                log.info("user = {}", uw.getUser());
+                log.info("userId = {}", uw.getUser().getId());
+            });
+        
+        return findWorkspace;
     }
     
     public Page<Workspace> findAll(Pageable pageable){
@@ -84,21 +106,38 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public Workspace addUser(Long workspaceId, Long userId){
+    public Workspace addUser(Long workspaceId, Long loginUserId, Long userId){
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
         Workspace workspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
+        
+        workspace.checkUser(loginUser);
         
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
         workspace.addUser(user);
+        // Lazy Loding
+        workspace.getUserWorkspaces().stream()
+            .forEach(uw -> {
+                log.info("user = {}", uw.getUser());
+                log.info("userId = {}", uw.getUser().getId());
+            });
+        
         return workspace;
     }
     
     @Transactional
-    public void removeUser(Long workspaceId, Long userId){
+    public void removeUser(Long workspaceId, Long loginUserId, Long userId){
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
         Workspace workspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
+        
+        workspace.checkAdmin(loginUser);
         
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
@@ -107,14 +146,31 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public void changeUserAuthority(Long workspaceId, Long userId, UserRole authority){
+    public Workspace changeUserAuthority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
         Workspace workspace = workspaceRepository.findById(workspaceId)
             .orElseThrow(NoSuchWorkspaceException::new);
         
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
+        //스스로 관리자 권한 부여 가능 -> 로직 수정 필요
+        if(loginUser != user){
+            workspace.checkAdmin(loginUser);
+        }        
+        
         workspace.giveAuthority(user, authority);
+        
+        // Lazy Loding
+        workspace.getUserWorkspaces().stream()
+            .forEach(uw -> {
+                log.info("user = {}", uw.getUser());
+                log.info("userId = {}", uw.getUser().getId());
+            });
+        
+        return workspace;
     }
     
     

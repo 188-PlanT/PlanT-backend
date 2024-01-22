@@ -1,41 +1,53 @@
 package project.dto.workspace;
 
 import lombok.Getter;
-import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.ArrayList;
 import project.domain.*;
 import static java.util.stream.Collectors.toList;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class FindWorkspaceUsersResponse{
-    private Long id;
-    private String name;
+    private Long workspaceId;
+    private String workspaceName;
+    private String profile;    
     
-    // private List<SimpleUserDto> users = new ArrayList<> ();
+    private List<SimpleUserDto> users = new ArrayList<> ();
         
-    // public FindWorkspaceUsersResponse(Workspace workspace){
-    //     this.id = workspace.getId();
-    //     this.name = workspace.getName();
+    public static FindWorkspaceUsersResponse from(Workspace workspace){
+        FindWorkspaceUsersResponse dto = new FindWorkspaceUsersResponse();
         
-    //     users.addAll(
-    //         workspace.getUserWorkspaces().stream()
-    //             .map(userWorkspace -> new SimpleUserDto(userWorkspace.getUser()))
-    //             .collect(toList())
-    //     );
-    // }
+        dto.setWorkspaceId(workspace.getId());
+        dto.setWorkspaceName(workspace.getName());
+        dto.setProfile(workspace.getProfile());
+        
+        dto.setUsers(
+            workspace.getUserWorkspaces().stream()
+                .map(SimpleUserDto::new)
+                .collect(toList())
+        );
+        
+        return dto;
+    }
     
-    // @Getter
-    //  static class SimpleUserDto{
-    //      private Long userId;
-    //      private String userEmail;
-    //      private String userName;
+    @Getter
+     static class SimpleUserDto{
+         private Long userId;
+         private String nickName;
+         private String email;
+         private UserRole authority;
          
-    //      public SimpleUserDto(User user){
-    //          this.userId = user.getId();
-    //          this.userEmail = user.getEmail();
-    //          this.userName = user.getName();
-    //      }
-    //  }   
+         public SimpleUserDto(UserWorkspace userWorkspace){
+             User user = userWorkspace.getUser();
+             
+             this.userId = user.getId();
+             this.nickName = user.getNickName();
+             this.email = user.getEmail();
+             this.authority = userWorkspace.getUserRole();
+         }
+     }   
 }

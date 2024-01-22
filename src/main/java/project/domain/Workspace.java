@@ -95,6 +95,22 @@ public class Workspace extends BaseEntity{
         throw new InvalidAuthorityException();
     }
     
+    public void checkUser(User user){
+        if (!this.hasUser(user)){
+            throw new NoSuchUserException();
+        }
+        
+        //여기 로직 수정 필요함
+        for (UserWorkspace uw : this.userWorkspaces){
+            if (uw.getUser().equals(user)){
+                if (uw.getUserRole().equals(UserRole.ADMIN) || uw.getUserRole().equals(UserRole.USER)){
+                    return;
+                }
+            }
+        }
+        throw new InvalidAuthorityException();
+    }
+    
     // 유저 권한 변경
     public void giveAuthority(User user, UserRole userRole){
         if (!this.hasUser(user)){
