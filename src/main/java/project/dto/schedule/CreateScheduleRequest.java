@@ -8,20 +8,21 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import java.util.List;
 import java.time.LocalDateTime;
-
 import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class CreateScheduleRequest{
     @NotBlank
-    private String workspace;
+    private Long workspaceId;
     
     @NotBlank
     private String name;
+    
+    @NotBlank
+    private List<Long> users;
     
     @NotBlank
     @JsonFormat(pattern = "yyyyMMdd:HH:mm")
@@ -35,6 +36,4 @@ public class CreateScheduleRequest{
     private Progress state;
     
     private String content;
-    
-    private List<String> users;
 }

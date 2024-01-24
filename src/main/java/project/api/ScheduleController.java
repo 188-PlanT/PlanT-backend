@@ -38,42 +38,68 @@ public class ScheduleController {
     //     return ResponseEntity.ok(response);
     // }
     
-    @PostMapping("/schedules")
-    public ResponseEntity<Long> createSchedule(@RequestBody CreateScheduleRequest request){
+    @PostMapping("/v1/schedules")
+    public ResponseEntity<ScheduleDto> createSchedule(@RequestBody CreateScheduleRequest request){
         
-        Long scheduleId = scheduleService.createSchedule(request);
+        Schedule schedule = scheduleService.createSchedule(request);
         
-        return ResponseEntity.ok(scheduleId);
-    }
-    
-    @GetMapping("/schedules/{scheduleId}") 
-    public ResponseEntity<FindSingleScheduleResponse> findSingleSchedule(@PathVariable Long scheduleId){
-            
-        Schedule schedule = scheduleService.findOne(scheduleId);
-        
-        FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
+        ScheduleDto response = ScheduleDto.from(schedule);
         
         return ResponseEntity.ok(response);
     }
     
-    // @PutMapping("/schedules/{scheduleId}") 
-    // public ResponseEntity<FindSingleScheduleResponse> updateSchedule(@PathVariable Long scheduleId,
-    //                                                 @RequestBody UpdateScheduleRequest request){
+    @GetMapping("/v1/schedules/{scheduleId}") 
+    public ResponseEntity<ScheduleDto> findSingleSchedule(@PathVariable Long scheduleId){
             
-    //     Schedule schedule = scheduleService.updateSchedule(scheduleId, request);
+        Schedule schedule = scheduleService.findOne(scheduleId);
         
-    //     FindSingleScheduleResponse response = new FindSingleScheduleResponse(schedule);
+        ScheduleDto response = ScheduleDto.from(schedule);
         
-    //     return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
+    }
+    
+    @PutMapping("/v1/schedules/{scheduleId}") 
+    public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,
+                                                    @RequestBody UpdateScheduleRequest request){
+            
+        Schedule schedule = scheduleService.updateSchedule(scheduleId, request);
+        
+        ScheduleDto response = ScheduleDto.from(schedule);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @DeleteMapping("/v1/schedules/{scheduleId}")
+    public ResponseEntity<DeleteScheduleResponse> deleteSchedule(@PathVariable Long scheduleId){
+            
+        scheduleService.removeSchedule(scheduleId);
+        
+        return ResponseEntity.ok(new DeleteScheduleResponse());
+    }
+    
+    @PutMapping("/v1/schedules/{scheduleId}/state") 
+    public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,
+                                                    @RequestBody UpdateScheduleStateRequest request){
+            
+        Schedule schedule = scheduleService.moveScheduleState(scheduleId, request.getState());
+        
+        ScheduleDto response = ScheduleDto.from(schedule);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+        // @PostMapping("/schedules/{scheduleId}/users")
+    // public ResponseEntity<Long> addScheduleUsers(
+    //                                                     @PathVariable Long scheduleId,
+    //                                                     @RequestBody AddUserReqeust request){
+            
+    //     Schedule schedule = scheduleService.addUser(scheduleId,request.getEmail());
+        
+    //     Long responseId = schedule.getId();
+        
+    //     return ResponseEntity.ok(responseId);
     // }
     
-    // @DeleteMapping("/schedules/{scheduleId}")
-    // public ResponseEntity<DeleteScheduleResponse> deleteSchedule(@PathVariable Long scheduleId){
-            
-    //     scheduleService.removeSchedule(scheduleId);
-        
-    //     return ResponseEntity.ok(new DeleteScheduleResponse());
-    // }
     
     // @GetMapping("/schedules/{scheduleId}/users")
     // public ResponseEntity<FindScheduleUsersResponse> findScheduleUsers(@PathVariable Long scheduleId){
@@ -109,8 +135,8 @@ public class ScheduleController {
     //     return ResponseEntity.ok(response);
     // }
     
-    // @Getter
-    // static class AddUserReqeust{
-    //     private String email;
-    // }
+    @Getter
+    static class UpdateScheduleStateRequest{
+        private Progress state;
+    }
 }

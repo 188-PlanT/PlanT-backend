@@ -119,6 +119,17 @@ public class ControllerAdvice{
             .body(response);
     }
     
+    @ExceptionHandler(NoSuchScheduleException.class)
+    public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchScheduleException e){
+        log.info("NoSuchScheduleException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+    
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> invalidUserHandler(NoHandlerFoundException e){
         log.info("url 오류");

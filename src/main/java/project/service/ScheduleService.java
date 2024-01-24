@@ -15,6 +15,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleService{
     
     private final ScheduleRepository scheduleRepository;
@@ -32,8 +34,17 @@ public class ScheduleService{
     
     @Transactional(readOnly = true)
     public Schedule findOne(Long id) {
-        return scheduleRepository.findById(id)
+        Schedule schedule = scheduleRepository.findById(id)
             .orElseThrow(NoSuchScheduleException::new);
+        
+        //<== Lazy Loding ==>
+        schedule.getUserSchedules().stream()
+            .forEach(us -> {
+                log.info("user = {}", us.getUser());
+                log.info("userId = {}", us.getUser().getId());
+            });
+        
+        return schedule;
     }
     
     @Transactional(readOnly = true)
@@ -44,12 +55,17 @@ public class ScheduleService{
     
     
     @Transactional
-    public Long createSchedule(CreateScheduleRequest request){
+    public Schedule createSchedule(CreateScheduleRequest request){
     
-        Workspace workspace = workspaceRepository.findByName(request.getWorkspace())
+        Workspace workspace = workspaceRepository.findById(request.getWorkspaceId())
             .orElseThrow(NoSuchWorkspaceException::new);
 
-        List <User> users = userRepository.findUsersByEmailList(request.getUsers());
+        List <User> users = userRepository.findByIdIn(request.getUsers());
+        
+        //validate
+        if(users.size() != request.getUsers().size()){
+            throw new NoSuchUserException();
+        }
         
         Schedule schedule = Schedule.builder()
                                         .workspace(workspace)
@@ -62,7 +78,7 @@ public class ScheduleService{
                                         .build();
             
         scheduleRepository.save(schedule);
-        return schedule.getId();
+        return schedule;
     }
     
     @Transactional
@@ -71,9 +87,15 @@ public class ScheduleService{
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(NoSuchScheduleException::new);
 
-        List <User> users = userRepository.findUsersByEmailList(request.getUsers());
+        List <User> users = userRepository.findByIdIn(request.getUsers());
         
-        schedule.update(request.getName(), request.getStartDate(), request.getEndDate(), request.getContent(), users);
+        //validate
+        if(users.size() != request.getUsers().size()){
+            throw new NoSuchUserException();
+        }
+        
+        schedule.update(request.getName(), request.getStartDate(), request.getEndDate(), request.getContent(), users, request.getState());
+        
         return schedule;
     }
     
@@ -106,5 +128,22 @@ public class ScheduleService{
             .orElseThrow(NoSuchUserException::new);
         
         schedule.removeUser(user);
+    }
+    
+    @Transactional(readOnly = true)
+    public Schedule moveScheduleState(Long id, Progress state) {
+        Schedule schedule = scheduleRepository.findById(id)
+            .orElseThrow(NoSuchScheduleException::new);
+        
+        schedule.moveProgress(state);
+        
+        //<== Lazy Loding ==>
+        schedule.getUserSchedules().stream()
+            .forEach(us -> {
+                log.info("user = {}", us.getUser());
+                log.info("userId = {}", us.getUser().getId());
+            });
+        
+        return schedule;
     }
 }
