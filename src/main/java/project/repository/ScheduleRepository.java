@@ -3,6 +3,7 @@ package project.repository;
 import project.domain.*;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,5 +16,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Sched
     @Query(value = "select s from Schedule s join fetch s.workspace w",
           countQuery = "select count(s) from Schedule s")
     public Page<Schedule> findAll(Pageable pageable);
+    
+    @Query("select s from Schedule s where s.workspace = :workspace and (s.startDate between :startDate and :endDate or s.endDate between :startDate and :endDate)")
+    public List<Schedule> searchSchedule(Workspace workspace, LocalDateTime startDate, LocalDateTime endDate);
     
 }

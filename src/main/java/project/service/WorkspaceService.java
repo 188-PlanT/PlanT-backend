@@ -4,6 +4,7 @@ import project.domain.*;
 import project.common.auth.oauth.UserInfo;
 import project.dto.workspace.*;
 import project.repository.WorkspaceRepository;
+import project.repository.ScheduleRepository;
 import project.repository.UserRepository;
 import project.exception.user.NoSuchUserException;
 import project.exception.workspace.NoSuchWorkspaceException;
@@ -14,6 +15,9 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 public class WorkspaceService{
     
     private final WorkspaceRepository workspaceRepository;
+    private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
         
     @Transactional
@@ -173,12 +178,39 @@ public class WorkspaceService{
         return workspace;
     }
     
+    @Transactional(readOnly = true)
+    public CalendarResponse getCalendar(Long workspaceId, Long loginUserId, LocalDateTime date){
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+            .orElseThrow(NoSuchWorkspaceException::new);
+        
+        workspace.checkUser(loginUser);
+        
+        LocalDateTime startDate = getStartDate(date);
+        LocalDateTime endDate = getEndDate(date);
+        
+        List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, startDate, endDate);
+        
+        return CalendarResponse.of(workspace, schedules);
+    }
     
-    // private void validateWorkspaceName(String name){
-    //     if (workspaceRepository.existsByName(name)){
-    //         throw new IllegalStateException("이미 존재하는 Workspace 입니다");
-    //     }
-    // }
+    //여기 예외처리 로직 잘 신경써보자
+    @Transactional(readOnly = true)
+    public CalendarResponse getDailySchedules(Long workspaceId, Long loginUserId, LocalDateTime date){
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+            .orElseThrow(NoSuchWorkspaceException::new);
+        
+        workspace.checkUser(loginUser);
+        
+        List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, date, date);
+        
+        return CalendarResponse.of(workspace, schedules);
+    }
     
     private void validateUserList(List<Long> userIds, List<User> userList){
         if (userIds.size() != userList.size()){
@@ -186,4 +218,17 @@ public class WorkspaceService{
         }
     }
     
+    private LocalDateTime getStartDate(LocalDateTime dateTime){
+        LocalDate date = dateTime.toLocalDate();
+        date = date.withDayOfMonth(1);
+        log.info("startDate = {}", date);
+        return date.atStartOfDay();
+    }
+    
+    private LocalDateTime getEndDate(LocalDateTime dateTime){
+        LocalDate date = dateTime.toLocalDate();
+        date = date.withDayOfMonth(date.lengthOfMonth());
+        log.info("endDate = {}", date);
+        return date.atTime(LocalTime.MAX);
+    }
 }
