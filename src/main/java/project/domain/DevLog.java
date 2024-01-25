@@ -4,6 +4,7 @@ import project.exception.user.NoSuchUserException;
 
 import javax.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Builder;
 import java.util.List;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "dev_logs")
 @Getter
+@Setter
 public class DevLog extends BaseEntity{
     
     @Id @GeneratedValue

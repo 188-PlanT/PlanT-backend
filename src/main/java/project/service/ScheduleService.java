@@ -130,12 +130,72 @@ public class ScheduleService{
         schedule.removeUser(user);
     }
     
-    @Transactional(readOnly = true)
+    @Transactional
     public Schedule moveScheduleState(Long id, Progress state) {
         Schedule schedule = scheduleRepository.findById(id)
             .orElseThrow(NoSuchScheduleException::new);
         
         schedule.moveProgress(state);
+        
+        //<== Lazy Loding ==>
+        schedule.getUserSchedules().stream()
+            .forEach(us -> {
+                log.info("user = {}", us.getUser());
+                log.info("userId = {}", us.getUser().getId());
+            });
+        
+        return schedule;
+    }
+    
+    @Transactional
+    public Schedule addChat(Long loginUserId, Long scheduleId, String content) {
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(NoSuchScheduleException::new);
+        
+        schedule.addChat(loginUser, content);
+        
+        //<== Lazy Loding ==>
+        schedule.getUserSchedules().stream()
+            .forEach(us -> {
+                log.info("user = {}", us.getUser());
+                log.info("userId = {}", us.getUser().getId());
+            });
+        
+        return schedule;
+    }
+    
+    @Transactional
+    public Schedule updateChat(Long loginUserId, Long scheduleId, Long chatId, String content) {
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(NoSuchScheduleException::new);
+
+        schedule.updateChat(loginUser, chatId, content);
+        
+        //<== Lazy Loding ==>
+        schedule.getUserSchedules().stream()
+            .forEach(us -> {
+                log.info("user = {}", us.getUser());
+                log.info("userId = {}", us.getUser().getId());
+            });
+        
+        return schedule;
+    }
+    
+    @Transactional
+    public Schedule removeChat(Long loginUserId, Long scheduleId, Long chatId) {
+        User loginUser = userRepository.findById(loginUserId)
+            .orElseThrow(NoSuchUserException::new);
+        
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(NoSuchScheduleException::new);
+
+        schedule.removeChat(loginUser, chatId);
         
         //<== Lazy Loding ==>
         schedule.getUserSchedules().stream()

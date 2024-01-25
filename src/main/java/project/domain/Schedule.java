@@ -1,6 +1,7 @@
 package project.domain;
 
 import project.exception.user.NoSuchUserException;
+import project.exception.user.InvalidAuthorityException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -47,8 +48,8 @@ public class Schedule extends BaseEntity{
     @OneToMany(mappedBy="schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList <> ();
     
-    //연관관계 삭제용
-    @OneToMany(mappedBy="schedule", orphanRemoval = true)
+    //Schedule이 DevLog 영속성 관리
+    @OneToMany(mappedBy="schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DevLog> devLogs = new ArrayList <> ();
     
     
@@ -92,6 +93,39 @@ public class Schedule extends BaseEntity{
     
     public void moveProgress(Progress state){
         this.state = state;
+    }
+    
+    public void addChat(User user, String content){
+        DevLog devLog = DevLog.builder()
+                                .schedule(this)
+                                .user(user)
+                                .content(content)
+                                .build();
+        
+        this.devLogs.add(devLog);
+    }
+    
+    public void updateChat(User user, Long chatId, String content){
+        for (DevLog devLog : this.devLogs){
+            if (devLog.getId() == chatId){
+                if(!devLog.getUser().equals(user)){
+                    throw new InvalidAuthorityException();
+                }
+                devLog.setContent(content);
+            }
+        }
+    }
+    
+    public void removeChat(User user, Long chatId){
+        for (DevLog devLog : this.devLogs){
+            if (devLog.getId() == chatId){
+                if(!devLog.getUser().equals(user)){
+                    throw new InvalidAuthorityException();
+                }
+            }
+        }
+        
+        this.devLogs.removeIf(d -> d.getId().equals(chatId));
     }
     
     //수정 로직 -> 이거 DTO로 묶는 방법 생각해보자
