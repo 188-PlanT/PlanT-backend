@@ -2,6 +2,7 @@ package project.repository;
 
 import project.domain.*;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -11,16 +12,17 @@ import static project.domain.QUser.user;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
+@Slf4j
 @RequiredArgsConstructor
 public class UserRepositoryCustomImpl implements UserRepositoryCustom{
     
     private final JPAQueryFactory qf;
     
     @Override
-    public Optional<User> searchUser(String email, String nickName){
+    public Optional<User> searchUser(String keyword){
         
         User findUser = qf.selectFrom(user)
-                        .where(emailEq(email), nickNameEq(nickName))
+                        .where(emailEq(keyword), nickNameEq(keyword))
                         .fetchFirst();
         
         return Optional.ofNullable(findUser);

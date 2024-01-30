@@ -66,9 +66,7 @@ public class UserController{
     public ResponseEntity<UserDto> setNickNameUser(@AuthenticationPrincipal UserInfo userInfo, 
                                                  @RequestBody FinishUserRegisterRequest request){
         
-        User loginUser = userInfo.getUser();
-        
-        User user = userService.finishRegister(loginUser.getId(), request.getNickName());
+        User user = userService.finishRegister(userInfo.getUsername(), request.getNickName());
         
         //여기서 부터 개발 시작
         return ResponseEntity.ok(UserDto.from(user));
@@ -79,7 +77,7 @@ public class UserController{
     @GetMapping("/v1/users")
     public ResponseEntity<UserDto> findUserDetails(@AuthenticationPrincipal UserInfo userInfo){
         
-        User loginUser = userInfo.getUser();
+        User loginUser = userService.findByEmail(userInfo.getUsername());
         
         return ResponseEntity.ok(UserDto.from(loginUser));
     }
@@ -90,9 +88,7 @@ public class UserController{
     public ResponseEntity<UserDto> updateUser(@AuthenticationPrincipal UserInfo userInfo,
                                                             @RequestBody UpdateUserRequest request){
         
-        User loginUser = userInfo.getUser();
-        
-        User updateUser = userService.updateUser(loginUser.getId(), request.getNickName(), request.getPassword(), request.getProfile());
+        User updateUser = userService.updateUser(userInfo.getUsername(), request.getNickName(), request.getPassword(), request.getProfile());
         
         return ResponseEntity.ok(UserDto.from(updateUser));
     }
@@ -101,11 +97,9 @@ public class UserController{
     @GetMapping("/v1/users/workspaces")
     public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(@AuthenticationPrincipal UserInfo userInfo, Pageable pageable){
         
-        User loginUser = userInfo.getUser();
+        User loginUser = userService.findByEmail(userInfo.getUsername());
         
-        
-        
-        Page<UserWorkspace> page = userService.findWorkspaces(loginUser, pageable);
+        Page<UserWorkspace> page = userService.findWorkspaces(userInfo.getUsername(), pageable);
         
         List<Workspace> workspaces = page.getContent()
                                         .stream()
@@ -122,12 +116,11 @@ public class UserController{
     public ResponseEntity<UserSchedulesResponse> readUserSchedules(@AuthenticationPrincipal UserInfo userInfo, 
                                                                     @RequestParam String date,
                                                                     Pageable pageable){
-        
-        User loginUser = userInfo.getUser();
+        User loginUser = userService.findByEmail(userInfo.getUsername());
         
         LocalDateTime dateTime = parseDateString(date);
         
-        Page<UserSchedule> page = userService.findSchedules(loginUser, dateTime, pageable);
+        Page<UserSchedule> page = userService.findSchedules(userInfo.getUsername(), dateTime, pageable);
         
         List<Schedule> schedules = page.getContent()
                                         .stream()
@@ -151,10 +144,9 @@ public class UserController{
     
     // <== 유저 검색 ==>
     @GetMapping("/v1/users/search")
-    public ResponseEntity<UserDto> searchUser(@RequestParam(required = false) String email,
-                                             @RequestParam(required = false) String nickName){
-        
-        User loginUser = userService.searchUser(email, nickName);
+    public ResponseEntity<UserDto> searchUser(@RequestParam String keyword){
+
+        User loginUser = userService.searchUser(keyword);
         
         return ResponseEntity.ok(UserDto.from(loginUser));
     }

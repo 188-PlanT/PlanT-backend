@@ -55,9 +55,9 @@ public class UserService implements UserDetailsService{
     
     //유저 정보 추가, 회원가입 마무리
     @Transactional
-    public User finishRegister(Long userId, String nickName){
+    public User finishRegister(String email, String nickName){
         
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
         validateUserNickName(nickName);
@@ -93,7 +93,10 @@ public class UserService implements UserDetailsService{
     
     // 워크스페이스 조회
     @Transactional(readOnly = true)
-    public Page<UserWorkspace> findWorkspaces(User user, Pageable pageable){
+    public Page<UserWorkspace> findWorkspaces(String email, Pageable pageable){
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(NoSuchUserException::new);
+        
         Page<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user, pageable);
         
         //lazy loding
@@ -104,7 +107,10 @@ public class UserService implements UserDetailsService{
     
     // 스케줄 조회
     @Transactional(readOnly = true)
-    public Page<UserSchedule> findSchedules(User user, LocalDateTime date, Pageable pageable){
+    public Page<UserSchedule> findSchedules(String email, LocalDateTime date, Pageable pageable){
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(NoSuchUserException::new);
+        
         Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(user, date, pageable);
         
         //lazy loding
@@ -115,8 +121,8 @@ public class UserService implements UserDetailsService{
     
     //유저 정보 수정
     @Transactional
-    public User updateUser(Long id, String nickName, String password, String profile){
-        User user = userRepository.findById(id)
+    public User updateUser(String email, String nickName, String password, String profile){
+        User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
         if(!user.getNickName().equals(nickName)){
@@ -141,13 +147,9 @@ public class UserService implements UserDetailsService{
     
     // 유저 검색
     @Transactional(readOnly = true)
-    public User searchUser(String email, String nickName){
+    public User searchUser(String keyword){
         
-        if (email == null && nickName == null){
-            throw new NoSuchUserException();
-        }
-        
-        return userRepository.searchUser(email, nickName)
+        return userRepository.searchByKeyword(keyword)
             .orElseThrow(NoSuchUserException::new);
     }
     

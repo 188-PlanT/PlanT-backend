@@ -35,9 +35,9 @@ public class WorkspaceService{
     private final UserRepository userRepository;
         
     @Transactional
-    public Workspace makeWorkspace(CreateWorkspaceRequest request, Long createUserId){
+    public Workspace makeWorkspace(CreateWorkspaceRequest request, String createUserEmail){
                 
-        User createUser = userRepository.findById(createUserId)
+        User createUser = userRepository.findByEmail(createUserEmail)
             .orElseThrow(NoSuchUserException::new);
         
         List<User> userList = userRepository.findByIdIn(request.getUsers());
@@ -57,8 +57,8 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public void removeWorkspace(Long workspaceId, Long userId){
-        User loginUser = userRepository.findById(userId)
+    public void removeWorkspace(Long workspaceId, String userEmail){
+        User loginUser = userRepository.findByEmail(userEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace findWorkspace = workspaceRepository.findById(workspaceId)
@@ -70,8 +70,8 @@ public class WorkspaceService{
     }
     
     @Transactional(readOnly = true)
-    public Workspace findOne(Long workspaceId, Long userId){
-        User loginUser = userRepository.findById(userId)
+    public Workspace findOne(Long workspaceId, String userEmail){
+        User loginUser = userRepository.findByEmail(userEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace findWorkspace = workspaceRepository.findById(workspaceId)
@@ -96,9 +96,9 @@ public class WorkspaceService{
     }
 
     @Transactional
-    public Workspace updateWorkspace(Long id, Long userId, UpdateWorkspaceRequest request){
+    public Workspace updateWorkspace(Long id, String userEmail, UpdateWorkspaceRequest request){
         
-        User loginUser = userRepository.findById(userId)
+        User loginUser = userRepository.findByEmail(userEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace workspace = workspaceRepository.findById(id)
@@ -111,8 +111,8 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public Workspace addUser(Long workspaceId, Long loginUserId, Long userId){
-        User loginUser = userRepository.findById(loginUserId)
+    public Workspace addUser(Long workspaceId, String userEmail, Long userId){
+        User loginUser = userRepository.findByEmail(userEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace workspace = workspaceRepository.findById(workspaceId)
@@ -135,8 +135,8 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public void removeUser(Long workspaceId, Long loginUserId, Long userId){
-        User loginUser = userRepository.findById(loginUserId)
+    public void removeUser(Long workspaceId, String userEmail, Long userId){
+        User loginUser = userRepository.findByEmail(userEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace workspace = workspaceRepository.findById(workspaceId)
@@ -151,8 +151,8 @@ public class WorkspaceService{
     }
     
     @Transactional
-    public Workspace changeUserAuthority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
-        User loginUser = userRepository.findById(loginUserId)
+    public Workspace changeUserAuthority(Long workspaceId, String loginUserEmail, Long userId, UserRole authority){
+        User loginUser = userRepository.findByEmail(loginUserEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace workspace = workspaceRepository.findById(workspaceId)
@@ -179,8 +179,8 @@ public class WorkspaceService{
     }
     
     @Transactional(readOnly = true)
-    public CalendarResponse getCalendar(Long workspaceId, Long loginUserId, LocalDateTime date){
-        User loginUser = userRepository.findById(loginUserId)
+    public CalendarResponse getCalendar(Long workspaceId, String loginUserEmail, LocalDateTime date){
+        User loginUser = userRepository.findByEmail(loginUserEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace workspace = workspaceRepository.findById(workspaceId)
@@ -198,8 +198,8 @@ public class WorkspaceService{
     
     //여기 예외처리 로직 잘 신경써보자
     @Transactional(readOnly = true)
-    public CalendarResponse getDailySchedules(Long workspaceId, Long loginUserId, LocalDateTime date){
-        User loginUser = userRepository.findById(loginUserId)
+    public CalendarResponse getDailySchedules(Long workspaceId, String loginUserEmail, LocalDateTime date){
+        User loginUser = userRepository.findByEmail(loginUserEmail)
             .orElseThrow(NoSuchUserException::new);
         
         Workspace workspace = workspaceRepository.findById(workspaceId)

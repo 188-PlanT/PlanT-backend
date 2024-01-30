@@ -112,8 +112,10 @@ public class Schedule extends BaseEntity{
                     throw new InvalidAuthorityException();
                 }
                 devLog.setContent(content);
+                return;
             }
         }
+        // throw new NoSuchChatException();
     }
     
     public void removeChat(User user, Long chatId){

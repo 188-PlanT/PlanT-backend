@@ -24,4 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     public List<User> findUsersByEmailList(@Param("userEmails") List<String> userEmails);
     
     public List<User> findByIdIn(List<Long> userIds);
+    
+    @Query("select u from User u where u.email = :keyword or u.nickName = :keyword")
+    public Optional<User> searchByKeyword(String keyword);
 }

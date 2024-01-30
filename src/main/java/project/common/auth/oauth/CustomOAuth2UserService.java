@@ -48,7 +48,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     //유저 생성 로직
     private User saveOrUpdate(Map<String, Object> attributes){
         
-        //여기 리팩토링 해보자
         Optional<User> findUser = userRepository.findByEmail((String) attributes.get("email"));
         
         if(findUser.isPresent()){

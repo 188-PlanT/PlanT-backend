@@ -34,9 +34,7 @@ public class WorkspaceController{
     public ResponseEntity<WorkspaceDto> createWorkspace(@AuthenticationPrincipal UserInfo userInfo,
                                                         @RequestBody CreateWorkspaceRequest request){
         
-        User loginUser = userInfo.getUser();
-        
-        Workspace workspace = workspaceService.makeWorkspace(request, loginUser.getId());
+        Workspace workspace = workspaceService.makeWorkspace(request, userInfo.getUsername());
         
         WorkspaceDto response = WorkspaceDto.from(workspace);
         
@@ -49,9 +47,7 @@ public class WorkspaceController{
                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                         @RequestBody UpdateWorkspaceRequest request){
         
-        User loginUser = userInfo.getUser();
-        
-        Workspace workspace = workspaceService.updateWorkspace(workspaceId, loginUser.getId(), request);
+        Workspace workspace = workspaceService.updateWorkspace(workspaceId, userInfo.getUsername(), request);
         
         WorkspaceDto response = WorkspaceDto.from(workspace);
         
@@ -63,9 +59,7 @@ public class WorkspaceController{
     public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId,
                                                                     @AuthenticationPrincipal UserInfo userInfo){
         
-        User loginUser = userInfo.getUser();
-        
-        workspaceService.removeWorkspace(workspaceId, loginUser.getId());
+        workspaceService.removeWorkspace(workspaceId, userInfo.getUsername());
         
         return ResponseEntity.ok(new DeleteWorkspaceResponse());
     }
@@ -73,11 +67,9 @@ public class WorkspaceController{
     // <== 워크스페이스 유저 조회 ==>
     @GetMapping("/v1/workspaces/{workspaceId}/users")
     public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId,
-                                                               @AuthenticationPrincipal UserInfo userInfo){
+                                                               @AuthenticationPrincipal UserInfo userInfo){                                                      
         
-        User loginUser = userInfo.getUser();                                                        
-        
-        Workspace workspace = workspaceService.findOne(workspaceId, loginUser.getId());
+        Workspace workspace = workspaceService.findOne(workspaceId, userInfo.getUsername());
         
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
         
@@ -89,10 +81,8 @@ public class WorkspaceController{
     public ResponseEntity<FindWorkspaceUsersResponse> addUser(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
                                         @RequestBody AddUserRequest request){
-        
-        User loginUser = userInfo.getUser(); 
-        
-        Workspace workspace = workspaceService.addUser(workspaceId, loginUser.getId(), request.getUserId());
+
+        Workspace workspace = workspaceService.addUser(workspaceId, userInfo.getUsername(), request.getUserId());
         
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
         
@@ -105,10 +95,8 @@ public class WorkspaceController{
                                         @AuthenticationPrincipal UserInfo userInfo,
                                         @RequestBody UpdateUserRequest request){
         
-        User loginUser = userInfo.getUser(); 
-        
         Workspace workspace = workspaceService.changeUserAuthority(workspaceId, 
-                                                                   loginUser.getId(), 
+                                                                   userInfo.getUsername(), 
                                                                    request.getUserId(), 
                                                                    request.getAuthority());
         
@@ -123,9 +111,7 @@ public class WorkspaceController{
                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                          @RequestBody AddUserRequest request){
         
-        User loginUser = userInfo.getUser(); 
-        
-        workspaceService.removeUser(workspaceId, loginUser.getId(), request.getUserId());
+        workspaceService.removeUser(workspaceId, userInfo.getUsername(), request.getUserId());
         
         RemoveUserResponse response = new RemoveUserResponse();
         
@@ -138,11 +124,9 @@ public class WorkspaceController{
                                                                     @AuthenticationPrincipal UserInfo userInfo,
                                                                     @RequestParam String date){
         
-        User loginUser = userInfo.getUser();
-        
         LocalDateTime dateTime = parseDateString(date);
         
-        CalendarResponse response = workspaceService.getCalendar(workspaceId, loginUser.getId(), dateTime);
+        CalendarResponse response = workspaceService.getCalendar(workspaceId, userInfo.getUsername(), dateTime);
         
         return ResponseEntity.ok(response);
     }
@@ -153,36 +137,12 @@ public class WorkspaceController{
                                                                     @AuthenticationPrincipal UserInfo userInfo,
                                                                     @RequestParam String date){
         
-        User loginUser = userInfo.getUser();
-        
         LocalDateTime dateTime = parseDateString(date);
         
-        CalendarResponse response = workspaceService.getDailySchedules(workspaceId, loginUser.getId(), dateTime);
+        CalendarResponse response = workspaceService.getDailySchedules(workspaceId, userInfo.getUsername(), dateTime);
         
         return ResponseEntity.ok(response);
     }
-    
-    // @GetMapping("/workspaces/{workspaceId}")
-    // public ResponseEntity<FindSingleWorkspaceResponse> findOneWorkspace(@PathVariable Long workspaceId){
-        
-    //     Workspace findWorkspace = workspaceService.findOne(workspaceId);
-        
-    //     FindSingleWorkspaceResponse response = new FindSingleWorkspaceResponse(findWorkspace);
-        
-    //     return ResponseEntity.ok(response);
-    // }
-    
-    // @DeleteMapping("/workspaces/{workspaceId}/users/{userId}")
-    // public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
-    //                                                     @PathVariable Long userId){
-        
-    //     workspaceService.removeUser(workspaceId, userId);
-        
-    //     RemoveUserResponse response = new RemoveUserResponse();
-        
-    //     return ResponseEntity.ok(response);
-    // }
-    
     
     //이거 Util 객체 하나 만드는게 좋지 않을까
     private LocalDateTime parseDateString(String dateStr){

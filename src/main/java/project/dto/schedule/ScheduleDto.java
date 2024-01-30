@@ -23,6 +23,7 @@ public class ScheduleDto{
     private LocalDateTime endDate;
     private String content;
     private Progress state;
+    private List<ChatDto> chatList = new ArrayList<> ();
     
     public static ScheduleDto from(Schedule schedule){
         ScheduleDto dto = new ScheduleDto();
@@ -37,6 +38,10 @@ public class ScheduleDto{
         
         dto.setUsers(schedule.getUserSchedules().stream()
                         .map(us -> new UserDto(us.getUser()))
+                        .collect(toList()));
+        
+        dto.setChatList(schedule.getDevLogs().stream()
+                        .map(d -> new ChatDto(d))
                         .collect(toList()));
         
         return dto;
@@ -55,14 +60,17 @@ public class ScheduleDto{
         }
     }
     
+    @Getter
+    static class ChatDto{
+        private Long chatId;
+        private String nickName;
+        private String content;
         
-    // public ScheduleDto(Schedule schedule){
-    //     this.schedule_id = schedule.getId();
-    //     this.workspace = schedule.getWorkspace().getName();
-    //     this.name = schedule.getName();
-            
-    //     for (UserSchedule userSchedule : schedule.getUserSchedules()){
-    //         users.add(userSchedule.getUser().getEmail());
-    //     }
-    // }
+        public ChatDto(DevLog log){
+            this.chatId = log.getId();
+            this.nickName = log.getUser().getNickName();
+            this.content = log.getContent();
+        }
+    }    
+
 }

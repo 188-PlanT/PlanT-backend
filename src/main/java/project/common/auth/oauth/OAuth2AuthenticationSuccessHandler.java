@@ -27,11 +27,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         UserInfo userInfo = (UserInfo) authentication.getPrincipal();
-        User loginUser =  userInfo.getUser();
         
-        String accessToken = jwtProvider.createAccessToken(loginUser);
+        String accessToken = jwtProvider.createAccessToken(userInfo);
         
-        String refreshToken = jwtProvider.createRefreshToken(loginUser);
+        String refreshToken = jwtProvider.createRefreshToken(userInfo);
         
         getRedirectStrategy().sendRedirect(request, response, getRedirectUrl(accessToken, refreshToken));
     }
