@@ -2,6 +2,7 @@ package project.repository;
 
 import project.domain.*;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,8 @@ public interface DevLogRepository extends JpaRepository<DevLog, Long>, DevLogRep
     // public void remove(DevLog devLog);
     
     // public DevLog findOne(Long id);
+    
+    // public Optional<DevLog> findById(Long id);
         
     // public List<DevLog> searchDevLogs(int offset, int limit, Schedule schedule, User user);
     

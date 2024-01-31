@@ -14,7 +14,7 @@ import project.exception.user.*;
 import project.exception.auth.*;
 import project.exception.schedule.*;
 import project.exception.workspace.*;
-import project.exception.auth.UnIdentifiedUserException;
+import project.exception.devLog.*;
 import project.dto.ErrorResponse;
 import project.dto.ErrorCode;
 
@@ -122,6 +122,17 @@ public class ControllerAdvice{
     @ExceptionHandler(NoSuchScheduleException.class)
     public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchScheduleException e){
         log.info("NoSuchScheduleException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+    
+    @ExceptionHandler(NoSuchChatException.class)
+    public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchChatException e){
+        log.info("NoSuchChatException");
         
         ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
         

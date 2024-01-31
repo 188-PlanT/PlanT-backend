@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +30,9 @@ public class ScheduleController {
 
          ScheduleDto response = scheduleService.createSchedule(request);
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response); 
     }
     
     @GetMapping("/v1/schedules/{scheduleId}") 
@@ -68,32 +71,36 @@ public class ScheduleController {
     
     
     @PostMapping("/v1/schedules/{scheduleId}/chat")
-    public ResponseEntity<ScheduleDto> addScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
+    public ResponseEntity<AddChatResponse> addScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long scheduleId,
                                                         @RequestBody AddChatRequest request){
 
-        ScheduleDto response = scheduleService.addChat(userInfo.getUsername(), scheduleId ,request.getContent());
+        AddChatResponse response = scheduleService.addChat(userInfo.getUsername(), scheduleId ,request.getContent());
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response); 
     }
     
     @PutMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
-    public ResponseEntity<ScheduleDto> updateScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
+    public ResponseEntity<AddChatResponse> updateScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long scheduleId,
                                                         @PathVariable Long chatId,
                                                         @RequestBody AddChatRequest request){
 
-        ScheduleDto response = scheduleService.updateChat(userInfo.getUsername(), scheduleId , chatId, request.getContent());
+        AddChatResponse response = scheduleService.updateChat(userInfo.getUsername(), scheduleId , chatId, request.getContent());
         
         return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
-    public ResponseEntity<ScheduleDto> deleteScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
+    public ResponseEntity<RemoveChatResponse> deleteScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long scheduleId,
                                                         @PathVariable Long chatId){
-
-        ScheduleDto response = scheduleService.removeChat(userInfo.getUsername(), scheduleId , chatId);
+        
+        scheduleService.removeChat(userInfo.getUsername(), scheduleId , chatId);
+        
+        RemoveChatResponse response = new RemoveChatResponse();
         
         return ResponseEntity.ok(response);
     }

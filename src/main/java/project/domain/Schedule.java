@@ -2,6 +2,7 @@ package project.domain;
 
 import project.exception.user.NoSuchUserException;
 import project.exception.user.InvalidAuthorityException;
+import project.exception.devLog.NoSuchChatException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -115,18 +116,24 @@ public class Schedule extends BaseEntity{
                 return;
             }
         }
-        // throw new NoSuchChatException();
+        throw new NoSuchChatException();
     }
     
     public void removeChat(User user, Long chatId){
+        boolean check = false;
+        
         for (DevLog devLog : this.devLogs){
             if (devLog.getId() == chatId){
                 if(!devLog.getUser().equals(user)){
                     throw new InvalidAuthorityException();
                 }
+                check = true;
             }
         }
         
+        if(check == false){
+            throw new NoSuchChatException();
+        }
         this.devLogs.removeIf(d -> d.getId().equals(chatId));
     }
     
