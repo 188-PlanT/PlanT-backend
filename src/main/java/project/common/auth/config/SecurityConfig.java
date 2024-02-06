@@ -55,23 +55,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterBefore(new CustomExceptionHandlerFilter(), OAuth2LoginAuthenticationFilter.class)
             .addFilterAfter(new JwtAuthorizationFilter(authenticationManager(), jwtProvider), OAuth2LoginAuthenticationFilter.class)
             .authorizeRequests()
-            .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up").permitAll()
+            .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up", "/v1/login/oauth2").permitAll()
             .antMatchers("/v1/users/nickname").hasAnyRole("PENDING", "USER")
             .antMatchers("/v1/**").hasRole("USER")
-            // .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-            // .antMatchers("/css/**", "/*.ico", "/error").permitAll()
-            // // .antMatchers("/admin/**").permitAll() // interceptor로 인가 구현
             .anyRequest().permitAll()
             .and()
             .exceptionHandling()
-                .accessDeniedHandler(customAccessDeniedHandler)
-            .and()
-            .oauth2Login()
-                .loginPage("/noToken")
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-            .and()
-            .successHandler(oAuth2AuthenticationSuccessHandler);
+                .accessDeniedHandler(customAccessDeniedHandler);
     }
 }
 

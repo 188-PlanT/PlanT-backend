@@ -1,63 +1,106 @@
 package project.common.auth.oauth;
 
-import org.springframework.security.oauth2.client.userinfo.*;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
-
 import project.domain.User;
 import project.exception.user.*;
 import project.repository.UserRepository;
 
-import javax.servlet.http.HttpSession;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Map;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.*;
+
 
  
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOAuth2UserService{
     
     private final UserRepository userRepository;
-    private final HttpSession httpSession;
+    private final OAuthAuthenticationProvider oAuthAuthenticationProvider;
+    private final RestTemplate restTemplate;
     
+    // OAuth2 유저 생성, 조회
+    public User getOAuth2User(String code, String provider){
+        
+        String decode = URLDecoder.decode(code, StandardCharsets.UTF_8);
+        
+        String accessToken = getAccessToken(decode, provider);
+        
+        String userEmail = getUserEmail(accessToken, provider);
+        
+        User user = saveOrUpdate(userEmail);
+        
+        return user;
+    }
     
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException{
+    private String getAccessToken(String code, String provider){
         
-        //attributes 얻기 위한 코드
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+        String tokenUrl = oAuthAuthenticationProvider.getTokenUrl(code, provider);
         
-        //OAuth2.0 서비스 id
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        
-        Map<String, Object> attributes = OAuthAttributes.of(registrationId, oAuth2User);
+        URI uri = UriComponentsBuilder
+                    .fromUriString(tokenUrl)
+                    .path("")
+                    .encode()
+                    .build()
+                    .toUri();
 
-        User user = saveOrUpdate(attributes);
+        TokenResponse response = restTemplate.postForObject(uri, null, TokenResponse.class);
+        
+        return response.getAccessToken();
+    }
+    
+    private String getUserEmail(String accessToken, String provider){
+        
+        String userInfoUrl = oAuthAuthenticationProvider.getUserInfoUrl(provider);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
 
-        return UserInfo.ofOAuth2(user, attributes);
+        HttpEntity request = new HttpEntity(headers);
+
+        Map<String, Object> attributes = (Map<String, Object>) restTemplate.exchange(
+              userInfoUrl,
+              HttpMethod.GET,
+              request,
+              Object.class
+            ).getBody();
+        
+        return OAuth2AttributeHelper.getEmail(provider, attributes);
     }
     
     //유저 생성 로직
-    private User saveOrUpdate(Map<String, Object> attributes){
+    private User saveOrUpdate(String email){
         
-        Optional<User> findUser = userRepository.findByEmail((String) attributes.get("email"));
+        Optional<User> findUser = userRepository.findByEmail(email);
         
         if(findUser.isPresent()){
             return findUser.get();
         }
         else{
-            User user = User.fromOAuth2Attributes(attributes);
+            User user = User.fromOAuth2Attributes(email);
             userRepository.save(user);
             
             return user;
+        }
+    }
+    
+    @Setter
+    static class TokenResponse{
+        String access_token;
+        
+        public String getAccessToken(){
+            return access_token;
         }
     }
 }

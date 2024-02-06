@@ -19,7 +19,11 @@ public class ScheduleDto{
     private Long workspaceId;
     private String name;
     private List<UserDto> users = new ArrayList <> ();
+    
+    @JsonFormat(pattern = "yyyyMMdd:HH:mm")
     private LocalDateTime startDate;
+    
+    @JsonFormat(pattern = "yyyyMMdd:HH:mm")
     private LocalDateTime endDate;
     private String content;
     private Progress state;

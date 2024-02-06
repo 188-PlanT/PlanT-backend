@@ -16,7 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.http.MediaType;
 
 @Slf4j
-public class CustomExceptionHandlerFilter extends OncePerRequestFilter { // 필터에터 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러 처리
+public class CustomExceptionHandlerFilter extends OncePerRequestFilter { // 필터에서 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러 처리
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,

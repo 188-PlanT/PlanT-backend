@@ -3,12 +3,17 @@ package project.api;
 import project.domain.*;
 import project.dto.login.*;
 import project.service.UserService;
+import project.service.EmailService;
 import project.common.auth.jwt.JwtProvider;
 import project.exception.auth.*;
+import project.common.auth.oauth.CustomOAuth2UserService;
+import project.common.auth.oauth.OAuthAuthenticationProvider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import javax.validation.Valid;
+import lombok.Getter;
+import lombok.Setter;
 
 import org.springframework.web.bind.annotation.*;
 import org.apache.coyote.Response;
@@ -21,8 +26,11 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public class LoginController{
     
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final EmailService emailService;
     private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final OAuthAuthenticationProvider oAuthAuthenticationProvider;
     
     //String으로 토큰 반환하기
     @PostMapping("/v1/login")
@@ -65,5 +73,25 @@ public class LoginController{
     @GetMapping("/noToken")
     public ResponseEntity<String> noTokenError(){
         throw new UnIdentifiedUserException("로그인이 필요한 요청입니다");    
+    }
+    
+    @PostMapping("/v1/login/oauth2")
+    public ResponseEntity<LoginResponse> oauth2Login(@RequestBody Oauth2LoginRequest request){
+        User loginUser = customOAuth2UserService.getOAuth2User(request.getCode(), request.getProvider());
+        
+        String accessToken = jwtProvider.createAccessToken(loginUser);
+        
+        String refreshToken = jwtProvider.createRefreshToken(loginUser);
+        
+        LoginResponse response = new LoginResponse(accessToken, refreshToken);
+            
+        return ResponseEntity.ok(response);
+    }
+    
+    @Getter
+    @Setter
+    static class Oauth2LoginRequest{
+        private String code;
+        private String provider;
     }
 }

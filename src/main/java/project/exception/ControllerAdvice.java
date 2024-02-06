@@ -141,6 +141,17 @@ public class ControllerAdvice{
             .body(response);
     }
     
+    @ExceptionHandler(NoSuchProviderException.class)
+    public ResponseEntity<ErrorResponse> invalidUserHandler(NoSuchProviderException e){
+        log.info("NoSuchProviderException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+    
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> invalidUserHandler(NoHandlerFoundException e){
         log.info("url 오류");
@@ -176,7 +187,6 @@ public class ControllerAdvice{
 
     @ExceptionHandler(RuntimeException.class) // 500 ERROR
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(RuntimeException e){
-        //에러가 여러개면 첫번째 에러만 반환하도록
         
         e.printStackTrace();
         

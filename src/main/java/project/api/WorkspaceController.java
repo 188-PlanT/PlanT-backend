@@ -124,7 +124,7 @@ public class WorkspaceController{
                                                                     @AuthenticationPrincipal UserInfo userInfo,
                                                                     @RequestParam String date){
         
-        LocalDateTime dateTime = parseDateString(date);
+        LocalDateTime dateTime = parseDateMonthString(date);
         
         CalendarResponse response = workspaceService.getCalendar(workspaceId, userInfo.getUsername(), dateTime);
         
@@ -149,6 +149,17 @@ public class WorkspaceController{
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             return LocalDate.parse(dateStr, formatter).atStartOfDay();
+        }
+        catch (DateTimeParseException e){
+            throw new DateFormatException();
+        }
+    }
+    
+    private LocalDateTime parseDateMonthString(String dateStr){
+        try {
+            // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM01");
+            dateStr = dateStr + "01";
+            return LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
         }
         catch (DateTimeParseException e){
             throw new DateFormatException();

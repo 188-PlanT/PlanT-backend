@@ -73,6 +73,15 @@ dependencies {
     
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+    //POP/IMAP
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    
+    //configuration processor
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    
+    //httpclient
+    implementation 'org.apache.httpcomponents:httpclient:4.5'
 }
 
 test {

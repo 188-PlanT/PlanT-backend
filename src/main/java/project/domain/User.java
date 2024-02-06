@@ -62,9 +62,9 @@ public class User extends BaseEntity{
     }
     
     // <== 정적 팩토리 메서드 ==>
-    public static User fromOAuth2Attributes(Map<String,Object> attributes){
+    public static User fromOAuth2Attributes(String email){
         return User.builder()
-            .email((String) attributes.get("email"))
+            .email(email)
             .profile(User.DEFAULT_PROFILE_URL)
             .userRole(UserRole.PENDING)
             .build();

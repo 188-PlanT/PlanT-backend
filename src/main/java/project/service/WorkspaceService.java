@@ -221,14 +221,12 @@ public class WorkspaceService{
     private LocalDateTime getStartDate(LocalDateTime dateTime){
         LocalDate date = dateTime.toLocalDate();
         date = date.withDayOfMonth(1);
-        log.info("startDate = {}", date);
         return date.atStartOfDay();
     }
     
     private LocalDateTime getEndDate(LocalDateTime dateTime){
         LocalDate date = dateTime.toLocalDate();
         date = date.withDayOfMonth(date.lengthOfMonth());
-        log.info("endDate = {}", date);
         return date.atTime(LocalTime.MAX);
     }
 }
