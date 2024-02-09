@@ -82,8 +82,6 @@ public class WorkspaceService{
         // Lazy Loding
         findWorkspace.getUserWorkspaces().stream()
             .forEach(uw -> {
-                // User u = uw.getUser();
-                // Long id = u.getId();
                 log.info("user = {}", uw.getUser());
                 log.info("userId = {}", uw.getUser().getId());
             });
@@ -124,6 +122,8 @@ public class WorkspaceService{
             .orElseThrow(NoSuchUserException::new);
         
         workspace.addUser(user);
+        
+        
         // Lazy Loding
         workspace.getUserWorkspaces().stream()
             .forEach(uw -> {

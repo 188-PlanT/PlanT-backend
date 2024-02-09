@@ -16,6 +16,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,9 @@ public class UserService implements UserDetailsService{
     private final UserScheduleRepository userScheduleRepository;
     private final PasswordEncoder passwordEncoder;
     
-    //회원가입
+    private final RedisService redisService;
+    
+    //<== 회원가입 ==>
     @Transactional
     public User register(SignUpRequest request){
         validateUserEmail(request.getEmail());
@@ -53,7 +56,7 @@ public class UserService implements UserDetailsService{
         return user;
     }
     
-    //유저 정보 추가, 회원가입 마무리
+    // <== 회원가입 마무리 ==>
     @Transactional
     public User finishRegister(String email, String nickName){
         
@@ -67,16 +70,16 @@ public class UserService implements UserDetailsService{
         return user;
     }
     
-    //유저 단건 조회
-    @Transactional(readOnly = true)
-    public User findOne(Long id){
-        User findUser = userRepository.findById(id)
-            .orElseThrow(NoSuchUserException::new);
+    // //유저 단건 조회
+    // @Transactional(readOnly = true)
+    // public User findOne(Long id){
+    //     User findUser = userRepository.findById(id)
+    //         .orElseThrow(NoSuchUserException::new);
         
-        return findUser;
-    }
+    //     return findUser;
+    // }
     
-    //유저 로그인
+    // <== 유저 로그인 ==>
     @Transactional(readOnly = true)
     public User signIn(String email, String password){
         
@@ -91,7 +94,7 @@ public class UserService implements UserDetailsService{
         }
     }
     
-    // 워크스페이스 조회
+    // <== 워크스페이스 조회 ==>
     @Transactional(readOnly = true)
     public Page<UserWorkspace> findWorkspaces(String email, Pageable pageable){
         User user = userRepository.findByEmail(email)
@@ -105,7 +108,7 @@ public class UserService implements UserDetailsService{
         return userWorkspaces;
     }
     
-    // 스케줄 조회
+    // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
     public Page<UserSchedule> findSchedules(String email, LocalDateTime date, Pageable pageable){
         User user = userRepository.findByEmail(email)
@@ -119,7 +122,7 @@ public class UserService implements UserDetailsService{
         return userSchedules;
     }
     
-    //유저 정보 수정
+    // <== 유저 정보 수정 ==>
     @Transactional
     public User updateUser(String email, String nickName, String password, String profile){
         User user = userRepository.findByEmail(email)
@@ -136,16 +139,16 @@ public class UserService implements UserDetailsService{
         return user;
     }
     
-    // 유저 삭제
-    @Transactional
-    public void deleteUser(Long id){
-        User user = userRepository.findById(id)
-            .orElseThrow(NoSuchUserException::new);
+    // // 유저 삭제
+    // @Transactional
+    // public void deleteUser(Long id){
+    //     User user = userRepository.findById(id)
+    //         .orElseThrow(NoSuchUserException::new);
         
-        userRepository.delete(user);
-    }
+    //     userRepository.delete(user);
+    // }
     
-    // 유저 검색
+    // <== 유저 검색 ==>
     @Transactional(readOnly = true)
     public User searchUser(String keyword){
         
@@ -153,15 +156,38 @@ public class UserService implements UserDetailsService{
             .orElseThrow(NoSuchUserException::new);
     }
     
+    // <== 이메일 검증 코드 제작 ==>
+    public int getEmailValidateCode(String email){
+        validateUserEmail(email);
+        
+        return ThreadLocalRandom.current().nextInt(100000, 1000000);
+    }
+    
+    // <== 이메일 검증 코드 검증 ==>
+    public void validateEmailCode(String email, int code){
+        String redisCode = redisService.getValues(email);
+        
+        if (redisCode == null){
+            throw new NoSuchUserException("잘못된 이메일입니다");
+        }
+        
+        if (!redisCode.equals(code+"")){
+            throw new IllegalStateException("잘못된 코드입니다");
+        }
+        
+        redisService.deleteByKey(email);
+    }
+    
     
     // < == validate logic ==> //
+    // <== 이메일 중복 검증 ==>
     public void validateUserEmail(String email){
         
         if (userRepository.existsByEmail(email)){
             throw new UserAlreadyExistException();
         }
     }
-    
+    // <== 닉네임 중복 검증 ==>
     public void validateUserNickName(String nickName){
         if (userRepository.existsByNickName(nickName)){
             throw new UserAlreadyExistException();
@@ -175,8 +201,7 @@ public class UserService implements UserDetailsService{
         }
     }
     
-    
-    //<== security 설정 ==> //
+    // <== 이메일로 조회 ==>
     @Transactional(readOnly = true)
     public User findByEmail(String email){
         
@@ -184,6 +209,7 @@ public class UserService implements UserDetailsService{
             .orElseThrow(NoSuchUserException::new);
     }
     
+    // < == Security 메서드 ==>
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
         

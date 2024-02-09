@@ -23,9 +23,9 @@ public class RedisService{
     }
     
     public void setExpiration(String key, Long time){
-        int second = time.intValue();
+        int milliSeconds = time.intValue();
         
-        redisTemplate.expire(key, second, TimeUnit.SECONDS);
+        redisTemplate.expire(key, milliSeconds, TimeUnit.MILLISECONDS);
     }
     
     public void deleteByKey(String key){

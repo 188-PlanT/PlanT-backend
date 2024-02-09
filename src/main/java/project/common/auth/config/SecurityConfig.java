@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterBefore(new CustomExceptionHandlerFilter(), OAuth2LoginAuthenticationFilter.class)
             .addFilterAfter(new JwtAuthorizationFilter(authenticationManager(), jwtProvider), OAuth2LoginAuthenticationFilter.class)
             .authorizeRequests()
-            .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up", "/v1/login/oauth2").permitAll()
+            .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up", "/v1/login/oauth2", "/v1/users/email/code").permitAll()
             .antMatchers("/v1/users/nickname").hasAnyRole("PENDING", "USER")
             .antMatchers("/v1/**").hasRole("USER")
             .anyRequest().permitAll()

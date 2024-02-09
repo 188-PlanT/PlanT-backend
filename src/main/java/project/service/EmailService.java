@@ -19,22 +19,29 @@ import javax.mail.MessagingException;
 public class EmailService{
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
+    private final RedisService redisService;
     
-    public void sendMail(){
+    private final Long CODE_EXP_TIME = 1000L * 60 * 3; //3분
+    
+    
+    public void sendValidateMail(String email, int code){
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo("kimsh8580@gmail.com"); // 메일 수신자
-            mimeMessageHelper.setSubject("test mail"); // 메일 제목
-            mimeMessageHelper.setText("hello", true); // 메일 본문 내용, HTML 여부
+            mimeMessageHelper.setTo(email); // 메일 수신자
+            mimeMessageHelper.setSubject("[PlanT] 회원가입 인증 코드입니다"); // 메일 제목
+            mimeMessageHelper.setText("인증 코드는 " + code + "입니다.", true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
 
-            log.info("Success");
+            log.info("Mail Success");
 
         } catch (MessagingException e) {
             log.info("fail");
             throw new RuntimeException(e);
         }
+        
+        redisService.setValues(email, code + "");
+        redisService.setExpiration(email, CODE_EXP_TIME);
     }
 }

@@ -4,6 +4,7 @@ import project.domain.*;
 import project.common.auth.oauth.UserInfo;
 import project.dto.user.*;
 import project.service.UserService;
+import project.service.EmailService;
 import project.exception.user.*;
 import project.exception.schedule.DateFormatException;
 
@@ -32,6 +33,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public class UserController{
     
     private final UserService userService;
+    private final EmailService emailService;
     
 
     // <==유저 이메일 인증==>
@@ -150,4 +152,30 @@ public class UserController{
         
         return ResponseEntity.ok(UserDto.from(loginUser));
     }
+    
+    
+    // <== 이메일 인증 메일 보내기 ==>
+    @GetMapping("/v1/users/email/code")
+    public ResponseEntity<String> getEmailValidateCode(@RequestParam String email){
+        
+        int code = userService.getEmailValidateCode(email);
+        
+        emailService.sendValidateMail(email, code);
+        
+        return ResponseEntity.ok("successfully send email");
+    }
+    
+    @PostMapping("/v1/users/email/code")
+    public ResponseEntity<String> validateCode(@RequestParam String email,
+                                               @RequestBody CodeRequest request){
+        
+        userService.validateEmailCode(email, request.getCode());
+
+        return ResponseEntity.ok("code success");
+    }
+    
+    @Getter
+    static class CodeRequest{
+        int code;
+    } 
 }
