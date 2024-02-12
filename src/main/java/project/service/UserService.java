@@ -4,6 +4,7 @@ import project.domain.*;
 import project.dto.user.*;
 import project.dto.login.SignUpRequest;
 import project.exception.user.*;
+import project.exception.auth.InvalidCodeException;
 import project.repository.UserRepository;
 import project.repository.UserWorkspaceRepository;
 import project.repository.UserScheduleRepository;
@@ -69,15 +70,6 @@ public class UserService implements UserDetailsService{
         
         return user;
     }
-    
-    // //유저 단건 조회
-    // @Transactional(readOnly = true)
-    // public User findOne(Long id){
-    //     User findUser = userRepository.findById(id)
-    //         .orElseThrow(NoSuchUserException::new);
-        
-    //     return findUser;
-    // }
     
     // <== 유저 로그인 ==>
     @Transactional(readOnly = true)
@@ -172,7 +164,7 @@ public class UserService implements UserDetailsService{
         }
         
         if (!redisCode.equals(code+"")){
-            throw new IllegalStateException("잘못된 코드입니다");
+            throw new InvalidCodeException("잘못된 코드입니다");
         }
         
         redisService.deleteByKey(email);

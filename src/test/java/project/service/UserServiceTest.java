@@ -1,8 +1,11 @@
 package project.service;
 
 import project.repository.UserRepository;
-import project.domain.User;
+import project.repository.UserWorkspaceRepository;
+import project.repository.UserScheduleRepository;
+import project.domain.*;
 import project.exception.user.*;
+import project.exception.auth.InvalidCodeException;
 import project.dto.user.*;
 import project.dto.login.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,20 +22,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.ArgumentMatchers.any;
-// import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-// import org.junit.runner.RunWith;
-// import org.mockito.junit.MockitoJUnitRunner;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import static org.assertj.core.api.Assertions.assertThat;
 
 
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.PageImpl;
-// import org.springframework.data.domain.Pageable;
-// import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
-// @RunWith(MockitoJUnitRunner.class)
+
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest{
     
@@ -39,7 +38,16 @@ public class UserServiceTest{
     private UserRepository userRepository;
     
     @Mock
+    private UserWorkspaceRepository userWorkspaceRepository;
+    
+    @Mock
+    private UserScheduleRepository userScheduleRepository;
+    
+    @Mock
     private PasswordEncoder passwordEncoder;
+    
+    @Mock
+    private RedisService redisService;
     
     @InjectMocks
     private UserService userService;
@@ -64,6 +72,7 @@ public class UserServiceTest{
         assertEquals(result.getEmail(), successEmail);
         assertEquals(result.getPassword(), "encodedPassword");
         assertNull(result.getNickName());
+        assertEquals(result.getUserRole(), UserRole.PENDING);
         
         assertThrows(UserAlreadyExistException.class, () -> {
             userService.register(failRequest);
@@ -78,15 +87,14 @@ public class UserServiceTest{
         String failEmail = "UnExistEmail1234@gmail.com";
         String failNickName = "alreadyExistNickName";
         
-        User user = User.ofEmailPassword(successEmail, "password", passwordEncoder);
+        given(passwordEncoder.encode(any(String.class))).willReturn("encodedPassword"); //Entity 의존성 줄여볼까??
+        User user = User.ofEmailPassword(successEmail, "test1234", passwordEncoder);
 
         given(userRepository.findByEmail(successEmail)).willReturn(Optional.of(user)); // 가입된 이메일
-        // given(userRepository.findByEmail(failEmail)).willReturn(Optional.ofNullable(null)); // 가입안된 이메일
+        given(userRepository.findByEmail(failEmail)).willReturn(Optional.ofNullable(null)); // 가입안된 이메일
 
         given(userRepository.existsByNickName(successNickName)).willReturn(false); // 가입 가능 닉네임
-        // given(userRepository.existsByNickName(failNickName)).willReturn(true); // 중복 닉네임
-        
-        given(passwordEncoder.encode(any(String.class))).willReturn("encodedPassword"); //Entity 의존성 줄여볼까??
+        given(userRepository.existsByNickName(failNickName)).willReturn(true); // 중복 닉네임
         
         //when
         User result = userService.finishRegister(successEmail, successNickName);
@@ -95,131 +103,251 @@ public class UserServiceTest{
         assertEquals(result.getEmail(), successEmail);
         assertEquals(result.getPassword(), "encodedPassword");
         assertEquals(result.getNickName(), successNickName);
+        assertEquals(result.getUserRole(), UserRole.USER);
         
-        // assertThrows(NoSuchUserException.class, () -> {
-        //     userService.finishRegister(failEmail, successNickName);
-        // });
-        // assertThrows(UserAlreadyExistException.class, () -> {
-        //     userService.finishRegister(successEmail, failNickName);
-        // });
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.finishRegister(failEmail, successNickName);
+        });
+        assertThrows(UserAlreadyExistException.class, () -> {
+            userService.finishRegister(successEmail, failNickName);
+        });
+    }
+    
+    @Test
+    public void 유저_로그인(){
+        //given
+        String successEmail = "test1234@gmail.com";
+        String successPassword = "test1234";
+        
+        String failEmail = "UnExistEmail1234@gmail.com";
+        String failPassword = "fail1234";
+        
+        given(passwordEncoder.encode(successPassword)).willReturn(successPassword);
+        given(passwordEncoder.matches(successPassword, successPassword)).willReturn(true);
+        
+        User user = User.ofEmailPassword(successEmail, successPassword, passwordEncoder);
+
+        given(userRepository.findByEmail(successEmail)).willReturn(Optional.of(user)); // 가입된 이메일
+        given(userRepository.findByEmail(failEmail)).willReturn(Optional.ofNullable(null)); // 가입안된 이메일
+        
+        //when
+        User result = userService.signIn(successEmail, successPassword);
+        
+        //then
+        assertEquals(result.getEmail(), successEmail);
+        assertEquals(result.getPassword(), successPassword);
+        
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.signIn(successEmail, failPassword);
+        });
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.signIn(failEmail, successPassword);
+        });
 
     }
     
-    // @Test
-    // public void 회원(){
-    //     //given
-    //     SignUpRequest request = new SignUpRequest("test1234@gmail.com", "test1234");
+    @Test
+    public void 워크스페이스_조회(){
+        //given
+        List<UserWorkspace> userWorkspaceList = new ArrayList<>();
         
-    //     given(userRepository.existsByEmail(any(String.class))).willReturn(false); //이거 구현 노출 아님???
-    //     given(passwordEncoder.encode(any(String.class))).willReturn("encodedPassword"); //Entity 의존성 줄여볼까??
+        User user = User.ofEmailPassword("test11@gmail.com", "test1111", passwordEncoder);
         
-    //     //when
-    //     User result = userService.register(request);
+        Workspace workspace1 = Workspace.builder()
+                                        .name("testWorkspace1")
+                                        .user(user)
+                                        .build();
         
-    //     //then
-    //     assertThat(result.getEmail()).isEqualTo("test1234@gmail.com");
-    //     assertThat(result.getPassword()).isEqualTo("encodedPassword");
-    // }
+        Workspace workspace2 = Workspace.builder()
+                                        .name("testWorkspace2")
+                                        .user(user)
+                                        .build();
+        
+        Workspace workspace3 = Workspace.builder()
+                                        .name("testWorkspace3")
+                                        .user(user)
+                                        .build();
+        
+        
+        userWorkspaceList.add(new UserWorkspace(user, workspace1, UserRole.ADMIN));
+        userWorkspaceList.add(new UserWorkspace(user, workspace2, UserRole.USER));
+        userWorkspaceList.add(new UserWorkspace(user, workspace3, UserRole.PENDING));
+        
+        
+        Pageable pageable = PageRequest.of(0,20);
+        Page<UserWorkspace> response = new PageImpl<>(userWorkspaceList, pageable, 3);
+
+        given(userRepository.findByEmail("test11@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.findByEmail("failEmail@gmail.com")).willReturn(Optional.ofNullable(null));
+        given(userWorkspaceRepository.searchByUser(user, pageable)).willReturn(response);
+        
+        // //when
+        Page<UserWorkspace> result = userService.findWorkspaces("test11@gmail.com", pageable);
+        
+        //then
+        assertEquals(result.getContent().size(), 3);
+        assertEquals(result.getContent().get(0).getWorkspace().getName(), "testWorkspace1");
+        assertEquals(result.getContent().get(0).getUserRole(), UserRole.ADMIN);
+        
+        assertEquals(result.getContent().get(1).getWorkspace().getName(), "testWorkspace2");
+        assertEquals(result.getContent().get(1).getUserRole(), UserRole.USER);
+        
+        assertEquals(result.getContent().get(2).getWorkspace().getName(), "testWorkspace3");
+        assertEquals(result.getContent().get(2).getUserRole(), UserRole.PENDING);
+        
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.findWorkspaces("failEmail@gmail.com", pageable);
+        });
+    }
     
-    // @Test
-    // public void 유저_리스트_조회(){
-    //     //given
-    //     List<User> userList = new ArrayList<>();
-    //     userList.add(new User("test1", "test1234", "kim"));
-    //     userList.add(new User("test2", "test1234", "kim"));
-    //     userList.add(new User("test3", "test1234", "kim"));
+    @Test
+    public void 스케줄_조회(){
+        //given
+        List<UserSchedule> userScheduleList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
         
-    //     Pageable pageable = PageRequest.of(0,20);
+        User user = User.ofEmailPassword("test11@gmail.com", "test1111", passwordEncoder);
+        userList.add(user);
         
-    //     Page<User> response = new PageImpl<>(userList, pageable, 3);
+        Workspace workspace = Workspace.builder()
+                                        .name("testWorkspace1")
+                                        .user(user)
+                                        .build();
         
-    //     given(userRepository.searchUsers(any(Pageable.class),any(String.class),any(String.class)))
-    //           .willReturn(response);
         
-    //     //when
-    //     Page<User> result = userService.findAllBySearch(pageable, "test", "test");
+        LocalDateTime now = LocalDateTime.now();
         
-    //     //then
-    //     assertThat(result.getContent().size()).isEqualTo(3);
-    //     assertThat(result.getContent().get(0).getAccountId()).isEqualTo("test1");
-    //     assertThat(result.getContent().get(1).getAccountId()).isEqualTo("test2");
-    //     assertThat(result.getContent().get(2).getAccountId()).isEqualTo("test3");
-    // }
+        Schedule schedule1 = Schedule.builder()
+                                    .workspace(workspace)
+                                    .name("testSchedule1")
+                                    .startDate(now)
+                                    .endDate(now)
+                                    .content("test")
+                                    .users(userList)
+                                    .build();
+        
+        Schedule schedule2 = Schedule.builder()
+                                    .workspace(workspace)
+                                    .name("testSchedule2")
+                                    .startDate(now)
+                                    .endDate(now)
+                                    .content("test")
+                                    .users(userList)
+                                    .build();
+        
+        userScheduleList.add(new UserSchedule(user,schedule1));
+        userScheduleList.add(new UserSchedule(user,schedule2));
+        
+        Pageable pageable = PageRequest.of(0,20);
+        Page<UserSchedule> response = new PageImpl<>(userScheduleList, pageable, 2);
+
+        given(userRepository.findByEmail("test11@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.findByEmail("failEmail@gmail.com")).willReturn(Optional.ofNullable(null));
+        given(userScheduleRepository.searchByUser(user, now, pageable)).willReturn(response);
+        
+        //when
+        Page<UserSchedule> result = userService.findSchedules("test11@gmail.com", now, pageable);
+        
+        //then
+        assertEquals(result.getContent().size(), 2);
+        assertEquals(result.getContent().get(0).getSchedule().getName(), "testSchedule1");
+        assertEquals(result.getContent().get(1).getSchedule().getName(), "testSchedule2");
+        
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.findSchedules("failEmail@gmail.com", now, pageable);
+        });
+    }
     
-    // //검색은 respository의 역할이 더 크므로 여기선 생략
+    @Test
+    public void 유저정보_수정(){
+        //given
+        given(passwordEncoder.encode(any(String.class))).willReturn("encodedPassword"); //Entity 의존성 줄여볼까??
+        
+        User user1 = User.ofEmailPassword("test11@gmail.com", "test1111", passwordEncoder);
+        user1.setNickName("test11");
+
+        User user2 = User.ofEmailPassword("test22@gmail.com", "test2222", passwordEncoder);
+        user2.setNickName("test22");
+        
+        given(userRepository.findByEmail("test11@gmail.com")).willReturn(Optional.of(user1));
+        given(userRepository.findByEmail("test22@gmail.com")).willReturn(Optional.of(user2));
+        given(userRepository.findByEmail("failEmail@gmail.com")).willReturn(Optional.ofNullable(null));
+        given(userRepository.existsByNickName("update11")).willReturn(false);
+        
+        //when
+        User updatedUser1 = userService.updateUser("test11@gmail.com", "update11", "test1111", "profile1");
+        User updatedUser2 = userService.updateUser("test22@gmail.com", "test22", "test2222", "profile2");
+        
+        //then
+        assertEquals(updatedUser1.getNickName(), "update11");
+        assertEquals(updatedUser1.getPassword(), "encodedPassword");
+        assertEquals(updatedUser1.getProfile(), "profile1");
+        
+        assertEquals(updatedUser2.getNickName(), "test22");
+        assertEquals(updatedUser2.getPassword(), "encodedPassword");
+        assertEquals(updatedUser2.getProfile(), "profile2");
+
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.updateUser("failEmail@gmail.com", "test22", "test2222", "profile2");
+        });
+    }
+
+    @Test
+    public void 유저_검색(){
+        //given
+        User user = User.ofEmailPassword("test11@gmail.com", "test1111", passwordEncoder);
+        
+        given(userRepository.searchByKeyword("test11@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.searchByKeyword("test11")).willReturn(Optional.of(user));
+        given(userRepository.searchByKeyword("failKeyword")).willReturn(Optional.ofNullable(null));
+        
+        //when
+        User result1 = userService.searchUser("test11@gmail.com");
+        User result2 = userService.searchUser("test11");
+        
+        //then
+        assertEquals(result1.getEmail(), "test11@gmail.com");
+        assertEquals(result2.getEmail(), "test11@gmail.com");
+        
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.searchUser("failKeyword");
+        });
+    }
     
-    // @Test
-    // public void 유저_생성(){
-    //     //given
-    //     User user = new User("test1", "test1234", "kim");
+    @Test
+    public void 이메일_검증코드_제작(){
+        //given
+        given(userRepository.existsByEmail("test11@gmail.com")).willReturn(false);
+        given(userRepository.existsByEmail("failEmail@gmail.com")).willReturn(true);
         
-    //     given(userRepository.existsByAccountId("test1")).willReturn(false);
-    //     given(userRepository.save(any(User.class))).willReturn(user);
+        // //when
+        int code = userService.getEmailValidateCode("test11@gmail.com");
         
-    //     //when
-    //     Long userId = userService.register(user);
-    // }
+        // //then
+        assertTrue(code < 1000000 && code > 99999);
+        assertThrows(UserAlreadyExistException.class, () -> {
+            userService.getEmailValidateCode("failEmail@gmail.com");
+        });
+    }
     
-    // @Test(expected = UserAlreadyExistException.class)
-    // public void 중복_유저_생성(){
-    //     //given
-    //     User user = new User("test1", "test1234", "kim");
+    @Test
+    public void 이메일_검증코드_검증(){
+        //given
+        given(redisService.getValues("test11@gmail.com")).willReturn("123456");
+        given(redisService.getValues("failEmail@gmail.com")).willReturn(null);
         
-    //     given(userRepository.existsByAccountId("test1")).willReturn(true);
+        // //when
+        userService.validateEmailCode("test11@gmail.com", 123456);
         
-    //     //when
-    //     Long userId = userService.register(user);
-    // }
+        // //then
+        assertThrows(NoSuchUserException.class, () -> {
+            userService.validateEmailCode("failEmail@gmail.com", 123456);
+        });
+        assertThrows(InvalidCodeException.class, () -> {
+            userService.validateEmailCode("test11@gmail.com", 654321);
+        });
+    }
     
-    // @Test
-    // public void 유저_수정(){
-    //     //given
-    //     User user = new User("test1", "test1234", "kim");
-    //     Long userId = 1L;
-        
-    //     given(userRepository.findById(userId)).willReturn(Optional.of(user));
-        
-    //     //when
-    //     User updatedUser = userService.updateUser(userId, "updatePw", "park");
-        
-    //     //then
-    //     assertThat(updatedUser.getPassword()).isEqualTo("updatePw");
-    //     assertThat(updatedUser.getName()).isEqualTo("park");
-    // }
-    
-    // @Test(expected = NoSuchUserException.class)
-    // public void 없는유저_수정(){
-    //     //given
-    //     User user = new User("test1", "test1234", "kim");
-    //     Long undefinedId = 2L;
-        
-    //     given(userRepository.findById(undefinedId)).willReturn(Optional.ofNullable(null));
-        
-    //     //when
-    //     User updatedUser = userService.updateUser(undefinedId, "updatePw", "park");
-    // }
-    
-    // @Test
-    // public void 유저_삭제(){
-    //     //given
-    //     User user = new User("test1", "test1234", "kim");
-    //     Long userId = 1L;
-        
-    //     given(userRepository.findById(userId)).willReturn(Optional.of(user));
-        
-    //     //when
-    //     userService.deleteUser(userId);
-    // }
-    
-    // @Test(expected = NoSuchUserException.class)
-    // public void 없는유저_삭제(){
-    //     //given
-    //     User user = new User("test1", "test1234", "kim");
-    //     Long undefinedId = 2L;
-        
-    //     given(userRepository.findById(undefinedId)).willReturn(Optional.ofNullable(null));
-        
-    //     //when
-    //     userService.deleteUser(undefinedId);
-    // }
+    // validateEmail, NickName, findByEmail 등의 메서드는 위의 메서드의 내부 메서드로 사용되며 검증되었음
+    // + 단순 호출 및 예외처리 로직이므로 생략함
 }

@@ -33,7 +33,8 @@ public class WorkspaceService{
     private final WorkspaceRepository workspaceRepository;
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
-        
+    
+    // <== 워크스페이스 제작 ==>
     @Transactional
     public Workspace makeWorkspace(CreateWorkspaceRequest request, String createUserEmail){
                 
@@ -56,6 +57,7 @@ public class WorkspaceService{
         return workspace;
     }
     
+    // <== 워크스페이스 삭제 ==>
     @Transactional
     public void removeWorkspace(Long workspaceId, String userEmail){
         User loginUser = userRepository.findByEmail(userEmail)
@@ -69,6 +71,7 @@ public class WorkspaceService{
         workspaceRepository.delete(findWorkspace);
     }
     
+    // <== 워크스페이스 단일 조회 ==>
     @Transactional(readOnly = true)
     public Workspace findOne(Long workspaceId, String userEmail){
         User loginUser = userRepository.findByEmail(userEmail)
@@ -89,10 +92,7 @@ public class WorkspaceService{
         return findWorkspace;
     }
     
-    public Page<Workspace> findAll(Pageable pageable){
-        return workspaceRepository.findAll(pageable);
-    }
-
+    //<== 워크스페이스 수정 ==>
     @Transactional
     public Workspace updateWorkspace(Long id, String userEmail, UpdateWorkspaceRequest request){
         
@@ -108,6 +108,7 @@ public class WorkspaceService{
         return workspace;
     }
     
+    // <== 워크스페이스 유저 추가 ==>
     @Transactional
     public Workspace addUser(Long workspaceId, String userEmail, Long userId){
         User loginUser = userRepository.findByEmail(userEmail)
@@ -134,6 +135,7 @@ public class WorkspaceService{
         return workspace;
     }
     
+    // <== 워크스페이스 유저 삭제 ==>
     @Transactional
     public void removeUser(Long workspaceId, String userEmail, Long userId){
         User loginUser = userRepository.findByEmail(userEmail)
@@ -150,6 +152,7 @@ public class WorkspaceService{
         workspace.removeUser(user);
     }
     
+    // <== 워크스페이스 유저 권한 변경 ==>
     @Transactional
     public Workspace changeUserAuthority(Long workspaceId, String loginUserEmail, Long userId, UserRole authority){
         User loginUser = userRepository.findByEmail(loginUserEmail)
@@ -178,6 +181,7 @@ public class WorkspaceService{
         return workspace;
     }
     
+    // <== 캘린더 응답 반환 ==>
     @Transactional(readOnly = true)
     public CalendarResponse getCalendar(Long workspaceId, String loginUserEmail, LocalDateTime date){
         User loginUser = userRepository.findByEmail(loginUserEmail)
@@ -196,7 +200,7 @@ public class WorkspaceService{
         return CalendarResponse.of(workspace, schedules);
     }
     
-    //여기 예외처리 로직 잘 신경써보자
+    // <== 오늘의 일정 반환 ==>
     @Transactional(readOnly = true)
     public CalendarResponse getDailySchedules(Long workspaceId, String loginUserEmail, LocalDateTime date){
         User loginUser = userRepository.findByEmail(loginUserEmail)
@@ -211,6 +215,7 @@ public class WorkspaceService{
         
         return CalendarResponse.of(workspace, schedules);
     }
+    
     
     private void validateUserList(List<Long> userIds, List<User> userList){
         if (userIds.size() != userList.size()){
