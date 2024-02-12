@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class ScheduleDto{
     private Long scheduleId;
     private Long workspaceId;
+    private String workspaceName;
     private String name;
     private List<UserDto> users = new ArrayList <> ();
     
@@ -34,6 +35,7 @@ public class ScheduleDto{
         
         dto.setScheduleId(schedule.getId());
         dto.setWorkspaceId(schedule.getWorkspace().getId());
+        dto.setWorkspaceName(schedule.getWorkspace().getName());
         dto.setName(schedule.getName());
         dto.setStartDate(schedule.getStartDate());
         dto.setEndDate(schedule.getEndDate());
@@ -67,13 +69,19 @@ public class ScheduleDto{
     @Getter
     static class ChatDto{
         private Long chatId;
+        private Long userId;
         private String nickName;
         private String content;
+
+        @JsonFormat(pattern = "yyyyMMdd:HH:mm:ss")
+        private LocalDateTime createDate;
         
         public ChatDto(DevLog log){
             this.chatId = log.getId();
+            this.userId = log.getUser().getId();
             this.nickName = log.getUser().getNickName();
             this.content = log.getContent();
+            this.createDate = log.getCreateDate();
         }
     }    
 

@@ -34,7 +34,7 @@ public class Schedule extends BaseEntity{
     @Column(nullable = false)
     private LocalDateTime endDate;
     
-    @Column(nullable = true)
+    @Column(columnDefinition = "TEXT", nullable = true)
     private String content;
     
     @ManyToOne(fetch = FetchType.LAZY)
