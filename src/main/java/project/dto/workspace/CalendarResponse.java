@@ -34,8 +34,9 @@ public class CalendarResponse {
         return dto;
     }
     
+    // test를 위해 public으로 선언
     @Getter
-    static class ScheduleDto{
+    public static class ScheduleDto{
         private Long scheduleId;
         private String scheduleName;
         @JsonFormat(pattern = "yyyyMMdd")
