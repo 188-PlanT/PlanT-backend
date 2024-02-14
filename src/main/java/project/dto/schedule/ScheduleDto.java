@@ -56,7 +56,7 @@ public class ScheduleDto{
     
     
     @Getter
-    static class UserDto{
+    public static class UserDto{
         private Long userId;
         private String nickName;
         
@@ -67,7 +67,7 @@ public class ScheduleDto{
     }
     
     @Getter
-    static class ChatDto{
+    public static class ChatDto{
         private Long chatId;
         private Long userId;
         private String nickName;

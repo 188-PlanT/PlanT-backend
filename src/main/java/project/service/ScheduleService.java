@@ -32,9 +32,9 @@ public class ScheduleService{
     private final WorkspaceRepository workspaceRepository;
     private final DevLogRepository devLogRepository;
     
+    // <== 스케줄 단일 조회 ==>
     @Transactional(readOnly = true)
     public ScheduleDto findOne(Long id) {
-        // <==유저가 스케줄에 속하는지 검증 안함 ??==>
         
         Schedule schedule = scheduleRepository.findById(id)
             .orElseThrow(NoSuchScheduleException::new);
@@ -44,6 +44,7 @@ public class ScheduleService{
         return dto;
     }
     
+    // <== 스케줄 생성 ==>
     @Transactional
     public ScheduleDto createSchedule(CreateScheduleRequest request){
     
@@ -74,6 +75,7 @@ public class ScheduleService{
         return dto;
     }
     
+    // <== 스케줄 수정 ==>
     @Transactional
     public ScheduleDto updateSchedule(Long scheduleId, UpdateScheduleRequest request){
         
@@ -94,6 +96,7 @@ public class ScheduleService{
         return dto;
     }
     
+    // <== 스케줄 삭제 ==>
     @Transactional
     public void removeSchedule(Long id){
         Schedule schedule = scheduleRepository.findById(id)
@@ -102,6 +105,7 @@ public class ScheduleService{
         scheduleRepository.delete(schedule);
     }
     
+    // <== 스케줄 상태 수정 ==>
     @Transactional
     public ScheduleDto moveScheduleState(Long id, Progress state) {
         Schedule schedule = scheduleRepository.findById(id)
@@ -114,6 +118,7 @@ public class ScheduleService{
         return dto;
     }
     
+    // <== 댓글 추가 ==>
     @Transactional
     public AddChatResponse addChat(String loginUserEmail, Long scheduleId, String content) {
         User loginUser = userRepository.findByEmail(loginUserEmail)
@@ -135,6 +140,7 @@ public class ScheduleService{
         return response;
     }
     
+    // <== 댓글 수정 ==>
     @Transactional
     public AddChatResponse updateChat(String loginUserEmail, Long scheduleId, Long chatId, String content) {
         User loginUser = userRepository.findByEmail(loginUserEmail)
@@ -160,6 +166,7 @@ public class ScheduleService{
         return response;
     }
     
+    // <== 댓글 삭제 ==>
     @Transactional
     public void removeChat(String loginUserEmail, Long scheduleId, Long chatId) {
         User loginUser = userRepository.findByEmail(loginUserEmail)
