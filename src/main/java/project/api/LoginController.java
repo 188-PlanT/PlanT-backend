@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+// @CrossOrigin("*.goorm.site")
 public class LoginController{
     
     private final CustomOAuth2UserService customOAuth2UserService;

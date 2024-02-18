@@ -36,3 +36,6 @@ goorm.manifest
 
 # vscode #
 .vscode
+
+# gradle wrapper #
+!gradle/wrapper/gradle-wrapper.jar

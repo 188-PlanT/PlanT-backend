@@ -24,6 +24,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.*;
 
  
 @Slf4j
@@ -48,10 +49,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         
         http
+            .httpBasic().disable()
+            .formLogin().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .formLogin().disable()
-            .httpBasic().disable()
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
             .addFilterBefore(new CustomExceptionHandlerFilter(), OAuth2LoginAuthenticationFilter.class)
             .addFilterAfter(new JwtAuthorizationFilter(authenticationManager(), jwtProvider), OAuth2LoginAuthenticationFilter.class)
             .authorizeRequests()
@@ -62,6 +65,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .exceptionHandling()
                 .accessDeniedHandler(customAccessDeniedHandler);
+    }
+    
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("https://g-project-front-hajrg.run.goorm.site");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
 

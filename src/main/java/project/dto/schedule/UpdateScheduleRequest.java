@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UpdateScheduleRequest{
     @NotBlank
     private String name;

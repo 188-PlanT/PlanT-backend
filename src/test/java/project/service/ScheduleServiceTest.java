@@ -60,7 +60,6 @@ public class ScheduleServiceTest{
         //given
         User admin = new User("admin@gmail.com", "admin", "test1111", "profile", UserRole.ADMIN);
         User user1 = new User("test11@gmail.com", "test11", "test1111", "profile", UserRole.USER);
-        User user2 = new User("test22@gmail.com", "test22", "test2222", "profile", UserRole.USER);
         
         List<User> userList = new ArrayList<>(Arrays.asList(admin, user1));
         
@@ -85,7 +84,7 @@ public class ScheduleServiceTest{
         schedule.addChat(user1, "user1 chat");
         
         given(scheduleRepository.findById(1L)).willReturn(Optional.of(schedule));
-        // given(scheduleRepository.findById(2L)).willReturn(Optional.of(schedule));
+        given(scheduleRepository.findById(2L)).willReturn(Optional.ofNullable(null));
         
         //when
         ScheduleDto result = scheduleService.findOne(1L);
@@ -95,117 +94,104 @@ public class ScheduleServiceTest{
         assertEquals(result.getWorkspaceName(), "testWorkspace1");
         assertEquals(result.getUsers().get(0).getNickName(), "admin");
         assertEquals(result.getUsers().get(1).getNickName(), "test11");
+        assertEquals(result.getState(), Progress.TODO);
+        assertEquals(result.getContent(), "test");
         assertEquals(result.getChatList().get(0).getNickName(), "admin");
         assertEquals(result.getChatList().get(0).getContent(), "admin chat");
         assertEquals(result.getChatList().get(1).getNickName(), "test11");
         assertEquals(result.getChatList().get(1).getContent(), "user1 chat");
+        
+        assertThrows(NoSuchScheduleException.class, () -> {
+           scheduleService.findOne(2L); 
+        });
     }
     
-    // @Test(expected = NoSuchScheduleException.class)
-    // public void 없는_스케줄_조회() throws Exception{
-    //     //given
-    //     Long undefinedId = 1L;
+    // 유저 생성 오류 테스트 안해봄..?
+    @Test
+    public void 스케줄_생성(){
+        //given
+        User admin = new User("admin@gmail.com", "admin", "test1111", "profile", UserRole.ADMIN);
+        User user1 = new User("test11@gmail.com", "test11", "test1111", "profile", UserRole.USER);
+        User user2 = new User("test22@gmail.com", "test22", "test2222", "profile", UserRole.USER);
         
-    //     given(scheduleRepository.findById(undefinedId)).willReturn(Optional.ofNullable(null));
+        List<User> userList = new ArrayList<>(Arrays.asList(admin, user1, user2));
         
-    //     //when
-    //     Schedule result = scheduleService.findOne(undefinedId);
-    // }
+        List<Long> userIdList = new ArrayList<>(Arrays.asList(1L, 2L, 3L));
+        
+        Workspace workspace = Workspace.builder()
+                                        .name("testWorkspace1")
+                                        .user(admin)
+                                        .build();
+        workspace.addUser(user1);
+        workspace.addUser(user2);
+        
+        LocalDateTime now = LocalDateTime.now();
+        
+        
+        CreateScheduleRequest request = new CreateScheduleRequest(1L, "testSchedule1", userIdList, now, now, Progress.TODO, "testContent");
+        
+        given(workspaceRepository.findById(1L)).willReturn(Optional.of(workspace));
+        given(userRepository.findByIdIn(userIdList)).willReturn(userList);
+        
+        //when
+        ScheduleDto result = scheduleService.createSchedule(request);
+        
+        //then
+        assertEquals(result.getName(), "testSchedule1");
+        assertEquals(result.getWorkspaceName(), "testWorkspace1");
+        assertEquals(result.getUsers().get(0).getNickName(), "admin");
+        assertEquals(result.getUsers().get(1).getNickName(), "test11");
+        assertEquals(result.getUsers().get(2).getNickName(), "test22");
+        assertEquals(result.getContent(), "testContent");
+        assertEquals(result.getState(), Progress.TODO);
+    }
     
-    // @Test
-    // public void 스케줄_리스트_조회(){
-    //     //given
-    //     Workspace workspace = new Workspace("testWorkspace1",getUserList());
+    @Test
+    public void 스케줄_수정(){
+        //given
+        User admin = new User("admin@gmail.com", "admin", "test1111", "profile", UserRole.ADMIN);
+        User user1 = new User("test11@gmail.com", "test11", "test1111", "profile", UserRole.USER);
+        User user2 = new User("test22@gmail.com", "test22", "test2222", "profile", UserRole.USER);
         
-    //     List<Schedule> scheduleList = new ArrayList<>();
-    //     scheduleList.add(new Schedule(workspace, "testSchedule1", getUserList()));
-    //     scheduleList.add(new Schedule(workspace, "testSchedule2", getUserList()));
-    //     scheduleList.add(new Schedule(workspace, "testSchedule3", getUserList()));
+        List<User> userList = new ArrayList<>(Arrays.asList(admin, user1));
         
-    //     Pageable pageable = PageRequest.of(0,20);
+        List<Long> userIdList = new ArrayList<>(Arrays.asList(1L, 2L, 3L));
         
-    //     Page<Schedule> response = new PageImpl<>(scheduleList, pageable, 3);
+        Workspace workspace = Workspace.builder()
+                                        .name("testWorkspace1")
+                                        .user(admin)
+                                        .build();
+        workspace.addUser(user1);
+        workspace.addUser(user2);
         
-    //     given(scheduleRepository.findAll(any(Pageable.class))).willReturn(response);
+        LocalDateTime now = LocalDateTime.now();
         
-    //     //when
-    //     List<Schedule> result = scheduleService.findSchedules(pageable).getContent();
+        Schedule schedule = Schedule.builder()
+                                    .workspace(workspace)
+                                    .name("testSchedule1")
+                                    .startDate(now)
+                                    .endDate(now)
+                                    .content("test")
+                                    .users(userList)
+                                    .build();
+        userList.add(user2);
         
-    //     //then
-    //     assertThat(result.size()).isEqualTo(3);
-    //     assertThat(result.get(0).getName()).isEqualTo("testSchedule1");
-    //     assertThat(result.get(1).getName()).isEqualTo("testSchedule2");
-    //     assertThat(result.get(2).getName()).isEqualTo("testSchedule3");
-    // }
-    
-    // @Test
-    // public void 스케줄_생성(){
-    //     //given
-    //     List<String> userNameList = new ArrayList<>();
-    //     userNameList.add("test1");
-    //     userNameList.add("test2");
-    //     userNameList.add("test3");
-        
-    //     Workspace workspace = new Workspace("testWorkspace1",getUserList());
-        
-    //     Schedule schedule = new Schedule(workspace, "testSchedule1", getUserList());
-        
-    //     CreateScheduleRequest request = new CreateScheduleRequest("testWorkspace1", "testSchedule1", userNameList);
-        
-    //     given(workspaceRepository.findByName("testWorkspace1")).willReturn(Optional.of(workspace));
-    //     given(userRepository.findUsersByAccounIdList(any(List.class))).willReturn(getUserList());
-    //     given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
-        
-    //     //when
-    //     Long scheduleId = scheduleService.createSchedule(request);
-    // }
-    
-    // @Test(expected = NoSuchWorkspaceException.class)
-    // public void 없는_워크스페이스에_스케줄_생성(){
-    //     //given
-    //     List<String> userNameList = new ArrayList<>();
-        
-    //     CreateScheduleRequest request = new CreateScheduleRequest("testWorkspace2", "testSchedule1", userNameList);
-        
-    //     given(workspaceRepository.findByName("testWorkspace2")).willReturn(Optional.ofNullable(null));
-        
-    //     //when
-    //     Long scheduleId = scheduleService.createSchedule(request);
-    // }
-    
-    // @Test
-    // public void 스케줄_수정(){
-    //     //given
-    //     List<User> userList = getUserList();
-        
-    //     List<String> userAccountIdList = new ArrayList<>();
-    //     userAccountIdList.add("test1");
-    //     userAccountIdList.add("test2");
-        
-    //     List<User> updateUserList = new ArrayList<>();
-    //     updateUserList.add(userList.get(0));
-    //     updateUserList.add(userList.get(1));
-        
-    //     Workspace workspace = new Workspace("testWorkspace1",userList);
-        
-    //     Schedule schedule = new Schedule(workspace, "testSchedule2", userList);
-    //     Long scheduleId = 1L;
-        
-    //     UpdateScheduleRequest request = new UpdateScheduleRequest("testSchedule2", userAccountIdList);
+        UpdateScheduleRequest request = new UpdateScheduleRequest("testSchedule2", userIdList, now, now, Progress.INPROGRESS, "test content");
         
         
-    //     given(scheduleRepository.findById(scheduleId)).willReturn(Optional.of(schedule));
-    //     given(userRepository.findUsersByAccounIdList(any(List.class))).willReturn(updateUserList);
-    //     //when
-    //     Schedule result = scheduleService.updateSchedule(scheduleId,request);
+        given(scheduleRepository.findById(1L)).willReturn(Optional.of(schedule));
+        given(userRepository.findByIdIn(userIdList)).willReturn(userList);
         
-    //     //then
-    //     assertThat(result.getName()).isEqualTo("testSchedule2");
-    //     assertThat(result.getWorkspace().getName()).isEqualTo("testWorkspace1");
-    //     assertThat(result.getUserSchedules().size()).isEqualTo(2);
-    //     assertThat(result.getUserSchedules().get(0).getUser().getAccountId()).isEqualTo("test1");
-    //     assertThat(result.getUserSchedules().get(1).getUser().getAccountId()).isEqualTo("test2");
-    // }
+        // //when
+        ScheduleDto result = scheduleService.updateSchedule(1L, request);
+        
+        // //then
+        assertEquals(result.getName(), "testSchedule2");
+        // assertThat(result.getWorkspace().getName()).isEqualTo("testWorkspace1");
+        // assertThat(result.getUserSchedules().size()).isEqualTo(2);
+        // assertThat(result.getUserSchedules().get(0).getUser().getAccountId()).isEqualTo("test1");
+        // assertThat(result.getUserSchedules().get(1).getUser().getAccountId()).isEqualTo("test2");
+    }
     
     // @Test(expected = NoSuchScheduleException.class)
     // public void 없는_스케줄_수정(){

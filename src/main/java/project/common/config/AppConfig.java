@@ -16,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Configuration
@@ -49,4 +50,16 @@ public class AppConfig implements WebMvcConfigurer{
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginUserArgumentResolver());
     }
+    
+    // //CORS
+    // @Override
+    // public void addCorsMappings(CorsRegistry registry) {
+    //     registry
+    //         .addMapping("/**")
+    //         .allowedHeaders("*")
+    //         // .allowedOrigins("https://g-project-front-hajrg.run.goorm.site")
+    //         .allowedOrigins("*.goorm.site")
+    //         .allowCredentials(true)
+    //         .allowedMethods("*");
+    // }
 }
