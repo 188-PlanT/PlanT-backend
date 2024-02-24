@@ -17,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Getter 
 public class Workspace extends BaseEntity{
     
-    private static final String DEFAULT_PROFILE_URL = "";
-    
     @Id @GeneratedValue
     @Column(name = "workspace_id")
     private Long id;
@@ -26,8 +24,9 @@ public class Workspace extends BaseEntity{
     @Column(nullable = false)
     private String name;
     
-    @Column(nullable = false)
-    private String profile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image profile;
     
     
     // Workspace가 UserWorkspace 영속성 관리
@@ -123,7 +122,7 @@ public class Workspace extends BaseEntity{
     }
     
     // 수정 로직
-    public void updateWorkspace(String name, String profile){
+    public void updateWorkspace(String name, Image profile){
         this.name = name;
         this.profile = profile;
     }
@@ -143,7 +142,7 @@ public class Workspace extends BaseEntity{
     
     public static class Builder{
         private String name;
-        private String profile = Workspace.DEFAULT_PROFILE_URL;
+        private Image profile;
         private User user;
 
         
@@ -152,7 +151,7 @@ public class Workspace extends BaseEntity{
             return this;
         }
         
-        public Builder profile(String profile){
+        public Builder profile(Image profile){
             this.profile = profile;
             return this;
         }

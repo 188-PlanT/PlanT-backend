@@ -3,11 +3,10 @@ package project.service;
 import project.domain.*;
 import project.common.auth.oauth.UserInfo;
 import project.dto.workspace.*;
-import project.repository.WorkspaceRepository;
-import project.repository.ScheduleRepository;
-import project.repository.UserRepository;
+import project.repository.*;
 import project.exception.user.NoSuchUserException;
 import project.exception.workspace.NoSuchWorkspaceException;
+import project.exception.image.NoSuchImageException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @Service
@@ -33,6 +33,10 @@ public class WorkspaceService{
     private final WorkspaceRepository workspaceRepository;
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
+    
+    @Value("${s3.default-image-url.workspace}")
+    private String DEFAULT_WORKSPACE_IMAGE_URL;
     
     // <== 워크스페이스 제작 ==>
     @Transactional
@@ -44,10 +48,13 @@ public class WorkspaceService{
         List<User> userList = userRepository.findByIdIn(request.getUsers());
         
         validateUserList(request.getUsers(), userList);
+        
+        Image defaultWorkspaceProfile = imageRepository.findByUrl(DEFAULT_WORKSPACE_IMAGE_URL)
+                                            .orElseThrow(NoSuchImageException::new);
 
         Workspace workspace = Workspace.builder()
                                         .name(request.getName())
-                                        .profile(request.getProfile())
+                                        .profile(defaultWorkspaceProfile)
                                         .user(createUser)
                                         .build();
         
@@ -85,9 +92,12 @@ public class WorkspaceService{
         // Lazy Loding
         findWorkspace.getUserWorkspaces().stream()
             .forEach(uw -> {
-                log.info("user = {}", uw.getUser());
-                log.info("userId = {}", uw.getUser().getId());
+                User user = uw.getUser();
+                Image image = user.getProfile();
+                image.getUrl();
             });
+        
+        findWorkspace.getProfile().getUrl();
         
         return findWorkspace;
     }
@@ -104,7 +114,10 @@ public class WorkspaceService{
         
         workspace.checkAdmin(loginUser);
         
-        workspace.updateWorkspace(request.getName(), request.getProfile());
+        Image profile = imageRepository.findByUrl(request.getProfile())
+                                        .orElseThrow(NoSuchImageException::new);
+        
+        workspace.updateWorkspace(request.getName(), profile);
         return workspace;
     }
     
@@ -128,9 +141,12 @@ public class WorkspaceService{
         // Lazy Loding
         workspace.getUserWorkspaces().stream()
             .forEach(uw -> {
-                log.info("user = {}", uw.getUser());
-                log.info("userId = {}", uw.getUser().getId());
+                User tempUser = uw.getUser();
+                Image image = tempUser.getProfile();
+                image.getUrl();
             });
+        
+        workspace.getProfile().getUrl();
         
         return workspace;
     }
@@ -174,9 +190,12 @@ public class WorkspaceService{
         // Lazy Loding
         workspace.getUserWorkspaces().stream()
             .forEach(uw -> {
-                log.info("user = {}", uw.getUser());
-                log.info("userId = {}", uw.getUser().getId());
+                User tempUser = uw.getUser();
+                Image image = tempUser.getProfile();
+                image.getUrl();
             });
+        
+        workspace.getProfile().getUrl();
         
         return workspace;
     }

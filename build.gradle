@@ -8,20 +8,17 @@ group = 'io.goorm'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+repositories {
+    mavenCentral()
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
 }
-repositories {
-    mavenCentral()
-}
-
 // querydsl 추가
 ext.querydslVersion = "4.4.0"
-
-//def querydslDir = "${buildDir}/generated/querydsl"/
-
 def querydslSrcDir = 'src/main/generated'
 clean {
     delete file(querydslSrcDir)
@@ -32,7 +29,6 @@ tasks.withType(JavaCompile) {
 sourceSets {
     main.java.srcDir querydslSrcDir
 }
-
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -81,7 +77,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     
     //httpclient
-    implementation 'org.apache.httpcomponents:httpclient:4.5'
+    //implementation 'org.apache.httpcomponents:httpclient:4.5'
+    
+    //s3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 test {

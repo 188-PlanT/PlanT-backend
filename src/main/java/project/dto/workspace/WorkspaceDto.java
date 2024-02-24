@@ -23,7 +23,7 @@ public class WorkspaceDto{
         
         dto.setWorkspaceId(workspace.getId());
         dto.setName(workspace.getName());
-        dto.setProfile(workspace.getProfile());
+        dto.setProfile(workspace.getProfile().getUrl());
         
         List<Long> userIds = workspace.getUserWorkspaces().stream()
                                         .map(uw -> uw.getUser().getId())

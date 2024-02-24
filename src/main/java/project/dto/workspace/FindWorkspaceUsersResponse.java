@@ -23,7 +23,7 @@ public class FindWorkspaceUsersResponse{
         
         dto.setWorkspaceId(workspace.getId());
         dto.setWorkspaceName(workspace.getName());
-        dto.setProfile(workspace.getProfile());
+        dto.setProfile(workspace.getProfile().getUrl());
         
         dto.setUsers(
             workspace.getUserWorkspaces().stream()

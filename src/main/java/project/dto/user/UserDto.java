@@ -20,7 +20,7 @@ public class UserDto {
         dto.setUserId(user.getId());
         dto.setNickName(user.getNickName());
         dto.setEmail(user.getEmail());
-        dto.setProfile(user.getProfile());
+        dto.setProfile(user.getProfile().getUrl());
         
         return dto;
     }

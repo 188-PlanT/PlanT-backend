@@ -5,9 +5,8 @@ import project.dto.user.*;
 import project.dto.login.SignUpRequest;
 import project.exception.user.*;
 import project.exception.auth.InvalidCodeException;
-import project.repository.UserRepository;
-import project.repository.UserWorkspaceRepository;
-import project.repository.UserScheduleRepository;
+import project.exception.image.NoSuchImageException;
+import project.repository.*;
 import project.common.auth.oauth.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,19 +27,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService{
     
+    //왜 퍼블릭?
     public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
+    
+    @Value("${s3.default-image-url.user}")
+    private String DEFAULT_USER_IMAGE_URL;
     
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
     private final UserScheduleRepository userScheduleRepository;
+    private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
-    
     private final RedisService redisService;
     
     //<== 회원가입 ==>
@@ -50,7 +54,10 @@ public class UserService implements UserDetailsService{
         
         validateUserPassword(request.getPassword());
         
-        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), passwordEncoder);   
+        Image defaultUserProfile = imageRepository.findByUrl(DEFAULT_USER_IMAGE_URL)
+                                            .orElseThrow(NoSuchImageException::new);
+        
+        User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), defaultUserProfile, passwordEncoder);   
         
         userRepository.save(user);
         
@@ -67,6 +74,9 @@ public class UserService implements UserDetailsService{
         validateUserNickName(nickName);
         
         user.setNickName(nickName);
+        
+        // lazy loding
+        user.getProfile().getUrl();
         
         return user;
     }
@@ -95,7 +105,10 @@ public class UserService implements UserDetailsService{
         Page<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user, pageable);
         
         //lazy loding
-        userWorkspaces.getContent().stream().forEach(uw -> uw.getWorkspace().getName());
+        userWorkspaces.getContent().stream().forEach(uw -> {
+            uw.getWorkspace().getName();
+            uw.getWorkspace().getProfile().getUrl();
+        });
         
         return userWorkspaces;
     }
@@ -116,7 +129,7 @@ public class UserService implements UserDetailsService{
     
     // <== 유저 정보 수정 ==>
     @Transactional
-    public User updateUser(String email, String nickName, String password, String profile){
+    public User updateUser(String email, String nickName, String password, String profileUrl){
         User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
@@ -125,6 +138,9 @@ public class UserService implements UserDetailsService{
         }
         
         validateUserPassword(password);
+        
+        Image profile = imageRepository.findByUrl(profileUrl)
+                                        .orElseThrow(NoSuchImageException::new);
         
         user.update(nickName, password, profile, passwordEncoder);
 
@@ -144,8 +160,13 @@ public class UserService implements UserDetailsService{
     @Transactional(readOnly = true)
     public User searchUser(String keyword){
         
-        return userRepository.searchByKeyword(keyword)
+        User user = userRepository.searchByKeyword(keyword)
             .orElseThrow(NoSuchUserException::new);
+        
+        // lazy loding
+        user.getProfile().getUrl();
+        
+        return user;
     }
     
     // <== 이메일 검증 코드 제작 ==>
@@ -197,8 +218,13 @@ public class UserService implements UserDetailsService{
     @Transactional(readOnly = true)
     public User findByEmail(String email){
         
-        return userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
+        
+        // lazy loding
+        user.getProfile().getUrl();
+        
+        return user;
     }
     
     // < == Security 메서드 ==>

@@ -42,7 +42,7 @@ public class UserWorkspacesResponse {
         public WorkspaceDto(Workspace workspace){
             this.workspaceId = workspace.getId();
             this.workspaceName = workspace.getName();
-            this.profile = workspace.getProfile();
+            this.profile = workspace.getProfile().getUrl();
         }
     }
 }

@@ -1,8 +1,11 @@
 package project.common.auth.oauth;
 
 import project.domain.User;
+import project.domain.Image;
 import project.exception.user.*;
 import project.repository.UserRepository;
+import project.repository.ImageRepository;
+import project.exception.image.NoSuchImageException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Value;
 
 
  
@@ -29,6 +33,10 @@ public class CustomOAuth2UserService{
     private final UserRepository userRepository;
     private final OAuthAuthenticationProvider oAuthAuthenticationProvider;
     private final RestTemplate restTemplate;
+    private final ImageRepository imageRepository;
+    
+    @Value("${s3.default-image-url.user}")
+    private String DEFAULT_USER_IMAGE_URL;
     
     // OAuth2 유저 생성, 조회
     public User getOAuth2User(String code, String provider){
@@ -88,7 +96,11 @@ public class CustomOAuth2UserService{
             return findUser.get();
         }
         else{
-            User user = User.fromOAuth2Attributes(email);
+            
+            Image defaultUserProfile = imageRepository.findByUrl(DEFAULT_USER_IMAGE_URL)
+                                                        .orElseThrow(NoSuchImageException::new);
+            
+            User user = User.fromOAuth2Attributes(email, defaultUserProfile);
             userRepository.save(user);
             
             return user;

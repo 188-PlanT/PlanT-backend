@@ -15,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 public class User extends BaseEntity{
     
-    private static final String DEFAULT_PROFILE_URL = "";
-    
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
@@ -30,8 +28,9 @@ public class User extends BaseEntity{
     @Column(nullable = true)
     private String password;
     
-    @Column(nullable = true)
-    private String profile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image profile;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -53,7 +52,7 @@ public class User extends BaseEntity{
     protected User () {} 
     
     @Builder //builder
-    public User(String email, String nickName, String password,  String profile, UserRole userRole){        
+    public User(String email, String nickName, String password,  Image profile, UserRole userRole){        
         this.email = email;
         this.nickName = nickName;
         this.password = password;
@@ -62,20 +61,20 @@ public class User extends BaseEntity{
     }
     
     // <== 정적 팩토리 메서드 ==>
-    public static User fromOAuth2Attributes(String email){
+    public static User fromOAuth2Attributes(String email, Image profile){
         return User.builder()
             .email(email)
-            .profile(User.DEFAULT_PROFILE_URL)
+            .profile(profile)
             .userRole(UserRole.PENDING)
             .build();
     }
     
-    public static User ofEmailPassword(String email, String password, PasswordEncoder passwordEncoder){
+    public static User ofEmailPassword(String email, String password, Image profile, PasswordEncoder passwordEncoder){
         
         User user =  User.builder()
                         .email(email)
                         .password(password)
-                        .profile(User.DEFAULT_PROFILE_URL)
+                        .profile(profile)
                         .userRole(UserRole.PENDING)
                         .build();
         
@@ -106,7 +105,7 @@ public class User extends BaseEntity{
         this.userRole = UserRole.USER;
     }
     
-    public void update(String nickName, String password, String profile, PasswordEncoder passwordEncoder){
+    public void update(String nickName, String password, Image profile, PasswordEncoder passwordEncoder){
         this.nickName = nickName;
         this.password = password;
         this.profile = profile;

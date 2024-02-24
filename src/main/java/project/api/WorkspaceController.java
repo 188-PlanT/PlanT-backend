@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import static java.util.stream.Collectors.toList;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.RequiredArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
@@ -166,12 +167,12 @@ public class WorkspaceController{
         }
     }
     
-    @Getter
+    @Getter @Setter
     static class AddUserRequest{
         private Long userId;
     }
     
-    @Getter
+    @Getter @Setter
     static class UpdateUserRequest{
         private Long userId;
         private UserRole authority;
