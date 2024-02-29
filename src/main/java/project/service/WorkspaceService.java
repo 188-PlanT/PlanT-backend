@@ -34,6 +34,8 @@ public class WorkspaceService{
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+	
+	private final EmailService emailService;
     
     @Value("${s3.default-image-url.workspace}")
     private String DEFAULT_WORKSPACE_IMAGE_URL;
@@ -137,6 +139,7 @@ public class WorkspaceService{
         
         workspace.addUser(user);
         
+		emailService.sendInvitationMail(user.getEmail(), loginUser.getEmail(), workspace.getName());
         
         // Lazy Loding
         workspace.getUserWorkspaces().stream()

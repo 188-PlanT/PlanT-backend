@@ -4,6 +4,7 @@ import project.domain.*;
 import project.dto.workspace.*;
 import project.common.auth.oauth.UserInfo;
 import project.service.WorkspaceService;
+import project.service.EmailService;
 import project.exception.schedule.DateFormatException;
 
 import java.util.List;
@@ -84,7 +85,7 @@ public class WorkspaceController{
                                         @RequestBody AddUserRequest request){
 
         Workspace workspace = workspaceService.addUser(workspaceId, userInfo.getUsername(), request.getUserId());
-        
+		
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
         
         return ResponseEntity.ok(response);
