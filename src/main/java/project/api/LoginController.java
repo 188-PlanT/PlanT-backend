@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.HttpHeaders;
 
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-// @CrossOrigin("*.goorm.site")
 public class LoginController{
     
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -43,9 +43,17 @@ public class LoginController{
         
         String refreshToken = jwtProvider.createRefreshToken(loginUser);
         
+        ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+                                                .httpOnly(true)
+                                                .secure(true)
+                                                .maxAge(60*60*24)
+                                                .build();
+        
         LoginResponse response = new LoginResponse(accessToken, refreshToken);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                            .body(response);
     }
 
     @PostMapping("/v1/refresh")
@@ -53,9 +61,17 @@ public class LoginController{
         
         String accessToken = jwtProvider.createAccessToken(refreshToken);
         
+        ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+                                                .httpOnly(true)
+                                                .secure(true)
+                                                .maxAge(60*60*24)
+                                                .build();
+        
         AccessTokenResponse response = new AccessTokenResponse(accessToken);
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                            .body(response);
     }
     
     

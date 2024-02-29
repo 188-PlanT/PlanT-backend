@@ -46,22 +46,15 @@ public class S3Service {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
-
+            metadata.setContentLength(multipartFile.getSize());
             amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (AmazonServiceException e) {
+        } catch (AmazonServiceException e) { //여기 예외처리 필요
             e.printStackTrace();
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
 
-        //object 정보 가져오기
-        // ListObjectsV2Result listObjectsV2Result = amazonS3Client.listObjectsV2(bucket);
-        // List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-
-        // for (S3ObjectSummary object: objectSummaries) {
-        //     System.out.println("object = " + object.toString());
-        // }
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 }
