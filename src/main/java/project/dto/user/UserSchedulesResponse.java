@@ -17,15 +17,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter
 @NoArgsConstructor
 public class UserSchedulesResponse {
-    private Long userId;
+    private String email;
     private int totalPages;
     private int pageNumber;
     private List<ScheduleDto> schedules = new ArrayList<> ();
     
-    public static UserSchedulesResponse of(User user, int totalPage, int pageNumber, List<Schedule> schedules){
+    public static UserSchedulesResponse of(String email, int totalPage, int pageNumber, List<Schedule> schedules){
         UserSchedulesResponse response = new UserSchedulesResponse();
         
-        response.setUserId(user.getId());
+        response.setEmail(email);
         response.setTotalPages(totalPage);
         response.setPageNumber(pageNumber + 1);
         

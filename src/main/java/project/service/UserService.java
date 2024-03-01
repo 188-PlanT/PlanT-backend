@@ -101,7 +101,7 @@ public class UserService implements UserDetailsService{
     public Page<UserWorkspace> findWorkspaces(String email, Pageable pageable){
         User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
-        
+		
         Page<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user, pageable);
         
         //lazy loding
@@ -109,18 +109,15 @@ public class UserService implements UserDetailsService{
             uw.getWorkspace().getName();
             uw.getWorkspace().getProfile().getUrl();
         });
-        
         return userWorkspaces;
     }
     
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
     public Page<UserSchedule> findSchedules(String email, LocalDateTime date, Pageable pageable){
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(user, date, date.plusDays(1).minusSeconds(1), pageable);
-        
+        log.info("<================= 11111 ==================>");
+        Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(email, date, date.plusDays(1).minusSeconds(1), pageable);
+        log.info("<================= 22222 ==================>");
         //lazy loding
         userSchedules.getContent().stream().forEach(uw -> uw.getSchedule().getWorkspace().getName());
 

@@ -99,8 +99,8 @@ public class UserController{
     @GetMapping("/v1/users/workspaces")
     public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(@AuthenticationPrincipal UserInfo userInfo, Pageable pageable){
         
-        User loginUser = userService.findByEmail(userInfo.getUsername());
-        
+		User loginUser = userService.findByEmail(userInfo.getUsername());
+		
         Page<UserWorkspace> page = userService.findWorkspaces(userInfo.getUsername(), pageable);
         
         List<Workspace> workspaces = page.getContent()
@@ -118,8 +118,6 @@ public class UserController{
     public ResponseEntity<UserSchedulesResponse> readUserSchedules(@AuthenticationPrincipal UserInfo userInfo, 
                                                                     @RequestParam String date,
                                                                     Pageable pageable){
-        User loginUser = userService.findByEmail(userInfo.getUsername());
-        
         LocalDateTime dateTime = parseDateString(date);
         
         Page<UserSchedule> page = userService.findSchedules(userInfo.getUsername(), dateTime, pageable);
@@ -129,7 +127,7 @@ public class UserController{
                                         .map(us -> us.getSchedule())
                                         .collect(toList());
         
-        UserSchedulesResponse response = UserSchedulesResponse.of(loginUser, page.getTotalPages(), page.getNumber(), schedules);
+        UserSchedulesResponse response = UserSchedulesResponse.of(userInfo.getUsername(), page.getTotalPages(), page.getNumber(), schedules);
         
         return ResponseEntity.ok(response);
     }
