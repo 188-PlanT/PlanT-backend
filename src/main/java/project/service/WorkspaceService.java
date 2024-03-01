@@ -233,7 +233,7 @@ public class WorkspaceService{
         
         workspace.checkUser(loginUser);
         
-        List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, date, date);
+        List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, date, date.plusDays(1).minusSeconds(1));
         
         return CalendarResponse.of(workspace, schedules);
     }

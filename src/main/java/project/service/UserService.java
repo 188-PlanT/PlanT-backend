@@ -119,7 +119,7 @@ public class UserService implements UserDetailsService{
         User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
         
-        Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(user, date, pageable);
+        Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(user, date, date.plusDays(1).minusSeconds(1), pageable);
         
         //lazy loding
         userSchedules.getContent().stream().forEach(uw -> uw.getSchedule().getWorkspace().getName());
