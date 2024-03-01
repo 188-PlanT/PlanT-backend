@@ -236,4 +236,19 @@ public class UserService implements UserDetailsService{
         
         return UserInfo.from(findUser);
     }
+	
+	// < == dumyDB 조회용 로그인 ==>
+    @Transactional(readOnly = true)
+    public User signInDumy(String email, String password){
+        
+        User findUser = userRepository.findByEmail(email)
+            .orElseThrow(NoSuchUserException::new);
+        
+        if (findUser.getPassword().equals(password)){
+            return findUser;
+        }
+        else{
+            throw new NoSuchUserException("아이디 혹은 비밀번호가 틀립니다");
+        }
+    }
 }

@@ -105,6 +105,19 @@ public class LoginController{
             
         return ResponseEntity.ok(response);
     }
+	
+	@PostMapping("/v1/login/dumy")
+    public ResponseEntity<LoginResponse> dumyLogin(@Valid @RequestBody LoginRequest request){
+        User loginUser = userService.signInDumy(request.getEmail(), request.getPassword());
+
+        String accessToken = jwtProvider.createAccessToken(loginUser);
+        
+        String refreshToken = jwtProvider.createRefreshToken(loginUser);
+        
+        LoginResponse response = new LoginResponse(accessToken, refreshToken);
+
+        return ResponseEntity.ok(response);
+    }
     
     @Getter
     @Setter
