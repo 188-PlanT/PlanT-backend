@@ -13,8 +13,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long> {
     
-    //쿼리 7번 나감 -> 페이징 포기하면 1번으로 변경 가능한데..
-    @Query(value= "select us from UserSchedule us where us.user.email =:email and (us.schedule.startDate between :startDate and :endDate or us.schedule.endDate between :startDate and :endDate)",
-		  countQuery="select count(us) from UserSchedule us where us.user.email =:email and (us.schedule.startDate between :startDate and :endDate or us.schedule.endDate between :startDate and :endDate)")
-    public Page<UserSchedule> searchByUser(String email, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    @Query("select us from UserSchedule us " + 
+			"join fetch us.user u join fetch us.schedule s join fetch s.workspace w " +
+			"where us.user.email =:email and (us.schedule.startDate between :startDate and :endDate or us.schedule.endDate between :startDate and :endDate)")
+    public List<UserSchedule> searchByUser(String email, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -1,8 +1,6 @@
 package project.dto.user;
 
-import project.domain.User;
-import project.domain.Schedule;
-import project.domain.Progress;
+import project.domain.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,35 +15,58 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter
 @NoArgsConstructor
 public class UserSchedulesResponse {
-    private String email;
-    private int totalPages;
-    private int pageNumber;
-    private List<ScheduleDto> schedules = new ArrayList<> ();
+    private Long userId;
+	private ScheduleListDto schedules;
+    //private List<ScheduleDto> schedules = new ArrayList<> ();
     
-    public static UserSchedulesResponse of(String email, int totalPage, int pageNumber, List<Schedule> schedules){
+    public static UserSchedulesResponse of(User user, List<UserSchedule> userSchedules){
         UserSchedulesResponse response = new UserSchedulesResponse();
         
-        response.setEmail(email);
-        response.setTotalPages(totalPage);
-        response.setPageNumber(pageNumber + 1);
-        
-        response.setSchedules(schedules.stream()
-                                            .map(ScheduleDto::new)
-                                            .collect(toList()));
+        response.setUserId(user.getId());
+        response.setSchedules(new ScheduleListDto(userSchedules));
         return response;
     }
+	
+	@Getter
+	static class ScheduleListDto{
+		private List<ScheduleDto> toDo = new ArrayList<> ();
+		private List<ScheduleDto> inProgress = new ArrayList<> ();
+		private List<ScheduleDto> done = new ArrayList<> ();
+		
+		public ScheduleListDto(List<UserSchedule> userSchedules){
+			for (UserSchedule us : userSchedules){
+				switch(us.getSchedule().getState().getKey()){
+					case "TO_DO":
+						toDo.add(new ScheduleDto(us));
+						break;
+					
+					case "IN_PROGRESS":
+						inProgress.add(new ScheduleDto(us));
+						break;
+					
+					case "DONE":
+						done.add(new ScheduleDto(us));
+						break;
+				}
+			}
+        }
+	}
     
     @Getter
     static class ScheduleDto{
         private Long scheduleId;
+		private Long workspaceId;
         private String workspaceName;
         private String scheduleName;
         @JsonFormat(pattern = "yyyyMMdd")
         private LocalDateTime endDate;
         private Progress state;
         
-        public ScheduleDto(Schedule schedule){
+        public ScheduleDto(UserSchedule userSchedule){
+			Schedule schedule = userSchedule.getSchedule();
+			
             this.scheduleId = schedule.getId();
+			this.workspaceId = schedule.getWorkspace().getId();
             this.workspaceName = schedule.getWorkspace().getName();
             this.scheduleName = schedule.getName();
             this.endDate = schedule.getEndDate();

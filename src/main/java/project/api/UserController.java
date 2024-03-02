@@ -97,18 +97,13 @@ public class UserController{
     
     // <== 유저 워크스페이스 리스트 조회 ==>
     @GetMapping("/v1/users/workspaces")
-    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(@AuthenticationPrincipal UserInfo userInfo, Pageable pageable){
+    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(@AuthenticationPrincipal UserInfo userInfo){
         
 		User loginUser = userService.findByEmail(userInfo.getUsername());
 		
-        Page<UserWorkspace> page = userService.findWorkspaces(userInfo.getUsername(), pageable);
+        List<UserWorkspace> userWorkspaces = userService.findWorkspaces(userInfo.getUsername());
         
-        List<Workspace> workspaces = page.getContent()
-                                        .stream()
-                                        .map(uw -> uw.getWorkspace())
-                                        .collect(toList());
-        
-        UserWorkspacesResponse response = UserWorkspacesResponse.of(loginUser, page.getTotalPages(), page.getNumber(), workspaces);
+        UserWorkspacesResponse response = UserWorkspacesResponse.of(loginUser, userWorkspaces);
         
         return ResponseEntity.ok(response);
     }
@@ -116,26 +111,23 @@ public class UserController{
     // <== 유저 스케줄 리스트 조회 ==>
     @GetMapping("/v1/users/schedules")
     public ResponseEntity<UserSchedulesResponse> readUserSchedules(@AuthenticationPrincipal UserInfo userInfo, 
-                                                                    @RequestParam String date,
-                                                                    Pageable pageable){
-        LocalDateTime dateTime = parseDateString(date);
+                                                                    @RequestParam String date){
+		
+		User loginUser = userService.findByEmail(userInfo.getUsername());
+		
+        LocalDateTime dateTime = parseDateMonthString(date);
         
-        Page<UserSchedule> page = userService.findSchedules(userInfo.getUsername(), dateTime, pageable);
+        List<UserSchedule> userSchedules = userService.findSchedules(userInfo.getUsername(), dateTime);
         
-        List<Schedule> schedules = page.getContent()
-                                        .stream()
-                                        .map(us -> us.getSchedule())
-                                        .collect(toList());
-        
-        UserSchedulesResponse response = UserSchedulesResponse.of(userInfo.getUsername(), page.getTotalPages(), page.getNumber(), schedules);
+        UserSchedulesResponse response = UserSchedulesResponse.of(loginUser, userSchedules);
         
         return ResponseEntity.ok(response);
     }
     
-    private LocalDateTime parseDateString(String dateStr){
+    private LocalDateTime parseDateMonthString(String dateStr){
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            return LocalDate.parse(dateStr, formatter).atStartOfDay();
+            dateStr = dateStr + "01";
+            return LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
         }
         catch (DateTimeParseException e){
             throw new DateFormatException();
@@ -144,11 +136,11 @@ public class UserController{
     
     // <== 유저 검색 ==>
     @GetMapping("/v1/users/search")
-    public ResponseEntity<UserDto> searchUser(@RequestParam String keyword){
+    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword){
 
-        User loginUser = userService.searchUser(keyword);
+        List<User> users = userService.searchUser(keyword);
         
-        return ResponseEntity.ok(UserDto.from(loginUser));
+        return ResponseEntity.ok(SearchUserResponse.from(users));
     }
     
     

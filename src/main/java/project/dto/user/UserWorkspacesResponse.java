@@ -1,7 +1,6 @@
 package project.dto.user;
 
-import project.domain.User;
-import project.domain.Workspace;
+import project.domain.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,18 +14,13 @@ import static java.util.stream.Collectors.toList;
 @NoArgsConstructor
 public class UserWorkspacesResponse {
     private Long userId;
-    private int totalPages;
-    private int pageNumber;
     private List<WorkspaceDto> workspaces = new ArrayList<> ();
     
-    public static UserWorkspacesResponse of(User user, int totalPage, int pageNumber, List<Workspace> workspaces){
+    public static UserWorkspacesResponse of(User user, List<UserWorkspace> userWorkspaces){
         UserWorkspacesResponse response = new UserWorkspacesResponse();
         
         response.setUserId(user.getId());
-        response.setTotalPages(totalPage);
-        response.setPageNumber(pageNumber + 1);
-        
-        response.setWorkspaces(workspaces.stream()
+        response.setWorkspaces(userWorkspaces.stream()
                                             .map(WorkspaceDto::new)
                                             .collect(toList()));
         
@@ -38,11 +32,13 @@ public class UserWorkspacesResponse {
         private Long workspaceId;
         private String workspaceName;
         private String profile;
+		private UserRole role;
         
-        public WorkspaceDto(Workspace workspace){
-            this.workspaceId = workspace.getId();
-            this.workspaceName = workspace.getName();
-            this.profile = workspace.getProfile().getUrl();
+        public WorkspaceDto(UserWorkspace userWorkspace){
+            this.workspaceId = userWorkspace.getWorkspace().getId();
+            this.workspaceName = userWorkspace.getWorkspace().getName();
+            this.profile = userWorkspace.getWorkspace().getProfile().getUrl();
+			this.role = userWorkspace.getUserRole();
         }
     }
 }

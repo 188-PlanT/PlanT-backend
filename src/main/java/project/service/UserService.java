@@ -98,28 +98,22 @@ public class UserService implements UserDetailsService{
     
     // <== 워크스페이스 조회 ==>
     @Transactional(readOnly = true)
-    public Page<UserWorkspace> findWorkspaces(String email, Pageable pageable){
+    public List<UserWorkspace> findWorkspaces(String email){
         User user = userRepository.findByEmail(email)
             .orElseThrow(NoSuchUserException::new);
 		
-        Page<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user, pageable);
-        
-        //lazy loding
-        userWorkspaces.getContent().stream().forEach(uw -> {
-            uw.getWorkspace().getName();
-            uw.getWorkspace().getProfile().getUrl();
-        });
+        List<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user);
+
         return userWorkspaces;
     }
     
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
-    public Page<UserSchedule> findSchedules(String email, LocalDateTime date, Pageable pageable){
-        log.info("<================= 11111 ==================>");
-        Page<UserSchedule> userSchedules = userScheduleRepository.searchByUser(email, date, date.plusDays(1).minusSeconds(1), pageable);
-        log.info("<================= 22222 ==================>");
-        //lazy loding
-        userSchedules.getContent().stream().forEach(uw -> uw.getSchedule().getWorkspace().getName());
+    public List<UserSchedule> findSchedules(String email, LocalDateTime date){
+		
+		// log.info("startDate = {}, endDate = {}", date, date.plusMonths(1).minusSeconds(1));
+		
+        List<UserSchedule> userSchedules = userScheduleRepository.searchByUser(email, date, date.plusMonths(1).minusSeconds(1));
 
         return userSchedules;
     }
@@ -155,15 +149,11 @@ public class UserService implements UserDetailsService{
     
     // <== 유저 검색 ==>
     @Transactional(readOnly = true)
-    public User searchUser(String keyword){
+    public List<User> searchUser(String keyword){
         
-        User user = userRepository.searchByKeyword(keyword)
-            .orElseThrow(NoSuchUserException::new);
+        List<User> users = userRepository.searchByKeyword(keyword);
         
-        // lazy loding
-        user.getProfile().getUrl();
-        
-        return user;
+        return users;
     }
     
     // <== 이메일 검증 코드 제작 ==>
