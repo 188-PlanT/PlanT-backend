@@ -43,17 +43,9 @@ public class LoginController{
         
         String refreshToken = jwtProvider.createRefreshToken(loginUser);
         
-        ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
-                                                .httpOnly(true)
-                                                .secure(true)
-                                                .maxAge(60*60*24)
-                                                .build();
-        
         LoginResponse response = new LoginResponse(accessToken, refreshToken);
 
-        return ResponseEntity.ok()
-                            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                            .body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/v1/refresh")
@@ -61,17 +53,9 @@ public class LoginController{
         
         String accessToken = jwtProvider.createAccessToken(refreshToken);
         
-        ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
-                                                .httpOnly(true)
-                                                .secure(true)
-                                                .maxAge(60*60*24)
-                                                .build();
-        
         AccessTokenResponse response = new AccessTokenResponse(accessToken);
         
-        return ResponseEntity.ok()
-                            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                            .body(response);
+        return ResponseEntity.ok(response);
     }
     
     

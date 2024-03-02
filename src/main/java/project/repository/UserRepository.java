@@ -25,6 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     
     public List<User> findByIdIn(List<Long> userIds);
     
-    @Query("select u from User u where u.email = :keyword or u.nickName = :keyword")
+    @Query("select u from User u where (u.email = :keyword or u.nickName = :keyword) and u.userRole != 'PENDING' ")
     public Optional<User> searchByKeyword(String keyword);
 }

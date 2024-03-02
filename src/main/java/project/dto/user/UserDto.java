@@ -3,7 +3,7 @@ package project.dto.user;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.domain.User;
+import project.domain.*;
 
 @Setter
 @Getter
@@ -13,6 +13,7 @@ public class UserDto {
     private String nickName;
     private String email;
     private String profile;
+	private UserRole state;
     
     public static UserDto from(User user){
         UserDto dto = new UserDto();
@@ -21,6 +22,7 @@ public class UserDto {
         dto.setNickName(user.getNickName());
         dto.setEmail(user.getEmail());
         dto.setProfile(user.getProfile().getUrl());
+		dto.setState(user.getUserRole());
         
         return dto;
     }
