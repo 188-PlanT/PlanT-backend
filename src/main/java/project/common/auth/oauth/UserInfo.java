@@ -13,38 +13,27 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-//OAuth2 유저 반환을 위한 프록시 객체
 @Getter
-public class UserInfo implements OAuth2User, UserDetails{
+public class UserInfo implements UserDetails {
     
+	private Long userId;
     private String username;
     private String password;
-    private Map<String, Object> attributes;
-    // private Collection<? extends GrantedAuthority> authorities;
     private String authority;
     
     @Builder
-    public UserInfo(String username, String password, String authority, Map<String, Object> attributes){
+    public UserInfo(Long userId, String username, String authority, String password){
+		this.userId = userId;
         this.username = username;
-        this.password = password;
         this.authority = authority;
-        this.attributes = attributes;
-    }
-    
-    
-    public static UserInfo ofOAuth2(User user, Map<String, Object> attributes){
-        return UserInfo.builder()
-                        .username(user.getEmail()) 
-                        .password(user.getPassword()) 
-                        .authority(user.getRoleKey())
-                        .attributes(attributes)                                 
-                        .build();
+		this.password = password;
     }
     
     public static UserInfo from(User user){
         return UserInfo.builder()
-                        .username(user.getEmail()) 
-                        .password(user.getPassword()) 
+    					.userId(user.getId())
+						.password(user.getPassword())
+                        .username(user.getEmail())
                         .authority(user.getRoleKey())
                         .build();
     }
@@ -81,18 +70,5 @@ public class UserInfo implements OAuth2User, UserDetails{
     @Override
     public boolean isEnabled(){
         return true;
-    }
-    
-    //<== Oauth2User ==>
-    @Override
-    public String getName(){
-        return this.username;
-    }
-    @Override
-    public Map<String, Object> getAttributes() {
-        if (this.attributes == null){
-            throw new IllegalStateException("OAuth2User입니다");
-        }
-        return this.attributes;
     }
 }

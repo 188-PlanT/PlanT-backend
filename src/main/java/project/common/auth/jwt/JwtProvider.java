@@ -65,6 +65,8 @@ public class JwtProvider {
     // User정보로 Access Token 생성
     public String createAccessToken(User user){
         
+		Long userId = user.getId();
+		
         String email = user.getEmail();
         
         String authorities = user.getRoleKey();
@@ -72,44 +74,12 @@ public class JwtProvider {
         Date expiration = new Date(System.currentTimeMillis() + ACCESS_EXP_TIME);
         
         return Jwts.builder()
+				.claim("userId", userId + "")
                 .claim("email", email)
                 .claim("authorities", authorities)
                 .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-    }
-    
-    //UserInfo로 AccessToken 생성
-    public String createAccessToken(UserInfo userInfo){
-        String email = userInfo.getUsername();
-        String authorities = userInfo.getAuthority();
-        
-        Date expiration = new Date(System.currentTimeMillis() + ACCESS_EXP_TIME);
-        
-        return Jwts.builder()
-            .claim("email", email)
-            .claim("authorities", authorities)
-            .setExpiration(expiration)
-            .signWith(SignatureAlgorithm.HS256, secretKey)
-            .compact();
-    }
-    
-    public String createRefreshToken(UserInfo userInfo){
-        String email = userInfo.getUsername();
-        
-        Date expiration = new Date(System.currentTimeMillis() + REFRESH_EXP_TIME);
-        
-        String refreshToken = Jwts.builder()
-                                .claim("email", email)
-                                .setExpiration(expiration)
-                                .signWith(SignatureAlgorithm.HS256, secretKey)
-                                .compact();
-        
-        //redis 유효기간 설정
-        redisService.setValues(email, refreshToken);
-        redisService.setExpiration(email, REFRESH_EXP_TIME);
-        
-        return refreshToken;
     }
     
     //User 정보로 Refresh Token 생성
@@ -136,12 +106,15 @@ public class JwtProvider {
     public Authentication getAuthentication(String accessToken){
         
         Claims claims = validateAccessToken(accessToken);
+		
+		String userId =  (String)claims.get("userId");
         
         String email = (String)claims.get("email");
         
         String authority = (String)claims.get("authorities");
         
         UserInfo principal = UserInfo.builder()
+										.userId(Long.parseLong(userId))
                                         .username(email)
                                         .authority(authority)
                                         .build();
@@ -154,7 +127,7 @@ public class JwtProvider {
         
         Claims claims = parseClaims(accessToken);
         
-        if (claims.get("email") == null || claims.get("authorities") == null){
+        if (claims.get("userId") == null || claims.get("email") == null || claims.get("authorities") == null){
             throw new InvalidTokenException("토큰 값이 올바르지 않습니다");    
         }
         
