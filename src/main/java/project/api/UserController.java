@@ -136,9 +136,11 @@ public class UserController{
     
     // <== 유저 검색 ==>
     @GetMapping("/v1/users/search")
-    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword){
-
-        List<User> users = userService.searchUser(keyword);
+    public ResponseEntity<SearchUserResponse> searchUser(@AuthenticationPrincipal UserInfo userInfo,
+														 @RequestParam String keyword){
+		Long loginUserId = userInfo.getUserId();
+		
+        List<User> users = userService.searchUser(loginUserId, keyword);
         
         return ResponseEntity.ok(SearchUserResponse.from(users));
     }

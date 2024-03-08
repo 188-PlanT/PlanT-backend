@@ -149,9 +149,9 @@ public class UserService implements UserDetailsService{
     
     // <== 유저 검색 ==>
     @Transactional(readOnly = true)
-    public List<User> searchUser(String keyword){
+    public List<User> searchUser(Long loginUserId, String keyword){
         
-        List<User> users = userRepository.searchByKeyword(keyword);
+        List<User> users = userRepository.searchByKeyword(loginUserId, keyword);
         
         return users;
     }

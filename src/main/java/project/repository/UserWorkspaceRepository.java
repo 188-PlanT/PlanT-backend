@@ -14,4 +14,9 @@ public interface UserWorkspaceRepository extends JpaRepository<UserWorkspace, Lo
     
     @Query("select uw from UserWorkspace uw join fetch uw.user u join fetch uw.workspace w join fetch w.profile p where uw.user =:user")
     public List<UserWorkspace> searchByUser(User user);
+	
+	@Query("select uw from UserWorkspace uw " + 
+		   "join fetch uw.user u join fetch uw.workspace w join fetch w.profile p " + 
+		   "where u.id =:userId and w.id =:workspaceId")
+	public Optional<UserWorkspace> searchByUserIdAndWorkspaceId(Long userId, Long workspaceId);
 }

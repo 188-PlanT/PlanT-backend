@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom{
+	
+	public Optional<User> findById(Long id);
     
     public boolean existsByEmail(String email);
     
@@ -28,6 +30,6 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     @Query("select u from User u " +
 		   "join fetch u.profile p " +
 		   "where (u.email like concat('%', :keyword, '%') or u.nickName like concat('%', :keyword, '%')) " +
-		   "and u.userRole != 'PENDING' ")
-    public List<User> searchByKeyword(String keyword);
+		   "and u.userRole != 'PENDING' and u.id != :loginUserId")
+    public List<User> searchByKeyword(Long loginUserId, String keyword);
 }

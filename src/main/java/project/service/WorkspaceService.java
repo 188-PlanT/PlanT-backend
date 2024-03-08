@@ -4,7 +4,7 @@ import project.domain.*;
 import project.common.auth.oauth.UserInfo;
 import project.dto.workspace.*;
 import project.repository.*;
-import project.exception.user.NoSuchUserException;
+import project.exception.user.*;
 import project.exception.workspace.NoSuchWorkspaceException;
 import project.exception.image.NoSuchImageException;
 
@@ -34,6 +34,7 @@ public class WorkspaceService{
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+	private final UserWorkspaceRepository userWorkspaceRepository;
 	
 	private final EmailService emailService;
     
@@ -42,9 +43,9 @@ public class WorkspaceService{
     
     // <== 워크스페이스 제작 ==>
     @Transactional
-    public Workspace makeWorkspace(CreateWorkspaceRequest request, String createUserEmail){
+    public Workspace makeWorkspace(CreateWorkspaceRequest request, Long createUserId){
                 
-        User createUser = userRepository.findByEmail(createUserEmail)
+        User createUser = userRepository.findById(createUserId)
             .orElseThrow(NoSuchUserException::new);
         
         List<User> userList = userRepository.findByIdIn(request.getUsers());
@@ -68,78 +69,56 @@ public class WorkspaceService{
     
     // <== 워크스페이스 삭제 ==>
     @Transactional
-    public void removeWorkspace(Long workspaceId, String userEmail){
-        User loginUser = userRepository.findByEmail(userEmail)
-            .orElseThrow(NoSuchUserException::new);
+    public void removeWorkspace(Long workspaceId, Long loginUserId){
+		
+		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         
-        Workspace findWorkspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        findWorkspace.checkAdmin(loginUser);
-        
-        workspaceRepository.delete(findWorkspace);
+        workspaceRepository.delete(workspace);
     }
     
     // <== 워크스페이스 단일 조회 ==>
     @Transactional(readOnly = true)
-    public Workspace findOne(Long workspaceId, String userEmail){
-        User loginUser = userRepository.findByEmail(userEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Workspace findWorkspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        findWorkspace.checkUser(loginUser);
+    public Workspace findOne(Long workspaceId, Long loginUserId){
+		
+		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         
         // Lazy Loding
-        findWorkspace.getUserWorkspaces().stream()
+        workspace.getUserWorkspaces().stream()
             .forEach(uw -> {
                 User user = uw.getUser();
                 Image image = user.getProfile();
                 image.getUrl();
             });
         
-        findWorkspace.getProfile().getUrl();
-        
-        return findWorkspace;
+        return workspace;
     }
     
     //<== 워크스페이스 수정 ==>
     @Transactional
-    public Workspace updateWorkspace(Long id, String userEmail, UpdateWorkspaceRequest request){
+    public Workspace updateWorkspace(Long workspaceId, Long loginUserId, UpdateWorkspaceRequest request){
         
-        User loginUser = userRepository.findByEmail(userEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Workspace workspace = workspaceRepository.findById(id)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        workspace.checkAdmin(loginUser);
+		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         
         Image profile = imageRepository.findByUrl(request.getProfile())
                                         .orElseThrow(NoSuchImageException::new);
         
         workspace.updateWorkspace(request.getName(), profile);
+		
         return workspace;
     }
     
     // <== 워크스페이스 유저 추가 ==>
     @Transactional
-    public Workspace addUser(Long workspaceId, String userEmail, Long userId){
-        User loginUser = userRepository.findByEmail(userEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        workspace.checkUser(loginUser);
+    public Workspace addUser(Long workspaceId, Long loginUserId, Long userId){
+		
+		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
         workspace.addUser(user);
         
-		emailService.sendInvitationMail(user.getEmail(), loginUser.getEmail(), workspace.getName());
+		emailService.sendInvitationMail(user.getEmail(), workspace.getName());
         
         // Lazy Loding
         workspace.getUserWorkspaces().stream()
@@ -149,21 +128,13 @@ public class WorkspaceService{
                 image.getUrl();
             });
         
-        workspace.getProfile().getUrl();
-        
         return workspace;
     }
     
     // <== 워크스페이스 유저 삭제 ==>
     @Transactional
-    public void removeUser(Long workspaceId, String userEmail, Long userId){
-        User loginUser = userRepository.findByEmail(userEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        workspace.checkAdmin(loginUser);
+    public void removeUser(Long workspaceId, Long loginUserId, Long userId){
+		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
@@ -173,20 +144,12 @@ public class WorkspaceService{
     
     // <== 워크스페이스 유저 권한 변경 ==>
     @Transactional
-    public Workspace changeUserAuthority(Long workspaceId, String loginUserEmail, Long userId, UserRole authority){
-        User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(NoSuchUserException::new);
+    public Workspace changeUserAuthority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
         
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
+		Workspace workspace = validateChangeUserAutority(workspaceId, loginUserId, userId, authority);
         
         User user = userRepository.findById(userId)
-            .orElseThrow(NoSuchUserException::new);
-        
-        //스스로 관리자 권한 부여 가능 -> 로직 수정 필요
-        if(loginUser != user){
-            workspace.checkAdmin(loginUser);
-        }        
+            .orElseThrow(NoSuchUserException::new);      
         
         workspace.giveAuthority(user, authority);
         
@@ -198,44 +161,32 @@ public class WorkspaceService{
                 image.getUrl();
             });
         
-        workspace.getProfile().getUrl();
-        
         return workspace;
     }
     
     // <== 캘린더 응답 반환 ==>
     @Transactional(readOnly = true)
-    public CalendarResponse getCalendar(Long workspaceId, String loginUserEmail, LocalDateTime date){
-        User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        workspace.checkUser(loginUser);
+    public CalendarResponse getCalendar(Long workspaceId, Long loginUserId, LocalDateTime date){
+		
+        Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         
         LocalDateTime startDate = getStartDate(date);
         LocalDateTime endDate = getEndDate(date);
         
         List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, startDate, endDate);
         
-        return CalendarResponse.of(workspace, schedules);
+        return CalendarResponse.of(workspace, schedules, loginUserId);
     }
     
     // <== 오늘의 일정 반환 ==>
     @Transactional(readOnly = true)
-    public CalendarResponse getDailySchedules(Long workspaceId, String loginUserEmail, LocalDateTime date){
-        User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-            .orElseThrow(NoSuchWorkspaceException::new);
-        
-        workspace.checkUser(loginUser);
+    public CalendarResponse getDailySchedules(Long workspaceId, Long loginUserId, LocalDateTime date){
+		
+		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         
         List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, date, date.plusDays(1).minusSeconds(1));
         
-        return CalendarResponse.of(workspace, schedules);
+        return CalendarResponse.of(workspace, schedules, loginUserId);
     }
     
     
@@ -256,4 +207,30 @@ public class WorkspaceService{
         date = date.withDayOfMonth(date.lengthOfMonth());
         return date.atTime(LocalTime.MAX);
     }
+	
+	private Workspace checkUserAuthority(Long workspaceId, Long loginUserId, UserRole... roles){
+		UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
+			.orElseThrow(NoSuchWorkspaceException::new);
+		
+		for (UserRole role : roles){
+			if (userWorkspace.getUserRole().equals(role)){
+				return userWorkspace.getWorkspace();
+			}
+		}
+		
+		throw new InvalidAuthorityException();
+	}
+	
+	private Workspace validateChangeUserAutority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
+		//워크스페이스 초대 수락 시
+		if(loginUserId == userId){
+			if (!authority.equals(UserRole.USER)){ // 유저 권한 외의 요청 발생시 에러 요청
+				throw new InvalidAuthorityException();
+			}
+			return checkUserAuthority(workspaceId, loginUserId, UserRole.PENDING);
+		}
+		else{ //회원 어드민 권한 부여 시
+			return checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+		}
+	}
 }

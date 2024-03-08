@@ -59,7 +59,7 @@ public class ControllerAdvice{
             .body(response);
     }
     
-    @ExceptionHandler(DateFormatException.class) // 비밀번호 검증 실패 예외
+    @ExceptionHandler(DateFormatException.class) // 날짜 검증 실패 예외
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(DateFormatException e){
         log.info("DateFormatException");
         

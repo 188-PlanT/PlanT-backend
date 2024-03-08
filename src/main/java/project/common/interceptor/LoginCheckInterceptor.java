@@ -23,11 +23,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
         HttpSession session = request.getSession(false);
         
         //근데 ADMIN이 아니면 세션 생성을 안하는데 여기서 중복 검증 해야하나??
-        if (session == null || !checkSessionUserIsAdmin(session)){ // 세션이 존재하지 않거나, 어드민 유저가 없을 경우
-            log.info("위임 전 사용자 요청");
-            response.sendRedirect("/admin/login?redirectURL=" + requestURI);
-            return false;
-        }
+        // if (session == null || !checkSessionUserIsAdmin(session)){ // 세션이 존재하지 않거나, 어드민 유저가 없을 경우
+        //     log.info("위임 전 사용자 요청");
+        //     response.sendRedirect("/admin/login?redirectURL=" + requestURI);
+        //     return false;
+        // }
         return true;
     }
     

@@ -30,8 +30,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 @Component
 public class JwtProvider {
-    //만료시간 : 30분
-    private final Long ACCESS_EXP_TIME = 1000L * 60 * 30;
+    //만료시간 : 30분 -> 개발 기간동안 24시간으로 변경
+    private final Long ACCESS_EXP_TIME = 1000L * 60 * 60 * 24;
     
     //만료 시간 : 하루
     private final Long REFRESH_EXP_TIME = 1000L * 60 * 60 * 24;

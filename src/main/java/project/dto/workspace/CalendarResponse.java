@@ -16,10 +16,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class CalendarResponse {
     private Long workspaceId;
     private String workspaceName;
+	private UserRole role;
     
     List<ScheduleDto> schedules = new ArrayList<> ();
     
-    public static CalendarResponse of(Workspace workspace, List<Schedule> schedules){
+    public static CalendarResponse of(Workspace workspace, List<Schedule> schedules, Long loginUserId){
         CalendarResponse dto = new CalendarResponse();
         
         dto.setWorkspaceId(workspace.getId());
@@ -30,6 +31,13 @@ public class CalendarResponse {
             .map(ScheduleDto::new)
             .collect(toList())
         );
+		
+		for(UserWorkspace uw : workspace.getUserWorkspaces()){
+			if (uw.getUser().getId() == loginUserId){
+				dto.setRole(uw.getUserRole());
+				break;
+			}
+		}
         
         return dto;
     }

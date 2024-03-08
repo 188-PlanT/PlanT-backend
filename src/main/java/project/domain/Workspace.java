@@ -80,18 +80,18 @@ public class Workspace extends BaseEntity{
         this.userWorkspaces.removeIf(uw -> uw.getUser().equals(user));
     }
     
-    public void checkAdmin(User user){
-        if (!this.hasUser(user)){
-            throw new NoSuchUserException();
-        }
-        
+    public void checkAdmin(Long userId){
         for (UserWorkspace uw : this.userWorkspaces){
-            if (uw.getUser().equals(user) && uw.getUserRole().equals(UserRole.ADMIN)){
+            if (uw.getUser().getId() == userId && uw.getUserRole().equals(UserRole.ADMIN)){
                 return;
             }
         }
         
         throw new InvalidAuthorityException();
+    }
+	
+	public void checkAdmin(User user){
+        return;
     }
     
     public void checkUser(User user){
