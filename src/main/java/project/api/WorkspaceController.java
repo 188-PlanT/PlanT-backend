@@ -95,11 +95,12 @@ public class WorkspaceController{
     @PutMapping("/v1/workspaces/{workspaceId}/users")
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
+										@RequestParam Long userId,
                                         @RequestBody UpdateUserRequest request){
         
         Workspace workspace = workspaceService.changeUserAuthority(workspaceId, 
                                                                    userInfo.getUserId(), 
-                                                                   request.getUserId(), 
+                                                                   userId, 
                                                                    request.getAuthority());
         
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
@@ -111,9 +112,9 @@ public class WorkspaceController{
     @DeleteMapping("/v1/workspaces/{workspaceId}/users")
     public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
                                                         @AuthenticationPrincipal UserInfo userInfo,
-                                                         @RequestBody AddUserRequest request){
+                                                        @RequestParam Long userId){
         
-        workspaceService.removeUser(workspaceId, userInfo.getUserId(), request.getUserId());
+        workspaceService.removeUser(workspaceId, userInfo.getUserId(), userId);
         
         RemoveUserResponse response = new RemoveUserResponse();
         
@@ -175,7 +176,6 @@ public class WorkspaceController{
     
     @Getter @Setter
     static class UpdateUserRequest{
-        private Long userId;
         private UserRole authority;
     }
 }

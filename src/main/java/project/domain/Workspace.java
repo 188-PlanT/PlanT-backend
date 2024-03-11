@@ -1,6 +1,7 @@
 package project.domain;
 
 import project.exception.user.*;
+import project.exception.workspace.NoWorkspaceAdminException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -76,23 +77,28 @@ public class Workspace extends BaseEntity{
         if (!this.hasUser(user)){
             throw new NoSuchUserException();
         }
+		
+		// 어드민이 1명뿐인데 나가기 시도
+		if (checkAdmin(user.getId()) && this.userWorkspaces.stream()
+                                    						.filter(uw -> uw.getUserRole().equals(UserRole.ADMIN))
+                                    						.count() == 1){
+			
+			throw new NoWorkspaceAdminException();
+		}
         
         this.userWorkspaces.removeIf(uw -> uw.getUser().equals(user));
     }
     
-    public void checkAdmin(Long userId){
-        for (UserWorkspace uw : this.userWorkspaces){
-            if (uw.getUser().getId() == userId && uw.getUserRole().equals(UserRole.ADMIN)){
-                return;
-            }
-        }
+		private boolean checkAdmin(Long userId){
+			for (UserWorkspace uw : this.userWorkspaces){
+				if (uw.getUser().getId() == userId && uw.getUserRole().equals(UserRole.ADMIN)){
+					return true;
+				}
+			}
         
-        throw new InvalidAuthorityException();
-    }
-	
-	public void checkAdmin(User user){
-        return;
-    }
+			return false;
+		// throw new InvalidAuthorityException();
+		}
     
     public void checkUser(User user){
         if (!this.hasUser(user)){

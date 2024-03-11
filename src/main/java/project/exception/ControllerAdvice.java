@@ -184,6 +184,17 @@ public class ControllerAdvice{
             .status(HttpStatus.NOT_FOUND)
             .body(response);
     }
+	
+	@ExceptionHandler(NoWorkspaceAdminException.class)
+    public ResponseEntity<ErrorResponse> invalidUserHandler(NoWorkspaceAdminException e){
+        log.info("NoWorkspaceAdminException");
+        
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
 
     @ExceptionHandler(RuntimeException.class) // 500 ERROR
     public ResponseEntity<ErrorResponse> ValidateErrorHandler(RuntimeException e){
