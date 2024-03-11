@@ -39,3 +39,6 @@ goorm.manifest
 
 # gradle wrapper #
 !gradle/wrapper/gradle-wrapper.jar
+
+# github workflows #
+!.github/workflows/*.yml
