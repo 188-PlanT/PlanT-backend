@@ -92,7 +92,7 @@ public class WorkspaceController{
     }
     
     // <== 유저 권한 수정 ==>
-    @PutMapping("/v1/workspaces/{workspaceId}/users")
+    @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
 										@RequestParam Long userId,
@@ -109,7 +109,7 @@ public class WorkspaceController{
     }
     
     // <== 유저 추방 ==>
-    @DeleteMapping("/v1/workspaces/{workspaceId}/users")
+    @DeleteMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                         @RequestParam Long userId){
