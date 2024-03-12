@@ -2,7 +2,6 @@ name: CICD Test
 run-name: Running
 on:
   push:
-    - 'main'
 
 env:
   AWS_REGION: ap-northeast-2
