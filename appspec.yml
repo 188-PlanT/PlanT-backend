@@ -10,7 +10,7 @@ permissions:
   - object: /
     owner: ubuntu
     group: ubuntu
-	mode: 755
+	mode: 777
 
 hooks:
   AfterInstall:
