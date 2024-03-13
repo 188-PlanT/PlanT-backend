@@ -105,7 +105,6 @@ public class LoginController{
     }
 	@GetMapping("/cicd/test")
 	public ResponseEntity<String> cicdTest(){
-
         return ResponseEntity.ok("success");
     }
     
