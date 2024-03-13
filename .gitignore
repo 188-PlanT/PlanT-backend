@@ -42,3 +42,4 @@ goorm.manifest
 
 # github workflows #
 !.github/workflows/*.yml
+!appspec.yml
