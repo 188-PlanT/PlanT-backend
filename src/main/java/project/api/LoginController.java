@@ -90,6 +90,7 @@ public class LoginController{
         return ResponseEntity.ok(response);
     }
 	
+	// ### 더미 데이터 테스트용 로그인 기능 ###
 	@PostMapping("/v1/login/dumy")
     public ResponseEntity<LoginResponse> dumyLogin(@Valid @RequestBody LoginRequest request){
         User loginUser = userService.signInDumy(request.getEmail(), request.getPassword());
@@ -101,6 +102,11 @@ public class LoginController{
         LoginResponse response = new LoginResponse(accessToken, refreshToken);
 
         return ResponseEntity.ok(response);
+    }
+	@GetMapping("/v1/cicd/test")
+	public ResponseEntity<String> cicdTest(){
+
+        return ResponseEntity.ok("success");
     }
     
     @Getter
