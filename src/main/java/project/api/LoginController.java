@@ -103,7 +103,7 @@ public class LoginController{
 
         return ResponseEntity.ok(response);
     }
-	@GetMapping("/v1/cicd/test")
+	@GetMapping("/cicd/test")
 	public ResponseEntity<String> cicdTest(){
 
         return ResponseEntity.ok("success");
