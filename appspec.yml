@@ -9,6 +9,7 @@ permissions:
   - object: /home/ubuntu/spring-github-action
     owner: ubuntu
     group: ubuntu
+    mode: -R 777
 hooks:
   AfterInstall:
     - location: scripts/stop.sh
