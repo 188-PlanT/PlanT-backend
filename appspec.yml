@@ -6,10 +6,11 @@ files:
     destination: /home/ubuntu/spring-github-action
     overwrite: yes
 permissions:
-  - object: /home/ubuntu/spring-github-action
+  - object: /
+    pattern: "**"
+    mode: '755'
     owner: ubuntu
     group: ubuntu
-    mode: -R 777
 hooks:
   AfterInstall:
     - location: scripts/stop.sh
