@@ -6,7 +6,7 @@ files:
     destination: /home/ubuntu/spring-github-action
     overwrite: yes
 permissions:
-  - object: /
+  - object: /home/ubuntu/spring-github-action
     owner: ubuntu
     group: ubuntu
 hooks:
