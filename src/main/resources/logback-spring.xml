@@ -14,7 +14,7 @@
     </appender>
     
     <!-- 디버그 파일 로깅 설정 -->
-    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--     <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
@@ -24,7 +24,7 @@
             <totalSizeCap>100MB</totalSizeCap>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-    </appender>
+    </appender> -->
     
     <!-- 에러 파일 로깅 설정 -->
 <!--     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
