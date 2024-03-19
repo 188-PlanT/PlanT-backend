@@ -40,7 +40,7 @@ jobs:
       run: |
         cd ./src/main/resources
         touch ./application-prod.yml
-        echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application.yml
+        echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application-prod.yml
       shell: bash
     - name: S3에 업로드
       run: aws deploy push --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --ignore-hidden-files --s3-location s3://$AWS_S3_BUCKET/cicdtest/$GITHUB_SHA.zip --source .
