@@ -14,6 +14,7 @@ NOW=$(date +%c)
 
 #echo "[$NOW] > $JAR 실행" >> $START_LOG
 #nohup java -jar $JAR --spring.profiles.active=prod & #> $APP_LOG 2> $ERROR_LOG
+./gradlew build
 nohup java -jar $ROOT_PATH/build/libs/blazingDevs_calendar-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod &
 
 SERVICE_PID=$(pgrep -f $JAR)
