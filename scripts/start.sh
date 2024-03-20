@@ -8,8 +8,6 @@ ERROR_LOG="$ROOT_PATH/error.log"
 START_LOG="$ROOT_PATH/start.log"
 
 JAR=blazingDevs_calendar-0.0.1-SNAPSHOT.jar
-LOG=/dev/null
-
 NOW=$(date +%c)
 
 #echo "[$NOW] $JAR 복사" >> $START_LOG
@@ -18,7 +16,7 @@ NOW=$(date +%c)
 #echo "[$NOW] > $JAR 실행" >> $START_LOG
 #./gradlew build
 export spring_profiles_active=prod
-nohup java -jar $ROOT_PATH/build/libs/$JAR > $LOG 2>&1 &
+nohup java -jar $ROOT_PATH/build/libs/$JAR > /dev/null 2> /dev/null < /dev/null &
 
 SERVICE_PID=$(pgrep -f $JAR)
 #echo "[$NOW] > 서비스 PID: $SERVICE_PID" >> $START_LOG
