@@ -36,7 +36,7 @@ public class UserController{
     private final EmailService emailService;
     
 
-    // <==유저 이메일 인증==>
+    // <==유저 이메일 검증==>
     @PostMapping("/v1/users/email")
     public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@RequestBody EmailCheckRequest request){
         
@@ -50,7 +50,7 @@ public class UserController{
         return ResponseEntity.ok(new EmailCheckResponse(true));
     }
 
-    // <==유저 닉네임 인증==>
+    // <==유저 닉네임 검증==>
     @PostMapping("/v1/users/nickname") //응답 결과 양식은 이메일과 같으므로 공유함
     public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@RequestBody NickNameCheckRequest request){
         
