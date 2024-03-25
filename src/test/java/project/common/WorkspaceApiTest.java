@@ -240,13 +240,13 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
 			.andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
 			.andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
-			.andExpect(jsonPath("$.schedules[0].endDate").value("20240401"))
+			.andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
 			.andExpect(jsonPath("$.schedules[0].state").value("TODO"))
 				
 			.andExpect(jsonPath("$.schedules[1].scheduleId").value("2"))
 			.andExpect(jsonPath("$.schedules[1].scheduleName").value("testSchedule2"))
-			.andExpect(jsonPath("$.schedules[1].startDate").value("20240401"))
-			.andExpect(jsonPath("$.schedules[1].endDate").value("20240401"))
+			.andExpect(jsonPath("$.schedules[1].startDate").value("20240430"))
+			.andExpect(jsonPath("$.schedules[1].endDate").value("20240501"))
 			.andExpect(jsonPath("$.schedules[1].state").value("TODO"))
 				
 			.andExpect(jsonPath("$.schedules[2]").doesNotExist());
@@ -279,16 +279,10 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
 			.andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
 			.andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
-			.andExpect(jsonPath("$.schedules[0].endDate").value("20240401"))
+			.andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
 			.andExpect(jsonPath("$.schedules[0].state").value("TODO"))
 				
-			.andExpect(jsonPath("$.schedules[1].scheduleId").value("2"))
-			.andExpect(jsonPath("$.schedules[1].scheduleName").value("testSchedule2"))
-			.andExpect(jsonPath("$.schedules[1].startDate").value("20240401"))
-			.andExpect(jsonPath("$.schedules[1].endDate").value("20240401"))
-			.andExpect(jsonPath("$.schedules[1].state").value("TODO"))
-				
-			.andExpect(jsonPath("$.schedules[2]").doesNotExist());
+			.andExpect(jsonPath("$.schedules[1]").doesNotExist());
 	}
 	
 	@Test // 가입대기 유저가 스케줄 조회시 권한 없음

@@ -140,13 +140,13 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.schedules.toDo[0].workspaceId").value("1"))
 			.andExpect(jsonPath("$.schedules.toDo[0].workspaceName").value("testWorkspace1"))
 			.andExpect(jsonPath("$.schedules.toDo[0].scheduleName").value("testSchedule1"))
-			.andExpect(jsonPath("$.schedules.toDo[0].endDate").value("20240401"))
+			.andExpect(jsonPath("$.schedules.toDo[0].endDate").value("20240430"))
 			
 			.andExpect(jsonPath("$.schedules.toDo[1].scheduleId").value("2"))
 			.andExpect(jsonPath("$.schedules.toDo[1].workspaceId").value("1"))
 			.andExpect(jsonPath("$.schedules.toDo[1].workspaceName").value("testWorkspace1"))
 			.andExpect(jsonPath("$.schedules.toDo[1].scheduleName").value("testSchedule2"))
-			.andExpect(jsonPath("$.schedules.toDo[1].endDate").value("20240401"));
+			.andExpect(jsonPath("$.schedules.toDo[1].endDate").value("20240501"));
     }
 	
 	@Test
