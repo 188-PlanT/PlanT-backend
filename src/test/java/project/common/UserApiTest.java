@@ -42,11 +42,11 @@ public class UserApiTest extends IntegrationTest {
 	@Test
     public void 닉네임_검증() throws Exception {
         //given
-        String request = "{ \"nickName\" : \"test33\" }";
+        String request = "{ \"nickName\" : \"test44\" }";
 
         //when
         mvc.perform(post("/v1/users/nickname")
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_NO_NICKNAME)
             .contentType(MediaType.APPLICATION_JSON)
 			.content(request))
         //then
@@ -57,18 +57,18 @@ public class UserApiTest extends IntegrationTest {
 	@Test
     public void 닉네임_변경() throws Exception {
         //given
-		String request = "{ \"nickName\" : \"test33\" }";
+		String request = "{ \"nickName\" : \"test44\" }";
 		
         //when
         mvc.perform(put("/v1/users/nickname")
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_NO_NICKNAME)
             .contentType(MediaType.APPLICATION_JSON)
 			.content(request))
         //then
             .andExpect(status().isOk())
-			.andExpect(jsonPath("$.userId").value("3"))
-			.andExpect(jsonPath("$.nickName").value("test33"))
-			.andExpect(jsonPath("$.email").value("test3@gmail.com"))
+			.andExpect(jsonPath("$.userId").value("4"))
+			.andExpect(jsonPath("$.nickName").value("test44"))
+			.andExpect(jsonPath("$.email").value("test4@gmail.com"))
 			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png"));
     }
 	
@@ -135,11 +135,13 @@ public class UserApiTest extends IntegrationTest {
         //then
             .andExpect(status().isOk())
 			.andExpect(jsonPath("$.userId").value("1"))
+			
 			.andExpect(jsonPath("$.schedules.toDo[0].scheduleId").value("1"))
 			.andExpect(jsonPath("$.schedules.toDo[0].workspaceId").value("1"))
 			.andExpect(jsonPath("$.schedules.toDo[0].workspaceName").value("testWorkspace1"))
 			.andExpect(jsonPath("$.schedules.toDo[0].scheduleName").value("testSchedule1"))
 			.andExpect(jsonPath("$.schedules.toDo[0].endDate").value("20240401"))
+			
 			.andExpect(jsonPath("$.schedules.toDo[1].scheduleId").value("2"))
 			.andExpect(jsonPath("$.schedules.toDo[1].workspaceId").value("1"))
 			.andExpect(jsonPath("$.schedules.toDo[1].workspaceName").value("testWorkspace1"))
@@ -159,6 +161,11 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.users[0].userId").value("2"))
 			.andExpect(jsonPath("$.users[0].nickName").value("test22"))
 			.andExpect(jsonPath("$.users[0].email").value("test2@gmail.com"))
-			.andExpect(jsonPath("$.users[1]").doesNotExist());
+			
+			.andExpect(jsonPath("$.users[1].userId").value("3"))
+			.andExpect(jsonPath("$.users[1].nickName").value("test33"))
+			.andExpect(jsonPath("$.users[1].email").value("test3@gmail.com"))
+			
+			.andExpect(jsonPath("$.users[2]").doesNotExist());
     }
 }

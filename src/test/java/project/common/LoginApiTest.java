@@ -42,7 +42,7 @@ public class LoginApiTest extends IntegrationTest {
 	@Test
 	public void 회원가입() throws Exception {
 		//given
-		String request = "{ \"email\" : \"test4@gmail.com\" , \"password\" : \"test1234\" }";
+		String request = "{ \"email\" : \"test5@gmail.com\" , \"password\" : \"test1234\" }";
 		
 		//when
 		mvc.perform(post("/v1/sign-up")
@@ -51,6 +51,6 @@ public class LoginApiTest extends IntegrationTest {
 		//then
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.userId").exists())
-			.andExpect(jsonPath("$.email").value("test4@gmail.com"));
+			.andExpect(jsonPath("$.email").value("test5@gmail.com"));
 	}
 }
