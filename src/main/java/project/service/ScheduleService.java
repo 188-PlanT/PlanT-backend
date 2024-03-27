@@ -156,7 +156,7 @@ public class ScheduleService{
             chat.updateContent(content);
         }
         else{
-            throw new NoSuchChatException();
+            throw new InvalidAuthorityException();
         }
         
         devLogRepository.save(chat);
