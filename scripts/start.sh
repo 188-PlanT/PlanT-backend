@@ -13,5 +13,5 @@ NOW=$(date +%c)
 export spring_profiles_active=prod
 nohup java -jar $ROOT_PATH/build/libs/$JAR > /dev/null 2> /dev/null < /dev/null &
 
-SERVICE_PID=$(pgrep -f $JAVA)
+SERVICE_PID=$(pgrep -f java)
 #echo "[$NOW] > 서비스 PID: $SERVICE_PID" >> $START_LOG
