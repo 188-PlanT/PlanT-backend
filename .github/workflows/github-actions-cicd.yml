@@ -34,7 +34,7 @@ jobs:
       shell: bash
     - name: test용 application.yml 생성
       run: |
-	    mkdir ./src/test/resources
+        mkdir ./src/test/resources
         cd ./src/test/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_YML_TEST }}" > ./application.yml
