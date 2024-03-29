@@ -86,3 +86,17 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+// --- test ---
+//task integrationTest(type: Test){
+//	useJUnitPlatform{
+//		includeTags 'integration' //통합 테스트
+//	}
+//}
+
+//task unitTest(type: Test){
+//	useJUnitPlatform{
+//		includeTags 'unit' //단위 테스트
+//	}
+//}
+

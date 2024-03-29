@@ -7,6 +7,7 @@ import project.common.auth.jwt.JwtProvider;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Tag("integration")
+@Transactional
 public class IntegrationTest {
 	@Autowired
 	private UserService userService;

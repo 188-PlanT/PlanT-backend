@@ -1,6 +1,5 @@
 package project.common;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 
@@ -10,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.ArgumentMatchers.any;
 
-@Transactional
 public class LoginApiTest extends IntegrationTest {
 	
 	@Test //localTestDB에는 암호화 안된 비밀번호 입력됨 -> dumyLogin 사용해야함
