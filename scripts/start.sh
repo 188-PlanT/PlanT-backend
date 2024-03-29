@@ -10,11 +10,6 @@ START_LOG="$ROOT_PATH/start.log"
 JAR=blazingDevs_calendar-0.0.1-SNAPSHOT.jar
 NOW=$(date +%c)
 
-#echo "[$NOW] $JAR 복사" >> $START_LOG
-#cp $ROOT_PATH/build/libs/blazingDevs_calendar-0.0.1-SNAPSHOT.jar $JAR
-
-#echo "[$NOW] > $JAR 실행" >> $START_LOG
-#./gradlew build
 export spring_profiles_active=prod
 nohup java -jar $ROOT_PATH/build/libs/$JAR > /dev/null 2> /dev/null < /dev/null &
 
