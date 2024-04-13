@@ -20,4 +20,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Sched
     @Query("select s from Schedule s where s.workspace = :workspace and (s.startDate between :startDate and :endDate or s.endDate between :startDate and :endDate)")
     public List<Schedule> searchSchedule(Workspace workspace, LocalDateTime startDate, LocalDateTime endDate);
     
+	@Query("select s from Schedule s join fetch s.workspace w where s.id = :id")
+	public Optional<Schedule> findById(Long id);
 }

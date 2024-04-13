@@ -2,6 +2,9 @@ package project.common.config;
 
 import project.admin.util.LoginUserArgumentResolver;
 import project.common.interceptor.*;
+import project.common.interceptor.auth.UserRoleCheckInterceptor;
+import project.repository.UserWorkspaceRepository;
+import project.repository.ScheduleRepository;
 
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -17,20 +20,22 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+// import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableJpaAuditing //Auditing
 public class AppConfig implements WebMvcConfigurer{
     
-    @PersistenceContext
-    private final EntityManager em;
+    // @PersistenceContext
+    // private final EntityManager em;
     
-    @Bean
-    public JPAQueryFactory qf() {
-        return new JPAQueryFactory(em);
-    }
+    // @Bean
+    // public JPAQueryFactory qf() {
+    //     return new JPAQueryFactory(em);
+    // }
+	
+	private final UserRoleCheckInterceptor userRoleCheckInterceptor;
     
     //인터셉터 등록
     @Override
@@ -39,11 +44,16 @@ public class AppConfig implements WebMvcConfigurer{
             .order(1)
             .addPathPatterns("/**")
             .excludePathPatterns("/css/**", "/*.ico","/error");
-        
-        registry.addInterceptor(new LoginCheckInterceptor())
+		
+		registry.addInterceptor(userRoleCheckInterceptor)
             .order(2)
-            .addPathPatterns("/admin/**")
-            .excludePathPatterns("/admin", "/admin/users/create-users", "/admin/login", "/css/**", "/*.ico","/error");
+            .addPathPatterns("/**")
+            .excludePathPatterns("/css/**", "/*.ico","/error");
+        
+        // registry.addInterceptor(new LoginCheckInterceptor())
+        //     .order(2)
+        //     .addPathPatterns("/admin/**")
+        //     .excludePathPatterns("/admin", "/admin/users/create-users", "/admin/login", "/css/**", "/*.ico","/error");
     }
     
     @Override

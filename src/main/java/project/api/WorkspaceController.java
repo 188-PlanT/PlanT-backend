@@ -6,6 +6,7 @@ import project.common.auth.oauth.UserInfo;
 import project.service.WorkspaceService;
 import project.service.EmailService;
 import project.exception.schedule.DateFormatException;
+import project.common.interceptor.auth.PermitUserRole;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class WorkspaceController{
     }
     
     // <== 워크스페이스 유저 조회 ==>
+	@PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/workspaces/{workspaceId}/users")
     public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId,
                                                                @AuthenticationPrincipal UserInfo userInfo){                                                      

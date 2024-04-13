@@ -4,6 +4,7 @@ import project.domain.*;
 import project.dto.schedule.*;
 import project.service.ScheduleService;
 import project.common.auth.oauth.UserInfo;
+import project.common.interceptor.auth.PermitUserRole;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ScheduleController {
                     .body(response); 
     }
     
+	@PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/schedules/{scheduleId}") 
     public ResponseEntity<ScheduleDto> findSingleSchedule(@PathVariable Long scheduleId){
 
