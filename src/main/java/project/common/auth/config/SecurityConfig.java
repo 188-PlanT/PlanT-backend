@@ -74,9 +74,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin("https://g-project-front-hajrg.run.goorm.site");
+        configuration.addAllowedOrigin("https://plant-front-bwmaj.run.goorm.site");
         configuration.addAllowedOrigin(MAIN_URL);
-		configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
+	configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
