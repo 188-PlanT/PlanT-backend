@@ -35,11 +35,13 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 	
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+		if (!(handler instanceof  HandlerMethod)) {
+			return true;
+		}
 
 		HandlerMethod handlerMethod = (HandlerMethod) handler;
-		
 		PermitUserRole permitUserRole = handlerMethod.getMethodAnnotation(PermitUserRole.class);
-		
+
 		if (permitUserRole == null){
 			return true;
 		}
