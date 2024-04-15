@@ -173,7 +173,7 @@ public class WorkspaceService{
         LocalDateTime startDate = getStartDate(date);
         LocalDateTime endDate = getEndDate(date);
         
-        List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, startDate, endDate);
+        List<Schedule> schedules = scheduleRepository.searchByMonth(workspace, startDate, endDate);
         
         return CalendarResponse.of(workspace, schedules, loginUserId);
     }
@@ -184,7 +184,7 @@ public class WorkspaceService{
 		
 		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         
-        List<Schedule> schedules = scheduleRepository.searchSchedule(workspace, date, date.plusDays(1).minusSeconds(1));
+        List<Schedule> schedules = scheduleRepository.searchByDate(workspace, date, date.plusDays(1).minusSeconds(1));
         
         return CalendarResponse.of(workspace, schedules, loginUserId);
     }

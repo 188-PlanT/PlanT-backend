@@ -262,7 +262,7 @@ public class WorkspaceApiTest extends IntegrationTest {
     }
 	
 	@Test 
-    public void 워크스페이스별_스케줄_조회() throws Exception {
+    public void 워크스페이스별_스케줄_조회_시작날짜() throws Exception {
         //given
 		String date = "20240401";
         //when
@@ -281,6 +281,54 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.schedules[0].state").value("TODO"))
 				
 			.andExpect(jsonPath("$.schedules[1]").doesNotExist());
+	}
+	@Test
+	public void 워크스페이스별_스케줄_조회_끝날짜() throws Exception {
+		//given
+		String date = "20240430";
+		//when
+		mvc.perform(get("/v1/workspaces/1/schedules?date=" + date)
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER))
+				//then
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.workspaceId").value("1"))
+				.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
+				.andExpect(jsonPath("$.role").value("USER"))
+
+				.andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
+				.andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
+				.andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
+				.andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
+				.andExpect(jsonPath("$.schedules[0].state").value("TODO"))
+
+				.andExpect(jsonPath("$.schedules[1].scheduleId").value("2"))
+				.andExpect(jsonPath("$.schedules[1].scheduleName").value("testSchedule2"))
+				.andExpect(jsonPath("$.schedules[1].startDate").value("20240430"))
+				.andExpect(jsonPath("$.schedules[1].endDate").value("20240501"))
+				.andExpect(jsonPath("$.schedules[1].state").value("TODO"))
+
+				.andExpect(jsonPath("$.schedules[2]").doesNotExist());
+	}
+	@Test
+	public void 워크스페이스별_스케줄_조회_중간날짜() throws Exception {
+		//given
+		String date = "20240405";
+		//when
+		mvc.perform(get("/v1/workspaces/1/schedules?date=" + date)
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER))
+				//then
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.workspaceId").value("1"))
+				.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
+				.andExpect(jsonPath("$.role").value("USER"))
+
+				.andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
+				.andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
+				.andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
+				.andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
+				.andExpect(jsonPath("$.schedules[0].state").value("TODO"))
+
+				.andExpect(jsonPath("$.schedules[1]").doesNotExist());
 	}
 	
 	@Test // 가입대기 유저가 스케줄 조회시 권한 없음

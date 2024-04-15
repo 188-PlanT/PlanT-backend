@@ -1,5 +1,6 @@
 package project.repository;
 
+import org.apache.tomcat.jni.Local;
 import project.domain.*;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +18,16 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Sched
           countQuery = "select count(s) from Schedule s")
     public Page<Schedule> findAll(Pageable pageable);
     
-    @Query("select s from Schedule s where s.workspace = :workspace and (s.startDate between :startDate and :endDate or s.endDate between :startDate and :endDate)")
-    public List<Schedule> searchSchedule(Workspace workspace, LocalDateTime startDate, LocalDateTime endDate);
-    
-	@Query("select s from Schedule s join fetch s.workspace w where s.id = :id")
+    @Query("select s from Schedule s " +
+            "where s.workspace = :workspace " +
+            "and ((s.startDate between :startDate and :endDate) or (s.endDate between :startDate and :endDate))")
+    public List<Schedule> searchByMonth(Workspace workspace, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("select s from Schedule s " +
+            "where s.workspace = :workspace " +
+            "and ((:startDate between s.startDate and s.endDate) or (:endDate between s.startDate and s.endDate))")
+    public List<Schedule> searchByDate(Workspace workspace, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("select s from Schedule s join fetch s.workspace w where s.id = :id")
 	public Optional<Schedule> findById(Long id);
 }
