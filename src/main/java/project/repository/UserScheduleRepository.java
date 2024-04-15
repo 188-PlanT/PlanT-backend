@@ -15,6 +15,7 @@ public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long
     
     @Query("select us from UserSchedule us " + 
 			"join fetch us.user u join fetch us.schedule s join fetch s.workspace w " +
-			"where us.user.email =:email and (us.schedule.startDate between :startDate and :endDate or us.schedule.endDate between :startDate and :endDate)")
+			"where us.user.email =:email and " +
+            "((us.schedule.startDate between :startDate and :endDate) or (us.schedule.endDate between :startDate and :endDate))")
     public List<UserSchedule> searchByUser(String email, LocalDateTime startDate, LocalDateTime endDate);
 }
