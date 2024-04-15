@@ -124,7 +124,7 @@ public class UserApiTest extends IntegrationTest {
     }
 	
 	@Test
-    public void 스케줄_조회() throws Exception {
+    public void 스케줄_조회_시작_겹치게() throws Exception {
         //given
 		String date = "202404";
         //when
@@ -144,8 +144,34 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.schedules.toDo[1].workspaceId").value("1"))
 			.andExpect(jsonPath("$.schedules.toDo[1].workspaceName").value("testWorkspace1"))
 			.andExpect(jsonPath("$.schedules.toDo[1].scheduleName").value("testSchedule2"))
-			.andExpect(jsonPath("$.schedules.toDo[1].endDate").value("20240501"));
+			.andExpect(jsonPath("$.schedules.toDo[1].endDate").value("20240501"))
+
+			.andExpect(jsonPath("$.schedules.toDo[2]").doesNotExist())
+			.andExpect(jsonPath("$.schedules.inProgress[0]").doesNotExist())
+			.andExpect(jsonPath("$.schedules.done[0]").doesNotExist());
     }
+
+	@Test
+	public void 스케줄_조회_끝_겹치게() throws Exception {
+		//given
+		String date = "202405";
+		//when
+		mvc.perform(get("/v1/users/schedules?date=" + date)
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+				//then
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.userId").value("1"))
+
+				.andExpect(jsonPath("$.schedules.toDo[0].scheduleId").value("2"))
+				.andExpect(jsonPath("$.schedules.toDo[0].workspaceId").value("1"))
+				.andExpect(jsonPath("$.schedules.toDo[0].workspaceName").value("testWorkspace1"))
+				.andExpect(jsonPath("$.schedules.toDo[0].scheduleName").value("testSchedule2"))
+				.andExpect(jsonPath("$.schedules.toDo[0].endDate").value("20240501"))
+
+				.andExpect(jsonPath("$.schedules.toDo[1]").doesNotExist())
+				.andExpect(jsonPath("$.schedules.inProgress[0]").doesNotExist())
+				.andExpect(jsonPath("$.schedules.done[0]").doesNotExist());
+	}
 	
 	@Test
     public void 유저_검색() throws Exception {
