@@ -71,7 +71,9 @@ public class WorkspaceService{
     @Transactional
     public void removeWorkspace(Long workspaceId, Long loginUserId){
 		
-		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
         
         workspaceRepository.delete(workspace);
     }
@@ -80,16 +82,17 @@ public class WorkspaceService{
     @Transactional(readOnly = true)
     public Workspace findOne(Long workspaceId, Long loginUserId){
 		
-		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
-        
+//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
+
         // Lazy Loding
-        workspace.getUserWorkspaces().stream()
+        workspace.getUserWorkspaces()
             .forEach(uw -> {
                 User user = uw.getUser();
                 Image image = user.getProfile();
-                image.getUrl();
+                String url = image.getUrl();
             });
-        
         return workspace;
     }
     
@@ -97,8 +100,10 @@ public class WorkspaceService{
     @Transactional
     public Workspace updateWorkspace(Long workspaceId, Long loginUserId, UpdateWorkspaceRequest request){
         
-		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
-        
+//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
+
         Image profile = imageRepository.findByUrl(request.getProfile())
                                         .orElseThrow(NoSuchImageException::new);
         
@@ -111,8 +116,10 @@ public class WorkspaceService{
     @Transactional
     public Workspace addUser(Long workspaceId, Long loginUserId, Long userId){
 		
-		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
-        
+//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
+
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
@@ -134,8 +141,10 @@ public class WorkspaceService{
     // <== 워크스페이스 유저 삭제 ==>
     @Transactional
     public void removeUser(Long workspaceId, Long loginUserId, Long userId){
-		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
-        
+//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
+
         User user = userRepository.findById(userId)
             .orElseThrow(NoSuchUserException::new);
         
@@ -168,8 +177,10 @@ public class WorkspaceService{
     @Transactional(readOnly = true)
     public CalendarResponse getCalendar(Long workspaceId, Long loginUserId, LocalDateTime date){
 		
-        Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
-        
+//        Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
+
         LocalDateTime startDate = getStartDate(date);
         LocalDateTime endDate = getEndDate(date);
         
@@ -182,8 +193,10 @@ public class WorkspaceService{
     @Transactional(readOnly = true)
     public CalendarResponse getDailySchedules(Long workspaceId, Long loginUserId, LocalDateTime date){
 		
-		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
-        
+//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(NoSuchWorkspaceException::new);
+
         List<Schedule> schedules = scheduleRepository.searchByDate(workspace, date, date.plusDays(1).minusSeconds(1));
         
         return CalendarResponse.of(workspace, schedules, loginUserId);
@@ -207,30 +220,22 @@ public class WorkspaceService{
         date = date.withDayOfMonth(date.lengthOfMonth());
         return date.atTime(LocalTime.MAX);
     }
-	
-	private Workspace checkUserAuthority(Long workspaceId, Long loginUserId, UserRole... roles){
-		UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-			.orElseThrow(NoSuchWorkspaceException::new);
-		
-		for (UserRole role : roles){
-			if (userWorkspace.getUserRole().equals(role)){
-				return userWorkspace.getWorkspace();
-			}
-		}
-		
-		throw new InvalidAuthorityException();
-	}
-	
+
+    //로직 분리할까 그냥...?
 	private Workspace validateChangeUserAutority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
-		//워크스페이스 초대 수락 시
-		if(loginUserId == userId){
-			if (!authority.equals(UserRole.USER)){ // 유저 권한 외의 요청 발생시 에러 요청
-				throw new InvalidAuthorityException();
-			}
-			return checkUserAuthority(workspaceId, loginUserId, UserRole.PENDING);
-		}
-		else{ //회원 어드민 권한 부여 시
-			return checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
-		}
+        UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
+			.orElseThrow(NoSuchWorkspaceException::new);
+
+        UserRole loginUserRole = userWorkspace.getUserRole();
+
+        if (UserRole.ADMIN.equals(loginUserRole)){
+            return userWorkspace.getWorkspace();
+        }
+        else if (UserRole.PENDING.equals(loginUserRole)){
+            if (loginUserId.equals(userId) && UserRole.USER.equals(authority)) {
+                return userWorkspace.getWorkspace();
+            }
+        }
+        throw new InvalidAuthorityException();
 	}
 }

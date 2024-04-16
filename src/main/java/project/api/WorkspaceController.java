@@ -1,5 +1,6 @@
 package project.api;
 
+import org.springframework.security.core.parameters.P;
 import project.domain.*;
 import project.dto.workspace.*;
 import project.common.auth.oauth.UserInfo;
@@ -46,6 +47,7 @@ public class WorkspaceController{
     
     // <== 워크스페이스 수정 ==>
     @PutMapping("/v1/workspaces/{workspaceId}")
+    @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<UpdateWorkspaceResponse> findAllWorkspaces(@PathVariable Long workspaceId,
                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                         @RequestBody UpdateWorkspaceRequest request){
@@ -59,6 +61,7 @@ public class WorkspaceController{
     
     // <== 워크스페이스 삭제 ==>
     @DeleteMapping("/v1/workspaces/{workspaceId}")
+    @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId,
                                                                     @AuthenticationPrincipal UserInfo userInfo){
         
@@ -82,6 +85,7 @@ public class WorkspaceController{
     
     // <== 유저 추가 ==>
     @PostMapping("/v1/workspaces/{workspaceId}/users")
+    @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<FindWorkspaceUsersResponse> addUser(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
                                         @RequestBody AddUserRequest request){
@@ -95,6 +99,7 @@ public class WorkspaceController{
     
     // <== 유저 권한 수정 ==>
     @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.PENDING}) // 유저 워크스페이스 수락도 여기서 진행되므로 PENDING도 허가
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
 										@PathVariable Long userId,
@@ -112,6 +117,7 @@ public class WorkspaceController{
     
     // <== 유저 추방 ==>
     @DeleteMapping("/v1/workspaces/{workspaceId}/users/{userId}")
+    @PermitUserRole(value={UserRole.ADMIN})
     public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long userId){
@@ -125,6 +131,7 @@ public class WorkspaceController{
     
     // <== 캘린더 조회 ==>
     @GetMapping("/v1/workspaces/{workspaceId}/calendar")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<CalendarResponse> readCalendar(@PathVariable Long workspaceId,
                                                                     @AuthenticationPrincipal UserInfo userInfo,
                                                                     @RequestParam String date){
@@ -138,6 +145,7 @@ public class WorkspaceController{
     
     // <== 날짜별 조회 ==>
     @GetMapping("/v1/workspaces/{workspaceId}/schedules")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<CalendarResponse> readDailySchedule(@PathVariable Long workspaceId,
                                                                     @AuthenticationPrincipal UserInfo userInfo,
                                                                     @RequestParam String date){
