@@ -46,10 +46,12 @@ public class ScheduleService{
     
     // <== 스케줄 생성 ==>
     @Transactional
-    public ScheduleDto createSchedule(CreateScheduleRequest request){
+    public ScheduleDto createSchedule(CreateScheduleRequest request, Long loginUserId){
     
         Workspace workspace = workspaceRepository.findById(request.getWorkspaceId())
             .orElseThrow(NoSuchWorkspaceException::new);
+
+        workspace.checkUser(loginUserId); // 유저가 워크스페이스에 속해있는지 확인 -> 근데 이 로직이 여기에 이렇게 들어가는게 맞을까
 
         List <User> users = userRepository.findByIdIn(request.getUsers());
         

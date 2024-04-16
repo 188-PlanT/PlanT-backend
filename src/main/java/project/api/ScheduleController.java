@@ -27,9 +27,10 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     
     @PostMapping("/v1/schedules")
-    public ResponseEntity<ScheduleDto> createSchedule(@RequestBody CreateScheduleRequest request){ // 파라미터가 많아 DTO로 직접 전달
+    public ResponseEntity<ScheduleDto> createSchedule(@RequestBody CreateScheduleRequest request,
+                                                      @AuthenticationPrincipal UserInfo userInfo){ // 파라미터가 많아 DTO로 직접 전달
 
-         ScheduleDto response = scheduleService.createSchedule(request);
+         ScheduleDto response = scheduleService.createSchedule(request, userInfo.getUserId());
         
         return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -45,7 +46,8 @@ public class ScheduleController {
         return ResponseEntity.ok(response);
     }
     
-    @PutMapping("/v1/schedules/{scheduleId}") 
+    @PutMapping("/v1/schedules/{scheduleId}")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,
                                                     @RequestBody UpdateScheduleRequest request){
 
@@ -55,6 +57,7 @@ public class ScheduleController {
     }
     
     @DeleteMapping("/v1/schedules/{scheduleId}")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<DeleteScheduleResponse> deleteSchedule(@PathVariable Long scheduleId){
             
         scheduleService.removeSchedule(scheduleId);
@@ -62,7 +65,8 @@ public class ScheduleController {
         return ResponseEntity.ok(new DeleteScheduleResponse());
     }
     
-    @PutMapping("/v1/schedules/{scheduleId}/state") 
+    @PutMapping("/v1/schedules/{scheduleId}/state")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,
                                                     @RequestBody UpdateScheduleStateRequest request){
         
@@ -73,6 +77,7 @@ public class ScheduleController {
     
     
     @PostMapping("/v1/schedules/{scheduleId}/chat")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<AddChatResponse> addScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long scheduleId,
                                                         @RequestBody AddChatRequest request){
@@ -85,6 +90,7 @@ public class ScheduleController {
     }
     
     @PutMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<AddChatResponse> updateScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long scheduleId,
                                                         @PathVariable Long chatId,
@@ -96,6 +102,7 @@ public class ScheduleController {
     }
     
     @DeleteMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<RemoveChatResponse> deleteScheduleChat( @AuthenticationPrincipal UserInfo userInfo,
                                                         @PathVariable Long scheduleId,
                                                         @PathVariable Long chatId){

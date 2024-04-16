@@ -100,14 +100,10 @@ public class Workspace extends BaseEntity{
 		// throw new InvalidAuthorityException();
 		}
     
-    public void checkUser(User user){
-        if (!this.hasUser(user)){
-            throw new NoSuchUserException();
-        }
-        
+    public void checkUser(Long userId){
         //여기 로직 수정 필요함
         for (UserWorkspace uw : this.userWorkspaces){
-            if (uw.getUser().equals(user)){
+            if (uw.getUser().getId().equals(userId)){
                 if (uw.getUserRole().equals(UserRole.ADMIN) || uw.getUserRole().equals(UserRole.USER)){
                     return;
                 }
