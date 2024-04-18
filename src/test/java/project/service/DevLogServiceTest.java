@@ -9,9 +9,9 @@
 // import org.junit.Test;
 // import static org.assertj.core.api.Assertions.assertThat;
 
-// import project.repository.UserRepository;
-// import project.repository.ScheduleRepository;
-// import project.repository.DevLogRepository;
+// import project.domain.user.dao.UserRepository;
+// import project.domain.schedule.dao.ScheduleRepository;
+// import project.domain.schedule.dao.DevLogRepository;
 // import project.domain.*;
 // import project.dto.devLog.*;
 // import project.exception.user.*;

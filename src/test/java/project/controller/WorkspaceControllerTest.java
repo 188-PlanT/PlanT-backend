@@ -21,8 +21,8 @@
 
 // import project.domain.*;
 // import project.dto.workspace.*;
-// import project.service.WorkspaceService;
-// import project.repository.UserRepository;
+// import project.domain.workspace.service.WorkspaceService;
+// import project.domain.user.dao.UserRepository;
 // import java.util.List;  
 // import java.util.ArrayList;
 

@@ -1,25 +1,18 @@
 package project.common.config;
 
-import project.admin.util.LoginUserArgumentResolver;
-import project.common.interceptor.*;
+import project.common.admin.util.LoginUserArgumentResolver;
 import project.common.interceptor.auth.UserRoleCheckInterceptor;
-import project.repository.UserWorkspaceRepository;
-import project.repository.ScheduleRepository;
 
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import project.common.interceptor.log.LogInterceptor;
 // import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Configuration

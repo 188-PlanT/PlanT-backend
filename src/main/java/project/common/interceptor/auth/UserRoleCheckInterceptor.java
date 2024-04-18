@@ -1,17 +1,17 @@
 package project.common.interceptor.auth;
 
-import project.domain.*;
-import project.common.auth.oauth.UserInfo;
-import project.exception.ErrorCode;
-import project.exception.PlantException;
-import project.repository.UserWorkspaceRepository;
-import project.repository.ScheduleRepository;
-import project.repository.UserScheduleRepository;
+import project.common.security.oauth.UserInfo;
+import project.domain.schedule.domain.Schedule;
+import project.domain.user.domain.UserRole;
+import project.domain.workspace.domain.UserWorkspace;
+import project.common.exception.ErrorCode;
+import project.common.exception.PlantException;
+import project.domain.workspace.dao.UserWorkspaceRepository;
+import project.domain.schedule.dao.ScheduleRepository;
 
 import lombok.RequiredArgsConstructor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,7 +20,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 
 // @Slf4j
 @Component

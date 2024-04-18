@@ -1,6 +1,6 @@
 package project.common.interceptor.auth;
 
-import project.domain.UserRole;
+import project.domain.user.domain.UserRole;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)

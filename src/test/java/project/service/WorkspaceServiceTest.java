@@ -1,8 +1,8 @@
 // package project.service;
 
-// import project.repository.UserRepository;
-// import project.repository.WorkspaceRepository;
-// import project.repository.ScheduleRepository;
+// import project.domain.user.dao.UserRepository;
+// import project.domain.workspace.dao.WorkspaceRepository;
+// import project.domain.schedule.dao.ScheduleRepository;
 // import project.domain.*;
 // import project.dto.workspace.*;
 // import project.exception.user.*;

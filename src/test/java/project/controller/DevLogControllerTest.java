@@ -14,8 +14,8 @@
 // import org.springframework.test.web.servlet.MockMvc;
 // import org.springframework.boot.test.mock.mockito.MockBean;
 // import project.domain.*;
-// import project.service.DevLogService;
-// import project.repository.DevLogRepository;
+// import project.domain.chat.service.DevLogService;
+// import project.domain.schedule.dao.DevLogRepository;
 // import java.util.List;  
 // import java.util.ArrayList;
 

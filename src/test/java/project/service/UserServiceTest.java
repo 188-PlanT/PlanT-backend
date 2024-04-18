@@ -1,8 +1,8 @@
 // package project.service;
 
-// import project.repository.UserRepository;
-// import project.repository.UserWorkspaceRepository;
-// import project.repository.UserScheduleRepository;
+// import project.domain.user.dao.UserRepository;
+// import project.domain.workspace.dao.UserWorkspaceRepository;
+// import project.domain.schedule.dao.UserScheduleRepository;
 // import project.domain.*;
 // import project.exception.user.*;
 // import project.exception.auth.InvalidCodeException;

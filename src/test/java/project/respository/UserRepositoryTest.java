@@ -11,7 +11,7 @@
 // import static org.assertj.core.api.Assertions.assertThat;
 
 // import project.AppConfig;
-// import project.domain.User;
+// import project.domain.user.domain.User;
 // import java.util.Optional;
 // import java.util.List;
 

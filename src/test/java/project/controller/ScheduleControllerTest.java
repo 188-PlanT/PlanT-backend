@@ -21,7 +21,7 @@
 
 // import project.domain.*;
 // import project.dto.schedule.*;
-// import project.service.ScheduleService;
+// import project.domain.schedule.service.ScheduleService;
 // import java.util.List;  
 // import java.util.ArrayList;
 
