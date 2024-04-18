@@ -2,14 +2,12 @@ package project.common.interceptor.auth;
 
 import project.domain.*;
 import project.common.auth.oauth.UserInfo;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.repository.UserWorkspaceRepository;
 import project.repository.ScheduleRepository;
 import project.repository.UserScheduleRepository;
-import project.exception.workspace.NoSuchWorkspaceException;
-import project.exception.schedule.NoSuchScheduleException;
-import project.exception.user.InvalidAuthorityException;
 
-// import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,18 +71,18 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 			Long scheduleId = Long.parseLong(pathVariables.get("scheduleId"));
 			
 			Schedule schedule = scheduleRepository.findById(scheduleId)
-				.orElseThrow(NoSuchScheduleException::new);
+				.orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
 			
 			return schedule.getWorkspace().getId();
 		}
 		else {
-			throw new NoSuchWorkspaceException("url 형식이 올바르지 않습니다");
+			throw new PlantException(ErrorCode.WORKSPACE_NOT_FOUND, "workspace 검증중 오류가 발생했습니다.");
 		}
 	}
 	
 	private void checkUserAuthority(Long workspaceId, Long loginUserId, UserRole... roles){
 		UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-			.orElseThrow(NoSuchWorkspaceException::new);
+			.orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 		
 		for (UserRole role : roles){
 			if (userWorkspace.getUserRole().equals(role)){
@@ -92,6 +90,6 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 			}
 		}
 		
-		throw new InvalidAuthorityException();
+		throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
 	}
 }

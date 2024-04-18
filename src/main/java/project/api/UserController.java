@@ -3,28 +3,22 @@ package project.api;
 import project.domain.*;
 import project.common.auth.oauth.UserInfo;
 import project.dto.user.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.service.UserService;
 import project.service.EmailService;
-import project.exception.user.*;
-import project.exception.schedule.DateFormatException;
 
 import java.util.List;
-import javax.validation.Valid;
-import static java.util.stream.Collectors.toList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Slf4j
@@ -43,7 +37,7 @@ public class UserController{
         try{
             userService.validateUserEmail(request.getEmail());
         } 
-        catch (UserAlreadyExistException e){
+        catch (PlantException e){
             return ResponseEntity.ok(new EmailCheckResponse(false));
         }
 
@@ -58,7 +52,7 @@ public class UserController{
             userService.validateUserNickName(request.getNickName());
             return ResponseEntity.ok(new EmailCheckResponse(true));
         } 
-        catch (UserAlreadyExistException e){
+        catch (PlantException e){
             return ResponseEntity.ok(new EmailCheckResponse(false));
         }
     }
@@ -130,7 +124,7 @@ public class UserController{
             return LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
         }
         catch (DateTimeParseException e){
-            throw new DateFormatException();
+            throw new PlantException(ErrorCode.DATE_INVALID);
         }
     }
     

@@ -2,10 +2,8 @@ package project.service;
 
 import project.domain.*;
 import project.dto.schedule.*;
-import project.exception.schedule.*;
-import project.exception.user.*;
-import project.exception.workspace.*;
-import project.exception.devLog.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.repository.*;
 
 import java.util.List;
@@ -37,7 +35,7 @@ public class ScheduleService{
     public ScheduleDto findOne(Long id) {
         
         Schedule schedule = scheduleRepository.findById(id)
-            .orElseThrow(NoSuchScheduleException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
         
         ScheduleDto dto = ScheduleDto.from(schedule);
         
@@ -49,7 +47,7 @@ public class ScheduleService{
     public ScheduleDto createSchedule(CreateScheduleRequest request, Long loginUserId){
     
         Workspace workspace = workspaceRepository.findById(request.getWorkspaceId())
-            .orElseThrow(NoSuchWorkspaceException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         workspace.checkUser(loginUserId); // 유저가 워크스페이스에 속해있는지 확인 -> 근데 이 로직이 여기에 이렇게 들어가는게 맞을까
 
@@ -57,7 +55,7 @@ public class ScheduleService{
         
         //validate
         if(users.size() != request.getUsers().size()){
-            throw new NoSuchUserException();
+            throw new PlantException(ErrorCode.USER_NOT_FOUND, "올바르지 않은 유저 정보가 포함되어 있습니다");
         }
         
         Schedule schedule = Schedule.builder()
@@ -82,13 +80,13 @@ public class ScheduleService{
     public ScheduleDto updateSchedule(Long scheduleId, UpdateScheduleRequest request){
         
         Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(NoSuchScheduleException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         List <User> users = userRepository.findByIdIn(request.getUsers());
         
         //validate
         if(users.size() != request.getUsers().size()){
-            throw new NoSuchUserException();
+            throw new PlantException(ErrorCode.USER_NOT_FOUND, "올바르지 않은 유저 정보가 포함되어 있습니다");
         }
         
         schedule.update(request.getName(), request.getStartDate(), request.getEndDate(), request.getContent(), users, request.getState());
@@ -102,7 +100,7 @@ public class ScheduleService{
     @Transactional
     public void removeSchedule(Long id){
         Schedule schedule = scheduleRepository.findById(id)
-            .orElseThrow(NoSuchScheduleException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
         
         scheduleRepository.delete(schedule);
     }
@@ -111,7 +109,7 @@ public class ScheduleService{
     @Transactional
     public ScheduleDto moveScheduleState(Long id, Progress state) {
         Schedule schedule = scheduleRepository.findById(id)
-            .orElseThrow(NoSuchScheduleException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
         
         schedule.moveProgress(state);
         
@@ -124,10 +122,10 @@ public class ScheduleService{
     @Transactional
     public AddChatResponse addChat(String loginUserEmail, Long scheduleId, String content) {
         User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(NoSuchScheduleException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
         
         DevLog chat = DevLog.builder()
                             .schedule(schedule)
@@ -146,19 +144,19 @@ public class ScheduleService{
     @Transactional
     public AddChatResponse updateChat(String loginUserEmail, Long scheduleId, Long chatId, String content) {
         User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+
         Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(NoSuchScheduleException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         DevLog chat = devLogRepository.findById(chatId)
-            .orElseThrow(NoSuchChatException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.CHAT_NOT_FOUND));
         
         if (chat.getSchedule().equals(schedule) && chat.getUser().equals(loginUser)){
             chat.updateContent(content);
         }
         else{
-            throw new InvalidAuthorityException();
+            throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
         }
         
         devLogRepository.save(chat);
@@ -172,10 +170,10 @@ public class ScheduleService{
     @Transactional
     public void removeChat(String loginUserEmail, Long scheduleId, Long chatId) {
         User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(NoSuchUserException::new);
-        
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+
         Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(NoSuchScheduleException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         schedule.removeChat(loginUser, chatId);
     }

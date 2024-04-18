@@ -1,11 +1,11 @@
 package project.common.auth.jwt;
 
 import project.domain.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.service.RedisService;
 import project.common.auth.oauth.UserInfo;
 import project.repository.UserRepository;
-import project.exception.user.*;
-import project.exception.auth.InvalidTokenException;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class JwtProvider {
         String email = (String)claims.get("email");
         
         User user = userRepository.findByEmail(email)
-                                    .orElseThrow(NoSuchUserException::new);
+                                    .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         return createAccessToken(user);
     }
@@ -128,7 +128,7 @@ public class JwtProvider {
         Claims claims = parseClaims(accessToken);
         
         if (claims.get("userId") == null || claims.get("email") == null || claims.get("authorities") == null){
-            throw new InvalidTokenException("토큰 값이 올바르지 않습니다");    
+            throw new PlantException(ErrorCode.TOKEN_INVALID);
         }
         
         return claims;
@@ -139,7 +139,7 @@ public class JwtProvider {
         Claims claims = parseClaims(refreshToken);
         
         if (claims.get("email") == null){
-            throw new InvalidTokenException("토큰 값이 올바르지 않습니다");    
+            throw new PlantException(ErrorCode.TOKEN_INVALID);
         }
         
         return claims;
@@ -168,12 +168,12 @@ public class JwtProvider {
             log.info("JWT claims string is empty.");
         }
         
-        throw new InvalidTokenException("올바르지 않은 토큰입니다");
+        throw new PlantException(ErrorCode.TOKEN_INVALID);
     }
     
     private String removeBearer(String tokenString){
         if (!tokenString.startsWith("Bearer")){
-            throw new InvalidTokenException("Token not start with Bearer");
+            throw new PlantException(ErrorCode.TOKEN_INVALID, "Token not starts with Bearer");
         }
         
         return tokenString.replace("Bearer ", "");

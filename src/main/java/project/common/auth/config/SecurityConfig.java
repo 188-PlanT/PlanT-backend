@@ -77,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         configuration.addAllowedOrigin("https://plant-front-bwmaj.run.goorm.site");
         configuration.addAllowedOrigin(MAIN_URL);
-	configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
+	    configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

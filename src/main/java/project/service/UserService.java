@@ -3,9 +3,8 @@ package project.service;
 import project.domain.*;
 import project.dto.user.*;
 import project.dto.login.SignUpRequest;
-import project.exception.user.*;
-import project.exception.auth.InvalidCodeException;
-import project.exception.image.NoSuchImageException;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.repository.*;
 import project.common.auth.oauth.UserInfo;
 
@@ -55,7 +54,7 @@ public class UserService implements UserDetailsService{
         validateUserPassword(request.getPassword());
         
         Image defaultUserProfile = imageRepository.findByUrl(DEFAULT_USER_IMAGE_URL)
-                                            .orElseThrow(NoSuchImageException::new);
+                                            .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         
         User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), defaultUserProfile, passwordEncoder);   
         
@@ -69,7 +68,7 @@ public class UserService implements UserDetailsService{
     public User finishRegister(String email, String nickName){
         
         User user = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         validateUserNickName(nickName);
         
@@ -86,13 +85,13 @@ public class UserService implements UserDetailsService{
     public User signIn(String email, String password){
         
         User findUser = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         if (findUser.checkPassword(password, passwordEncoder)){
             return findUser;
         }
         else{
-            throw new NoSuchUserException("아이디 혹은 비밀번호가 틀립니다");
+            throw new PlantException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호가 틀립니다");
         }
     }
     
@@ -100,7 +99,7 @@ public class UserService implements UserDetailsService{
     @Transactional(readOnly = true)
     public List<UserWorkspace> findWorkspaces(String email){
         User user = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
 		
         List<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user);
 
@@ -122,7 +121,7 @@ public class UserService implements UserDetailsService{
     @Transactional
     public User updateUser(String email, String nickName, String password, String profileUrl){
         User user = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         if(!user.getNickName().equals(nickName)){
             validateUserNickName(nickName);
@@ -131,7 +130,7 @@ public class UserService implements UserDetailsService{
         validateUserPassword(password);
         
         Image profile = imageRepository.findByUrl(profileUrl)
-                                        .orElseThrow(NoSuchImageException::new);
+                                        .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         
         user.update(nickName, password, profile, passwordEncoder);
 
@@ -168,11 +167,11 @@ public class UserService implements UserDetailsService{
         String redisCode = redisService.getValues(email);
         
         if (redisCode == null){
-            throw new NoSuchUserException("잘못된 이메일입니다");
+            throw new PlantException(ErrorCode.USER_NOT_FOUND, "잘못된 이메일입니다");
         }
         
         if (!redisCode.equals(code+"")){
-            throw new InvalidCodeException("잘못된 코드입니다");
+            throw new PlantException(ErrorCode.EMAIL_CODE_INVALID);
         }
         
         redisService.deleteByKey(email);
@@ -184,20 +183,20 @@ public class UserService implements UserDetailsService{
     public void validateUserEmail(String email){
         
         if (userRepository.existsByEmail(email)){
-            throw new UserAlreadyExistException();
+            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
         }
     }
     // <== 닉네임 중복 검증 ==>
     public void validateUserNickName(String nickName){
         if (userRepository.existsByNickName(nickName)){
-            throw new UserAlreadyExistException();
+            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
         }
     }
     
     private void validateUserPassword(String password){
         
         if (!Pattern.matches(PASSWORD_PATTERN, password)){
-            throw new InvalidPasswordException(); 
+            throw new PlantException(ErrorCode.PASSWORD_INVALD);
         }
     }
     
@@ -206,7 +205,7 @@ public class UserService implements UserDetailsService{
     public User findByEmail(String email){
         
         User user = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         // lazy loding
         user.getProfile().getUrl();
@@ -219,7 +218,7 @@ public class UserService implements UserDetailsService{
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
         
         User findUser = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다"));
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         return UserInfo.from(findUser);
     }
@@ -229,13 +228,13 @@ public class UserService implements UserDetailsService{
     public User signInDumy(String email, String password){
         
         User findUser = userRepository.findByEmail(email)
-            .orElseThrow(NoSuchUserException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         if (findUser.getPassword().equals(password)){
             return findUser;
         }
         else{
-            throw new NoSuchUserException("아이디 혹은 비밀번호가 틀립니다");
+            throw new PlantException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호가 틀립니다");
         }
     }
 }

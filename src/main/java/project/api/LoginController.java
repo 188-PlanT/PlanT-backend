@@ -2,10 +2,11 @@ package project.api;
 
 import project.domain.*;
 import project.dto.login.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.service.UserService;
 import project.service.EmailService;
 import project.common.auth.jwt.JwtProvider;
-import project.exception.auth.*;
 import project.common.auth.oauth.CustomOAuth2UserService;
 import project.common.auth.oauth.OAuthAuthenticationProvider;
 
@@ -16,11 +17,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.springframework.web.bind.annotation.*;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.HttpHeaders;
 
 
 @Slf4j
@@ -74,7 +72,7 @@ public class LoginController{
     
     @GetMapping("/noToken")
     public ResponseEntity<String> noTokenError(){
-        throw new UnIdentifiedUserException("로그인이 필요한 요청입니다");    
+        throw new PlantException(ErrorCode.USER_UNAUTHORIZED);
     }
     
     @PostMapping("/v1/login/oauth2")

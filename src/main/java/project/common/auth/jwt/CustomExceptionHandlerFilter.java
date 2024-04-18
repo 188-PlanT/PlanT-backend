@@ -1,7 +1,6 @@
 package project.common.auth.jwt;
 
-import project.exception.auth.*;
-import project.dto.ErrorCode;
+import project.exception.ErrorCode;
 import project.dto.ErrorResponse;
 
 import java.io.IOException;
@@ -14,9 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.http.MediaType;
+import project.exception.PlantException;
 
+// 필터에서 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러를 처리하는 필터
 @Slf4j
-public class CustomExceptionHandlerFilter extends OncePerRequestFilter { // 필터에서 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러 처리
+public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -28,18 +29,18 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter { // 필�
             filterChain.doFilter(request, response);
             
         }
-        catch (InvalidTokenException e){
-            setErrorResponse(response, ErrorCode.NOT_FOUND);
+        catch (PlantException e){
+            setErrorResponse(response, ErrorCode.TOKEN_INVALID);
         }
     }
     
     private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode){
         ObjectMapper objectMapper = new ObjectMapper();
-        response.setStatus(errorCode.getCode());
+        response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         
-        ErrorResponse errorResponse = new ErrorResponse(errorCode, "토큰이 올바르지 않습니다");
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.name(), errorCode.getMessage());
         try{
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         }catch (IOException e){

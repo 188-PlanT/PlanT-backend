@@ -1,7 +1,7 @@
 package project.domain;
 
-import project.exception.user.*;
-import project.exception.workspace.NoWorkspaceAdminException;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class Workspace extends BaseEntity{
     public void addUser(User user){
         
         if (this.hasUser(user)){
-            throw new UserAlreadyExistException();
+            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
         }
         
         UserWorkspace userWorkspace = UserWorkspace.builder()
@@ -75,7 +75,7 @@ public class Workspace extends BaseEntity{
     // 유저 삭제
     public void removeUser(User user){
         if (!this.hasUser(user)){
-            throw new NoSuchUserException();
+            throw new PlantException(ErrorCode.USER_NOT_FOUND);
         }
 		
 		// 어드민이 1명뿐인데 나가기 시도
@@ -83,7 +83,7 @@ public class Workspace extends BaseEntity{
                                     						.filter(uw -> uw.getUserRole().equals(UserRole.ADMIN))
                                     						.count() == 1){
 			
-			throw new NoWorkspaceAdminException();
+			throw new PlantException(ErrorCode.WORKSPACE_ADMIN_NOT_EXIST);
 		}
         
         this.userWorkspaces.removeIf(uw -> uw.getUser().equals(user));
@@ -109,13 +109,13 @@ public class Workspace extends BaseEntity{
                 }
             }
         }
-        throw new InvalidAuthorityException();
+        throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
     }
     
     // 유저 권한 변경
     public void giveAuthority(User user, UserRole userRole){
         if (!this.hasUser(user)){
-            throw new NoSuchUserException();
+            throw new PlantException(ErrorCode.USER_NOT_FOUND);
         }
         
         this.userWorkspaces.stream()

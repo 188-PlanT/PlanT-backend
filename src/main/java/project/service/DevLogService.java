@@ -1,26 +1,19 @@
 package project.service;
 
 import project.domain.*;
-import project.dto.devLog.*;
-import project.exception.user.*;
-import project.exception.schedule.*;
-import project.exception.devLog.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.repository.DevLogRepository;
 import project.repository.UserRepository;
 import project.repository.ScheduleRepository;
 import project.dto.devLog.CreateDevLogRequest;
 
 import lombok.RequiredArgsConstructor;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +27,10 @@ public class DevLogService{
     public Long createDevLog(CreateDevLogRequest request){
         
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
-            .orElseThrow(NoSuchScheduleException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
         
         User user = userRepository.findById(request.getUserId())
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         validateDevLog(schedule, user);
         
@@ -65,7 +58,7 @@ public class DevLogService{
     public DevLog findOne(Long devLogId){
             
         DevLog findDevLog = devLogRepository.findById(devLogId)
-            .orElseThrow(NoSuchDevLogException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.CHAT_NOT_FOUND));
         
         return findDevLog;
     }
@@ -73,7 +66,7 @@ public class DevLogService{
     @Transactional
     public DevLog updateDevLog(Long devLogId, String content){
         DevLog findDevLog = devLogRepository.findById(devLogId)
-            .orElseThrow(NoSuchDevLogException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.CHAT_NOT_FOUND));
         
         findDevLog.updateContent(content);
         
@@ -84,7 +77,7 @@ public class DevLogService{
     public void deleteDevLog(Long devLogId){
         
         DevLog findDevLog = devLogRepository.findById(devLogId)
-            .orElseThrow(NoSuchDevLogException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.CHAT_NOT_FOUND));
         
         devLogRepository.delete(findDevLog);
     }
@@ -102,7 +95,7 @@ public class DevLogService{
             return null;
         }
         return scheduleRepository.findById(scheduleId)
-            .orElseThrow(NoSuchScheduleException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
     }
     
     private User validateEmail (String email){
@@ -110,6 +103,6 @@ public class DevLogService{
             return null;
         }
         return userRepository.findByEmail(email)
-                .orElseThrow(NoSuchUserException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -1,11 +1,12 @@
 package project.domain;
 
-import project.exception.user.NoSuchUserException;
-
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -73,7 +74,7 @@ public class DevLog extends BaseEntity{
         
         public DevLog build(){
             if (!schedule.hasUser(user)){
-                throw new NoSuchUserException("스케줄에 존재하지 않는 유저입니다");
+                throw new PlantException(ErrorCode.USER_NOT_FOUND, "스케줄에 존재하지 않는 유저입니다");
             }
             
             return new DevLog(this); 

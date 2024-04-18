@@ -1,6 +1,6 @@
 package project.common.auth.jwt;
 
-import project.dto.ErrorCode;
+import project.exception.ErrorCode;
 import project.dto.ErrorResponse;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-
+// Security FilterChain에서 요청을 거부했을때 에러 응답을 반환하는 Handler 클래스
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
@@ -22,14 +22,14 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
         
-        ErrorCode errorCode = ErrorCode.FORBIDDEN;
+        ErrorCode errorCode = ErrorCode.USER_AUTHORITY_INVALID;
         
         ObjectMapper objectMapper = new ObjectMapper();
-        response.setStatus(errorCode.getCode());
+        response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         
-        ErrorResponse errorResponse = new ErrorResponse(errorCode, "해당 url에 접근이 허가되지 않은 유저입니다");
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.name(), errorCode.getMessage());
         try{
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         }catch (IOException e){

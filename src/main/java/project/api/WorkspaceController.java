@@ -1,21 +1,16 @@
 package project.api;
 
-import org.springframework.security.core.parameters.P;
 import project.domain.*;
 import project.dto.workspace.*;
 import project.common.auth.oauth.UserInfo;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.service.WorkspaceService;
-import project.service.EmailService;
-import project.exception.schedule.DateFormatException;
 import project.common.interceptor.auth.PermitUserRole;
 
-import java.util.List;
-import java.util.ArrayList;
-import static java.util.stream.Collectors.toList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.RequiredArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,8 +18,6 @@ import java.time.format.DateTimeParseException;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RequiredArgsConstructor
@@ -164,7 +157,7 @@ public class WorkspaceController{
             return LocalDate.parse(dateStr, formatter).atStartOfDay();
         }
         catch (DateTimeParseException e){
-            throw new DateFormatException();
+            throw new PlantException(ErrorCode.DATE_INVALID);
         }
     }
     
@@ -175,7 +168,7 @@ public class WorkspaceController{
             return LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
         }
         catch (DateTimeParseException e){
-            throw new DateFormatException();
+            throw new PlantException(ErrorCode.DATE_INVALID);
         }
     }
     

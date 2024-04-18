@@ -1,11 +1,11 @@
 package project.common.auth.oauth;
 
-import project.exception.auth.*;
-
 import java.util.Map;
 import java.util.HashMap;
 import lombok.Getter;
 import lombok.Setter;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 
 @Getter
 public class OAuthAuthenticationProvider {
@@ -17,7 +17,7 @@ public class OAuthAuthenticationProvider {
         Provider client = provider.get(clientName);
         
         if (client == null){
-            throw new NoSuchProviderException("client가 올바르지 않습니다");
+            throw new PlantException(ErrorCode.OAUTH_PROVIDER_NOT_FOUND);
         }
         
         String tokenUrl = makeTokenUrl(code, client);
@@ -30,7 +30,7 @@ public class OAuthAuthenticationProvider {
         Provider client = provider.get(clientName);
         
         if (client == null){
-            throw new NoSuchProviderException("client가 올바르지 않습니다");
+            throw new PlantException(ErrorCode.OAUTH_PROVIDER_NOT_FOUND, "client가 올바르지 않습니다");
         }
         
         return client.getUserInfoUri();

@@ -1,9 +1,5 @@
 package project.domain;
 
-import project.exception.user.NoSuchUserException;
-import project.exception.user.InvalidAuthorityException;
-import project.exception.devLog.NoSuchChatException;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -14,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 // import lombok.Builder;
 import lombok.NoArgsConstructor;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 
 @Entity
 @Table(name = "schedules")
@@ -72,7 +70,7 @@ public class Schedule extends BaseEntity{
     public void addUser(User user){
         
         if(!this.workspace.hasUser(user)){
-            throw new NoSuchUserException("Workspace에 존재하지 않는 유저입니다");
+            throw new PlantException(ErrorCode.USER_NOT_FOUND);
         }
         
         if (this.hasUser(user)){
@@ -108,31 +106,31 @@ public class Schedule extends BaseEntity{
     
     public void updateChat(User user, Long chatId, String content){
         for (DevLog devLog : this.devLogs){
-            if (devLog.getId() == chatId){
+            if (devLog.getId().equals(chatId)){
                 if(!devLog.getUser().equals(user)){
-                    throw new InvalidAuthorityException();
+                    throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
                 }
                 devLog.setContent(content);
                 return;
             }
         }
-        throw new NoSuchChatException();
+        throw new PlantException(ErrorCode.CHAT_NOT_FOUND);
     }
     
     public void removeChat(User user, Long chatId){
         boolean check = false;
         
         for (DevLog devLog : this.devLogs){
-            if (devLog.getId() == chatId){
+            if (devLog.getId().equals(chatId)){
                 if(!devLog.getUser().equals(user)){
-                    throw new InvalidAuthorityException();
+                    throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
                 }
                 check = true;
             }
         }
         
-        if(check == false){
-            throw new NoSuchChatException();
+        if(!check){
+            throw new PlantException(ErrorCode.CHAT_NOT_FOUND);
         }
         this.devLogs.removeIf(d -> d.getId().equals(chatId));
     }

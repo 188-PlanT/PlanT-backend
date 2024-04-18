@@ -3,10 +3,9 @@ package project.service;
 import project.domain.*;
 import project.common.auth.oauth.UserInfo;
 import project.dto.workspace.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.repository.*;
-import project.exception.user.*;
-import project.exception.workspace.NoSuchWorkspaceException;
-import project.exception.image.NoSuchImageException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -46,14 +45,14 @@ public class WorkspaceService{
     public Workspace makeWorkspace(CreateWorkspaceRequest request, Long createUserId){
                 
         User createUser = userRepository.findById(createUserId)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         List<User> userList = userRepository.findByIdIn(request.getUsers());
         
         validateUserList(request.getUsers(), userList);
         
         Image defaultWorkspaceProfile = imageRepository.findByUrl(DEFAULT_WORKSPACE_IMAGE_URL)
-                                            .orElseThrow(NoSuchImageException::new);
+                                            .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
 
         Workspace workspace = Workspace.builder()
                                         .name(request.getName())
@@ -73,7 +72,7 @@ public class WorkspaceService{
 		
 //		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
         
         workspaceRepository.delete(workspace);
     }
@@ -84,7 +83,7 @@ public class WorkspaceService{
 		
 //		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         // Lazy Loding
         workspace.getUserWorkspaces()
@@ -102,10 +101,10 @@ public class WorkspaceService{
         
 //		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         Image profile = imageRepository.findByUrl(request.getProfile())
-                                        .orElseThrow(NoSuchImageException::new);
+                                        .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         
         workspace.updateWorkspace(request.getName(), profile);
 		
@@ -118,10 +117,10 @@ public class WorkspaceService{
 		
 //		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         User user = userRepository.findById(userId)
-            .orElseThrow(NoSuchUserException::new);
+            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         workspace.addUser(user);
         
@@ -143,10 +142,10 @@ public class WorkspaceService{
     public void removeUser(Long workspaceId, Long loginUserId, Long userId){
 //		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         User user = userRepository.findById(userId)
-            .orElseThrow(NoSuchUserException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         workspace.removeUser(user);
     }
@@ -156,9 +155,9 @@ public class WorkspaceService{
     public Workspace changeUserAuthority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
         
 		Workspace workspace = validateChangeUserAutority(workspaceId, loginUserId, userId, authority);
-        
+
         User user = userRepository.findById(userId)
-            .orElseThrow(NoSuchUserException::new);      
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         workspace.giveAuthority(user, authority);
         
@@ -179,7 +178,7 @@ public class WorkspaceService{
 		
 //        Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         LocalDateTime startDate = getStartDate(date);
         LocalDateTime endDate = getEndDate(date);
@@ -195,7 +194,7 @@ public class WorkspaceService{
 		
 //		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(NoSuchWorkspaceException::new);
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         List<Schedule> schedules = scheduleRepository.searchByDate(workspace, date, date.plusDays(1).minusSeconds(1));
         
@@ -205,7 +204,7 @@ public class WorkspaceService{
     
     private void validateUserList(List<Long> userIds, List<User> userList){
         if (userIds.size() != userList.size()){
-            throw new NoSuchUserException();
+            throw new PlantException(ErrorCode.USER_NOT_FOUND, "잘못된 유저 정보가 포함되어 있습니다");
         }
     }
     
@@ -224,7 +223,7 @@ public class WorkspaceService{
     //로직 분리할까 그냥...?
 	private Workspace validateChangeUserAutority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
         UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-			.orElseThrow(NoSuchWorkspaceException::new);
+			.orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
         UserRole loginUserRole = userWorkspace.getUserRole();
 
@@ -236,6 +235,6 @@ public class WorkspaceService{
                 return userWorkspace.getWorkspace();
             }
         }
-        throw new InvalidAuthorityException();
+        throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
 	}
 }

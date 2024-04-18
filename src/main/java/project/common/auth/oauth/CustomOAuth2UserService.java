@@ -2,10 +2,10 @@ package project.common.auth.oauth;
 
 import project.domain.User;
 import project.domain.Image;
-import project.exception.user.*;
+import project.exception.ErrorCode;
+import project.exception.PlantException;
 import project.repository.UserRepository;
 import project.repository.ImageRepository;
-import project.exception.image.NoSuchImageException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -98,7 +98,7 @@ public class CustomOAuth2UserService{
         else{
             
             Image defaultUserProfile = imageRepository.findByUrl(DEFAULT_USER_IMAGE_URL)
-                                                        .orElseThrow(NoSuchImageException::new);
+                    .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
             
             User user = User.fromOAuth2Attributes(email, defaultUserProfile);
             userRepository.save(user);

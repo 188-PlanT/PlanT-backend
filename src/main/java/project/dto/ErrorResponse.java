@@ -1,16 +1,18 @@
 package project.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import project.exception.ErrorCode;
 
 @Getter
+@AllArgsConstructor
 public class ErrorResponse{
-    private int code;
-    private String message;
-    private String details;
-    
-    public ErrorResponse(ErrorCode errorCode, String details){
-        this.code = errorCode.getCode();
-        this.message = errorCode.getMessage();
-        this.details = details;
-    }
+    private final String errorName;
+    private final String message;
+
+//    public ErrorResponse(ErrorCode errorCode){
+//        this.errorName = errorCode.name();
+//        this.message = errorCode.getMessage();
+//    }
 }
