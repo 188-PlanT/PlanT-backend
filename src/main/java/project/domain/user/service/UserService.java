@@ -9,9 +9,11 @@ import project.domain.user.domain.User;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.user.dto.login.SignUpRequest;
+import project.domain.user.dto.user.UpdateUserRequest;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.security.oauth.UserInfo;
+import project.common.service.RedisService;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
-import project.common.service.RedisService;
 
 @Slf4j
 @Service
@@ -120,20 +121,33 @@ public class UserService implements UserDetailsService{
     
     // <== 유저 정보 수정 ==>
     @Transactional
-    public User updateUser(String email, String nickName, String password, String profileUrl){
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
-        
-        if(!user.getNickName().equals(nickName)){
+    public User updateUser(Long userId, UpdateUserRequest request){
+		
+		User user = userRepository.findById(userId) //토큰에서 유저 조회
+			.orElseThrow(() -> new PlantException(ErrorCode.TOKEN_INVALID, "존재하지 않는 유저입니다"));
+		
+		// lazy Loding
+		user.getProfile().getUrl();
+		
+		validateCurrentPassword(user, request.getCurrentPassword());
+		
+		String nickName = request.getNickName(); //닉네임 변경값 검증
+        if(nickName != null && !user.getNickName().equals(nickName)){
             validateUserNickName(nickName);
         }
+		
+		String newPassword = request.getNewPassword(); // 비밀번호 변경값 검증
+        if (newPassword != null) validateUserPassword(newPassword);
         
-        validateUserPassword(password);
+		String profileUrl = request.getProfile();
+		Image profile = null;
+		
+		if (profileUrl != null){
+			profile = imageRepository.findByUrl(profileUrl)
+                .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));	
+		}
         
-        Image profile = imageRepository.findByUrl(profileUrl)
-                                        .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
-        
-        user.update(nickName, password, profile, passwordEncoder);
+        user.update(nickName, newPassword, profile, passwordEncoder);
 
         return user;
     }
@@ -178,29 +192,6 @@ public class UserService implements UserDetailsService{
         redisService.deleteByKey(email);
     }
     
-    
-    // < == validate logic ==> //
-    // <== 이메일 중복 검증 ==>
-    public void validateUserEmail(String email){
-        
-        if (userRepository.existsByEmail(email)){
-            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
-        }
-    }
-    // <== 닉네임 중복 검증 ==>
-    public void validateUserNickName(String nickName){
-        if (userRepository.existsByNickName(nickName)){
-            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
-        }
-    }
-    
-    private void validateUserPassword(String password){
-        
-        if (!Pattern.matches(PASSWORD_PATTERN, password)){
-            throw new PlantException(ErrorCode.PASSWORD_INVALD);
-        }
-    }
-    
     // <== 이메일로 조회 ==>
     @Transactional(readOnly = true)
     public User findByEmail(String email){
@@ -238,4 +229,32 @@ public class UserService implements UserDetailsService{
             throw new PlantException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호가 틀립니다");
         }
     }
+	
+	// < == validate logic ==> //
+    // <== 이메일 중복 검증 ==>
+    public void validateUserEmail(String email){
+        
+        if (userRepository.existsByEmail(email)){
+            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
+        }
+    }
+    // <== 닉네임 중복 검증 ==>
+    public void validateUserNickName(String nickName){
+        if (userRepository.existsByNickName(nickName)){
+            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
+        }
+    }
+    
+    private void validateUserPassword(String password){
+        if (!Pattern.matches(PASSWORD_PATTERN, password)){
+            throw new PlantException(ErrorCode.PASSWORD_INVALD);
+        }
+    }
+	
+	// 업데이트 로직에서 현재 비밀번호 확인
+	private void validateCurrentPassword(User user, String password){
+		if (!user.checkPassword(password, passwordEncoder)){
+			throw new PlantException(ErrorCode.USER_NOT_FOUND, "비밀번호가 올바르지 않습니다");	
+		}
+	}
 }

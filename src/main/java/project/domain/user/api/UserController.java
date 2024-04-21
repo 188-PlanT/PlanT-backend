@@ -9,6 +9,7 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.domain.user.service.UserService;
 import project.common.service.EmailService;
+import project.common.security.jwt.JwtProvider;
 
 import java.util.List;
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class UserController{
     
     private final UserService userService;
     private final EmailService emailService;
+	private final JwtProvider jwtProvider;
     
 
     // <==유저 이메일 검증==>
@@ -61,13 +63,14 @@ public class UserController{
     
     // <== 유저 닉네임 추가 ==>
     @PutMapping("/v1/users/nickname")
-    public ResponseEntity<UserDto> setNickNameUser(@AuthenticationPrincipal UserInfo userInfo,
+    public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(@AuthenticationPrincipal UserInfo userInfo,
                                                    @RequestBody FinishUserRegisterRequest request){
         
         User user = userService.finishRegister(userInfo.getUsername(), request.getNickName());
-        
-        //여기서 부터 개발 시작
-        return ResponseEntity.ok(UserDto.from(user));
+		
+		String accessToken = jwtProvider.createAccessToken(user);
+
+        return ResponseEntity.ok(FinishUserRegisterResponse.from(user, accessToken));
     }
     
     
@@ -84,9 +87,9 @@ public class UserController{
     // <== 유저 정보 수정 ==>
     @PutMapping("/v1/users")
     public ResponseEntity<UserDto> updateUser(@AuthenticationPrincipal UserInfo userInfo,
-                                                            @RequestBody UpdateUserRequest request){
+                                                @RequestBody UpdateUserRequest request){
         
-        User updateUser = userService.updateUser(userInfo.getUsername(), request.getNickName(), request.getPassword(), request.getProfile());
+        User updateUser = userService.updateUser(userInfo.getUserId(), request);
         
         return ResponseEntity.ok(UserDto.from(updateUser));
     }

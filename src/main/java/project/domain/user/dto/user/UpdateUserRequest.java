@@ -12,10 +12,11 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UpdateUserRequest{
     @NotBlank
-    private String nickName;
-    
-    @NotBlank
-    private String password;
+    private String currentPassword;
+	
+	private String newPassword;
+	
+	private String nickName;
     
     private String profile;
 }

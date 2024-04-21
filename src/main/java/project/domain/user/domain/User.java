@@ -108,10 +108,13 @@ public class User extends BaseEntity {
     }
     
     public void update(String nickName, String password, Image profile, PasswordEncoder passwordEncoder){
-        this.nickName = nickName;
-        this.password = password;
-        this.profile = profile;
-        
-        encodePassword(passwordEncoder);
+		
+        this.nickName = (nickName != null)? nickName : this.nickName;
+		
+		if (password != null){
+			this.password = password;
+			encodePassword(passwordEncoder);
+		}
+        this.profile = (profile != null) ? profile : this.profile;
     }
 }
