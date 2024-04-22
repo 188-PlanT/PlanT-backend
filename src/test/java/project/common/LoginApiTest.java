@@ -17,7 +17,7 @@ public class LoginApiTest extends IntegrationTest {
 		String request = "{ \"email\" : \"test1@gmail.com\" , \"password\" : \"test1234\" }";
 
 		//when
-		mvc.perform(post("/v1/login/dumy")            
+		mvc.perform(post("/v1/login")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request))
 			//then

@@ -67,7 +67,8 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.userId").value("4"))
 			.andExpect(jsonPath("$.nickName").value("test44"))
 			.andExpect(jsonPath("$.email").value("test4@gmail.com"))
-			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png"));
+			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png"))
+			.andExpect(jsonPath("$.accessToken").exists());
     }
 	
 	@Test
@@ -88,7 +89,10 @@ public class UserApiTest extends IntegrationTest {
 	@Test
     public void 유저_정보_수정() throws Exception {
         //given
-		String request = "{ \"nickName\" : \"test111\" , \"password\" : \"test4321\" , \"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
+		String request = "{ \"nickName\" : \"test111\" ," +
+				"\"currentPassword\" : \"test1234\" , " +
+				"\"newPassword\" : \"test4321\" , " +
+				"\"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
 		
         //when
         mvc.perform(put("/v1/users")
@@ -103,6 +107,43 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
 			.andExpect(jsonPath("$.state").value("ADMIN"));
     }
+
+	@Test
+	public void 유저_정보_수정_옵셔널() throws Exception {
+		//given
+		String request = " { \"currentPassword\" : \"test1234\" , " +
+				"\"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
+
+		//when
+		mvc.perform(put("/v1/users")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				//then
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.userId").value("1"))
+				.andExpect(jsonPath("$.nickName").value("test11"))
+				.andExpect(jsonPath("$.email").value("test1@gmail.com"))
+				.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+				.andExpect(jsonPath("$.state").value("ADMIN"));
+	}
+
+	@Test
+	public void 유저_정보_수정_비밀번호오류() throws Exception {
+		//given
+		String request = " { \"currentPassword\" : \"test5555\" , " +
+				"\"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
+
+		//when
+		mvc.perform(put("/v1/users")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				//then
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.errorName").value("USER_NOT_FOUND"))
+				.andExpect(jsonPath("$.message").value("비밀번호가 올바르지 않습니다"));
+	}
 	
 	@Test
     public void 워크스페이스_조회() throws Exception {
