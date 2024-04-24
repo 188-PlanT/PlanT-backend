@@ -8,9 +8,4 @@ import lombok.Getter;
 public class ErrorResponse{
     private final String errorName;
     private final String message;
-
-//    public ErrorResponse(ErrorCode errorCode){
-//        this.errorName = errorCode.name();
-//        this.message = errorCode.getMessage();
-//    }
 }

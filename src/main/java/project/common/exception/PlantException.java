@@ -6,6 +6,7 @@ import lombok.Getter;
 public class PlantException extends RuntimeException{
     private final ErrorCode errorCode;
 
+    // 기본 에러 양식
     public PlantException(ErrorCode errorCode){
         super(errorCode.getMessage());
         this.errorCode = errorCode;
