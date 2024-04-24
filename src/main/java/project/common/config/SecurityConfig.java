@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up", "/v1/login/oauth2", "/v1/login/dumy", "/v1/users/email/code", "/v1/image").permitAll()
             .antMatchers("/v1/users/nickname").hasAnyRole("PENDING", "USER", "ADMIN")
-            .antMatchers("/v1/**").hasAnyRole("PENDING", "USER", "ADMIN")
+            .antMatchers("/v1/**").hasAnyRole("PENDING", "USER", "ADMIN") //여기 런칭할때는 수정해야함
             .anyRequest().permitAll()
             .and()
             .exceptionHandling()

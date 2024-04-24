@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-// @EnableConfigurationProperties(OAuthProvider.class)
 public class OAuth2Config {
     @Bean
     @ConfigurationProperties(prefix = "oauth2")

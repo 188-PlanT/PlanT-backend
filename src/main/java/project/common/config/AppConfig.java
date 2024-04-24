@@ -13,23 +13,13 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import project.common.interceptor.log.LogInterceptor;
-// import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableJpaAuditing //Auditing
 public class AppConfig implements WebMvcConfigurer{
-    
-    // @PersistenceContext
-    // private final EntityManager em;
-    
-    // @Bean
-    // public JPAQueryFactory qf() {
-    //     return new JPAQueryFactory(em);
-    // }
 	
 	private final UserRoleCheckInterceptor userRoleCheckInterceptor;
-    
     //인터셉터 등록
     @Override
     public void addInterceptors(InterceptorRegistry registry){
@@ -53,16 +43,4 @@ public class AppConfig implements WebMvcConfigurer{
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginUserArgumentResolver());
     }
-    
-    // //CORS
-    // @Override
-    // public void addCorsMappings(CorsRegistry registry) {
-    //     registry
-    //         .addMapping("/**")
-    //         .allowedHeaders("*")
-    //         // .allowedOrigins("https://g-project-front-hajrg.run.goorm.site")
-    //         .allowedOrigins("*.goorm.site")
-    //         .allowCredentials(true)
-    //         .allowedMethods("*");
-    // }
 }
