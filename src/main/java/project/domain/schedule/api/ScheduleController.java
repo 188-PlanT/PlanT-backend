@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.HttpStatus;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 @RestController
 @RequiredArgsConstructor
 public class ScheduleController {
@@ -22,7 +25,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     
     @PostMapping("/v1/schedules")
-    public ResponseEntity<ScheduleDto> createSchedule(@RequestBody CreateScheduleRequest request,
+    public ResponseEntity<ScheduleDto> createSchedule(@Valid @RequestBody CreateScheduleRequest request,
                                                       @AuthenticationPrincipal UserInfo userInfo){ // 파라미터가 많아 DTO로 직접 전달
 
          ScheduleDto response = scheduleService.createSchedule(request, userInfo.getUserId());
@@ -44,7 +47,7 @@ public class ScheduleController {
     @PutMapping("/v1/schedules/{scheduleId}")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,
-                                                    @RequestBody UpdateScheduleRequest request){
+                                                    @Valid @RequestBody UpdateScheduleRequest request){
 
         ScheduleDto response = scheduleService.updateSchedule(scheduleId, request);
         
@@ -63,7 +66,7 @@ public class ScheduleController {
     @PutMapping("/v1/schedules/{scheduleId}/state")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,
-                                                    @RequestBody UpdateScheduleStateRequest request){
+                                                    @Valid @RequestBody UpdateScheduleStateRequest request){
         
         ScheduleDto response = scheduleService.moveScheduleState(scheduleId, request.getState());
         
@@ -111,6 +114,7 @@ public class ScheduleController {
     
     @Getter
     static class UpdateScheduleStateRequest{
+        @NotBlank
         private Progress state;
     }
     

@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class UserController{
 
     // <==유저 이메일 검증==>
     @PostMapping("/v1/users/email")
-    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@RequestBody EmailCheckRequest request){
+    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@Valid @RequestBody EmailCheckRequest request){
         
         try{
             userService.validateUserEmail(request.getEmail());
@@ -50,7 +52,7 @@ public class UserController{
 
     // <==유저 닉네임 검증==>
     @PostMapping("/v1/users/nickname") //응답 결과 양식은 이메일과 같으므로 공유함
-    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@RequestBody NickNameCheckRequest request){
+    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@Valid @RequestBody NickNameCheckRequest request){
         
         try{
             userService.validateUserNickName(request.getNickName());
@@ -64,7 +66,7 @@ public class UserController{
     // <== 유저 닉네임 추가 ==>
     @PutMapping("/v1/users/nickname")
     public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(@AuthenticationPrincipal UserInfo userInfo,
-                                                   @RequestBody FinishUserRegisterRequest request){
+                                                   @Valid @RequestBody FinishUserRegisterRequest request){
         
         User user = userService.finishRegister(userInfo.getUsername(), request.getNickName());
 		
@@ -87,7 +89,7 @@ public class UserController{
     // <== 유저 정보 수정 ==>
     @PutMapping("/v1/users")
     public ResponseEntity<UserDto> updateUser(@AuthenticationPrincipal UserInfo userInfo,
-                                                @RequestBody UpdateUserRequest request){
+                                                @Valid @RequestBody UpdateUserRequest request){
         
         User updateUser = userService.updateUser(userInfo.getUserId(), request);
         

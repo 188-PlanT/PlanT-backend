@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 @RequiredArgsConstructor
 @RestController
 public class WorkspaceController{
@@ -30,7 +33,7 @@ public class WorkspaceController{
     // <== 워크스페이스 생성 ==>
     @PostMapping("/v1/workspaces")
     public ResponseEntity<WorkspaceDto> createWorkspace(@AuthenticationPrincipal UserInfo userInfo,
-                                                        @RequestBody CreateWorkspaceRequest request){
+                                                        @Valid @RequestBody CreateWorkspaceRequest request){
         
         Workspace workspace = workspaceService.makeWorkspace(request, userInfo.getUserId());
         
@@ -44,7 +47,7 @@ public class WorkspaceController{
     @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<UpdateWorkspaceResponse> findAllWorkspaces(@PathVariable Long workspaceId,
                                                         @AuthenticationPrincipal UserInfo userInfo,
-                                                        @RequestBody UpdateWorkspaceRequest request){
+                                                        @Valid @RequestBody UpdateWorkspaceRequest request){
         
         Workspace workspace = workspaceService.updateWorkspace(workspaceId, userInfo.getUserId(), request);
         
@@ -82,7 +85,7 @@ public class WorkspaceController{
     @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<FindWorkspaceUsersResponse> addUser(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
-                                        @RequestBody AddUserRequest request){
+                                        @Valid @RequestBody AddUserRequest request){
 
         Workspace workspace = workspaceService.addUser(workspaceId, userInfo.getUserId(), request.getUserId());
 		
@@ -97,7 +100,7 @@ public class WorkspaceController{
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
                                         @AuthenticationPrincipal UserInfo userInfo,
 										@PathVariable Long userId,
-                                        @RequestBody UpdateUserRequest request){
+                                        @Valid @RequestBody UpdateUserRequest request){
         
         Workspace workspace = workspaceService.changeUserAuthority(workspaceId, 
                                                                    userInfo.getUserId(), 
@@ -175,11 +178,13 @@ public class WorkspaceController{
     
     @Getter @Setter
     static class AddUserRequest{
+        @NotBlank
         private Long userId;
     }
     
     @Getter @Setter
     static class UpdateUserRequest{
+        @NotBlank
         private UserRole authority;
     }
 }
