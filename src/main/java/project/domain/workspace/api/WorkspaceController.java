@@ -1,21 +1,17 @@
 package project.domain.workspace.api;
 
+import project.common.util.DateFormatUtil;
 import project.domain.user.domain.UserRole;
 import project.domain.workspace.domain.Workspace;
 import project.domain.workspace.dto.*;
 import project.common.security.oauth.UserInfo;
-import project.common.exception.ErrorCode;
-import project.common.exception.PlantException;
 import project.domain.workspace.service.WorkspaceService;
 import project.common.interceptor.auth.PermitUserRole;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.RequiredArgsConstructor;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -133,7 +129,7 @@ public class WorkspaceController{
                                                          @AuthenticationPrincipal UserInfo userInfo,
                                                          @RequestParam String date){
         
-        LocalDateTime dateTime = parseDateMonthString(date);
+        LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
         
         CalendarResponse response = workspaceService.getCalendar(workspaceId, userInfo.getUserId(), dateTime);
         
@@ -147,35 +143,13 @@ public class WorkspaceController{
                                                                     @AuthenticationPrincipal UserInfo userInfo,
                                                                     @RequestParam String date){
         
-        LocalDateTime dateTime = parseDateString(date);
+        LocalDateTime dateTime = DateFormatUtil.parseStartOfDay(date);
         
         CalendarResponse response = workspaceService.getDailySchedules(workspaceId, userInfo.getUserId(), dateTime);
         
         return ResponseEntity.ok(response);
     }
-    
-    //이거 Util 객체 하나 만드는게 좋지 않을까
-    private LocalDateTime parseDateString(String dateStr){
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            return LocalDate.parse(dateStr, formatter).atStartOfDay();
-        }
-        catch (DateTimeParseException e){
-            throw new PlantException(ErrorCode.DATE_INVALID);
-        }
-    }
-    
-    private LocalDateTime parseDateMonthString(String dateStr){
-        try {
-            // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM01");
-            dateStr = dateStr + "01";
-            return LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
-        }
-        catch (DateTimeParseException e){
-            throw new PlantException(ErrorCode.DATE_INVALID);
-        }
-    }
-    
+
     @Getter @Setter
     static class AddUserRequest{
         @NotBlank

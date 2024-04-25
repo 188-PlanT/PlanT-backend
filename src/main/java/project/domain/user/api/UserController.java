@@ -1,11 +1,11 @@
 package project.domain.user.api;
 
 import project.common.security.oauth.UserInfo;
+import project.common.util.DateFormatUtil;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
 import project.domain.workspace.domain.UserWorkspace;
-import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.domain.user.service.UserService;
 import project.common.service.EmailService;
@@ -16,9 +16,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -116,23 +113,13 @@ public class UserController{
 		
 		User loginUser = userService.findByEmail(userInfo.getUsername());
 		
-        LocalDateTime dateTime = parseDateMonthString(date);
+        LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
         
         List<UserSchedule> userSchedules = userService.findSchedules(userInfo.getUsername(), dateTime);
         
         UserSchedulesResponse response = UserSchedulesResponse.of(loginUser, userSchedules);
         
         return ResponseEntity.ok(response);
-    }
-    
-    private LocalDateTime parseDateMonthString(String dateStr){
-        try {
-            dateStr = dateStr + "01";
-            return LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
-        }
-        catch (DateTimeParseException e){
-            throw new PlantException(ErrorCode.DATE_INVALID);
-        }
     }
     
     // <== 유저 검색 ==>
