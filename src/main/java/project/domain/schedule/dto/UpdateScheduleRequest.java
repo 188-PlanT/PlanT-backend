@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
@@ -19,18 +21,18 @@ public class UpdateScheduleRequest{
     @NotBlank
     private String name;
     
-    @NotBlank
+    @NotNull
     private List<Long> users;
-    
-    @NotBlank
+
+    @NotNull
     @JsonFormat(pattern = "yyyyMMdd:HH:mm")
     private LocalDateTime startDate;
-    
-    @NotBlank
+
+    @NotNull
     @JsonFormat(pattern = "yyyyMMdd:HH:mm")
     private LocalDateTime endDate;
-    
-    @NotBlank
+
+    @NotNull
     private Progress state;
     
     private String content;

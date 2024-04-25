@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequiredArgsConstructor
@@ -114,7 +115,7 @@ public class ScheduleController {
     
     @Getter
     static class UpdateScheduleStateRequest{
-        @NotBlank
+        @NotNull
         private Progress state;
     }
     
