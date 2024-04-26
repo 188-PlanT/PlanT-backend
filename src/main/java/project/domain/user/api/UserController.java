@@ -2,6 +2,7 @@ package project.domain.user.api;
 
 import project.common.security.oauth.UserInfo;
 import project.common.util.DateFormatUtil;
+import project.common.util.UserUtil;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
@@ -31,6 +32,7 @@ public class UserController{
     private final UserService userService;
     private final EmailService emailService;
 	private final JwtProvider jwtProvider;
+    private final UserUtil userUtil;
     
 
     // <==유저 이메일 검증==>
@@ -62,10 +64,9 @@ public class UserController{
     
     // <== 유저 닉네임 추가 ==>
     @PutMapping("/v1/users/nickname")
-    public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(@AuthenticationPrincipal UserInfo userInfo,
-                                                   @Valid @RequestBody FinishUserRegisterRequest request){
+    public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(@Valid @RequestBody FinishUserRegisterRequest request){
         
-        User user = userService.finishRegister(userInfo.getUsername(), request.getNickName());
+        User user = userService.finishRegister(request.getNickName());
 		
 		String accessToken = jwtProvider.createAccessToken(user);
 
@@ -75,9 +76,9 @@ public class UserController{
     
     // <== 유저 정보 확인 ==>
     @GetMapping("/v1/users")
-    public ResponseEntity<UserDto> findUserDetails(@AuthenticationPrincipal UserInfo userInfo){
+    public ResponseEntity<UserDto> findUserDetails(){
         
-        User loginUser = userService.findByEmail(userInfo.getUsername());
+        User loginUser = userUtil.getLoginUser();
         
         return ResponseEntity.ok(UserDto.from(loginUser));
     }
@@ -85,50 +86,40 @@ public class UserController{
     
     // <== 유저 정보 수정 ==>
     @PutMapping("/v1/users")
-    public ResponseEntity<UserDto> updateUser(@AuthenticationPrincipal UserInfo userInfo,
-                                                @Valid @RequestBody UpdateUserRequest request){
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UpdateUserRequest request){
         
-        User updateUser = userService.updateUser(userInfo.getUserId(), request);
+        User updateUser = userService.updateUser(request);
         
         return ResponseEntity.ok(UserDto.from(updateUser));
     }
     
     // <== 유저 워크스페이스 리스트 조회 ==>
     @GetMapping("/v1/users/workspaces")
-    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(@AuthenticationPrincipal UserInfo userInfo){
-        
-		User loginUser = userService.findByEmail(userInfo.getUsername());
+    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(){
 		
-        List<UserWorkspace> userWorkspaces = userService.findWorkspaces(userInfo.getUsername());
-        
-        UserWorkspacesResponse response = UserWorkspacesResponse.of(loginUser, userWorkspaces);
+//        List<UserWorkspace> userWorkspaces = userService.findWorkspaces();
+
+        UserWorkspacesResponse response = userService.findWorkspaces();
         
         return ResponseEntity.ok(response);
     }
     
     // <== 유저 스케줄 리스트 조회 ==>
     @GetMapping("/v1/users/schedules")
-    public ResponseEntity<UserSchedulesResponse> readUserSchedules(@AuthenticationPrincipal UserInfo userInfo,
-                                                                   @RequestParam String date){
-		
-		User loginUser = userService.findByEmail(userInfo.getUsername());
+    public ResponseEntity<UserSchedulesResponse> readUserSchedules(@RequestParam String date){
 		
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
         
-        List<UserSchedule> userSchedules = userService.findSchedules(userInfo.getUsername(), dateTime);
-        
-        UserSchedulesResponse response = UserSchedulesResponse.of(loginUser, userSchedules);
+        UserSchedulesResponse response  = userService.findSchedules(dateTime);
         
         return ResponseEntity.ok(response);
     }
     
     // <== 유저 검색 ==>
     @GetMapping("/v1/users/search")
-    public ResponseEntity<SearchUserResponse> searchUser(@AuthenticationPrincipal UserInfo userInfo,
-                                                         @RequestParam String keyword){
-		Long loginUserId = userInfo.getUserId();
-		
-        List<User> users = userService.searchUser(loginUserId, keyword);
+    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword){
+
+        List<User> users = userService.searchUser(keyword);
         
         return ResponseEntity.ok(SearchUserResponse.from(users));
     }

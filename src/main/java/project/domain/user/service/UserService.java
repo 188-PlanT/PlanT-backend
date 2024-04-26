@@ -1,11 +1,14 @@
 package project.domain.user.service;
 
+import project.common.util.UserUtil;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
 import project.domain.schedule.dao.UserScheduleRepository;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
+import project.domain.user.dto.user.UserSchedulesResponse;
+import project.domain.user.dto.user.UserWorkspacesResponse;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.user.dto.login.SignUpRequest;
@@ -47,6 +50,7 @@ public class UserService implements UserDetailsService{
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
+    private final UserUtil userUtil;
     
     //<== 회원가입 ==>
     @Transactional
@@ -67,10 +71,11 @@ public class UserService implements UserDetailsService{
     
     // <== 회원가입 마무리 ==>
     @Transactional
-    public User finishRegister(String email, String nickName){
+    public User finishRegister(String nickName){
         
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+//        User user = userRepository.findByEmail(email)
+//            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        User user = userUtil.getLoginUser();
         
         validateUserNickName(nickName);
         
@@ -99,32 +104,29 @@ public class UserService implements UserDetailsService{
     
     // <== 워크스페이스 조회 ==>
     @Transactional(readOnly = true)
-    public List<UserWorkspace> findWorkspaces(String email){
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
-		
+    public UserWorkspacesResponse findWorkspaces(){
+        User user = userUtil.getLoginUser();
+
         List<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user);
 
-        return userWorkspaces;
+        return UserWorkspacesResponse.of(user, userWorkspaces);
     }
     
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
-    public List<UserSchedule> findSchedules(String email, LocalDateTime date){
+    public UserSchedulesResponse findSchedules(LocalDateTime date){
+        User loginUser = userUtil.getLoginUser();
 		
-		// log.info("startDate = {}, endDate = {}", date, date.plusMonths(1).minusSeconds(1));
-		
-        List<UserSchedule> userSchedules = userScheduleRepository.searchByUser(email, date, date.plusMonths(1).minusSeconds(1));
+        List<UserSchedule> userSchedules = userScheduleRepository.searchByUser(loginUser.getEmail(), date, date.plusMonths(1).minusSeconds(1));
 
-        return userSchedules;
+        return UserSchedulesResponse.of(loginUser, userSchedules);
     }
     
     // <== 유저 정보 수정 ==>
     @Transactional
-    public User updateUser(Long userId, UpdateUserRequest request){
+    public User updateUser(UpdateUserRequest request){
 		
-		User user = userRepository.findById(userId) //토큰에서 유저 조회
-			.orElseThrow(() -> new PlantException(ErrorCode.TOKEN_INVALID, "존재하지 않는 유저입니다"));
+		User user = userUtil.getLoginUser();
 		
 		// lazy Loding
 		user.getProfile().getUrl();
@@ -163,9 +165,10 @@ public class UserService implements UserDetailsService{
     
     // <== 유저 검색 ==>
     @Transactional(readOnly = true)
-    public List<User> searchUser(Long loginUserId, String keyword){
+    public List<User> searchUser(String keyword){
+        User loginUser = userUtil.getLoginUser();
         
-        List<User> users = userRepository.searchByKeyword(loginUserId, keyword);
+        List<User> users = userRepository.searchByKeyword(loginUser.getId(), keyword);
         
         return users;
     }
