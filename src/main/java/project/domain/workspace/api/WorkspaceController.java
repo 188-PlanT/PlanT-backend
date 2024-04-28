@@ -4,7 +4,6 @@ import project.common.util.DateFormatUtil;
 import project.domain.user.domain.UserRole;
 import project.domain.workspace.domain.Workspace;
 import project.domain.workspace.dto.*;
-import project.common.security.oauth.UserInfo;
 import project.domain.workspace.service.WorkspaceService;
 import project.common.interceptor.auth.PermitUserRole;
 
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
