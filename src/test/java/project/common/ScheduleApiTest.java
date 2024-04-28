@@ -62,9 +62,9 @@ public class ScheduleApiTest extends IntegrationTest {
 	 					+ " \"content\" : \"hihi\" ,"
 	 					+ " \"state\" : \"TODO\" }";
 	 //when
-	 mvc.perform(post("/v1/schedules")
+	 mvc.perform(post("/v1/schedules/")
 	 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
-	 .contentType(MediaType.APPLICATION_JSON)
+	 		.contentType(MediaType.APPLICATION_JSON)
 	 		.content(request))
 	 //then
 	 .andExpect(status().isForbidden());

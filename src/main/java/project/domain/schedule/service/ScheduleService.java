@@ -1,5 +1,6 @@
 package project.domain.schedule.service;
 
+import project.common.util.UserUtil;
 import project.domain.schedule.dao.DevLogRepository;
 import project.domain.schedule.domain.DevLog;
 import project.domain.schedule.dao.ScheduleRepository;
@@ -33,6 +34,7 @@ public class ScheduleService{
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
     private final DevLogRepository devLogRepository;
+    private final UserUtil userUtil;
     
     // <== 스케줄 단일 조회 ==>
     @Transactional(readOnly = true)
@@ -48,12 +50,15 @@ public class ScheduleService{
     
     // <== 스케줄 생성 ==>
     @Transactional
-    public ScheduleDto createSchedule(CreateScheduleRequest request, Long loginUserId){
+    public ScheduleDto createSchedule(CreateScheduleRequest request){
     
         Workspace workspace = workspaceRepository.findById(request.getWorkspaceId())
             .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
-        workspace.checkUser(loginUserId); // 유저가 워크스페이스에 속해있는지 확인 -> 근데 이 로직이 여기에 이렇게 들어가는게 맞을까
+        Long loginUserId = userUtil.getLoginUserId();
+
+        // api url에 workspaceId 가 들어가지 않으므로 Interceptor에서 검증 불가능 -> 서비스에서 검증
+        workspace.checkUser(loginUserId);
 
         List <User> users = userRepository.findByIdIn(request.getUsers());
         
@@ -124,9 +129,8 @@ public class ScheduleService{
     
     // <== 댓글 추가 ==>
     @Transactional
-    public AddChatResponse addChat(String loginUserEmail, Long scheduleId, String content) {
-        User loginUser = userRepository.findByEmail(loginUserEmail)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+    public AddChatResponse addChat(Long scheduleId, String content) {
+        User loginUser = userUtil.getLoginUser();
         
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
@@ -146,9 +150,8 @@ public class ScheduleService{
     
     // <== 댓글 수정 ==>
     @Transactional
-    public AddChatResponse updateChat(String loginUserEmail, Long scheduleId, Long chatId, String content) {
-        User loginUser = userRepository.findByEmail(loginUserEmail)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+    public AddChatResponse updateChat(Long scheduleId, Long chatId, String content) {
+        User loginUser = userUtil.getLoginUser();
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
@@ -172,9 +175,8 @@ public class ScheduleService{
     
     // <== 댓글 삭제 ==>
     @Transactional
-    public void removeChat(String loginUserEmail, Long scheduleId, Long chatId) {
-        User loginUser = userRepository.findByEmail(loginUserEmail)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+    public void removeChat(Long scheduleId, Long chatId) {
+        User loginUser = userUtil.getLoginUser();
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
