@@ -28,10 +28,9 @@ public class WorkspaceController{
     
     // <== 워크스페이스 생성 ==>
     @PostMapping("/v1/workspaces")
-    public ResponseEntity<WorkspaceDto> createWorkspace(@AuthenticationPrincipal UserInfo userInfo,
-                                                        @Valid @RequestBody CreateWorkspaceRequest request){
+    public ResponseEntity<WorkspaceDto> createWorkspace(@Valid @RequestBody CreateWorkspaceRequest request){
         
-        Workspace workspace = workspaceService.makeWorkspace(request, userInfo.getUserId());
+        Workspace workspace = workspaceService.makeWorkspace(request);
         
         WorkspaceDto response = WorkspaceDto.from(workspace);
         
@@ -42,10 +41,9 @@ public class WorkspaceController{
     @PutMapping("/v1/workspaces/{workspaceId}")
     @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<UpdateWorkspaceResponse> findAllWorkspaces(@PathVariable Long workspaceId,
-                                                        @AuthenticationPrincipal UserInfo userInfo,
-                                                        @Valid @RequestBody UpdateWorkspaceRequest request){
+                                                                     @Valid @RequestBody UpdateWorkspaceRequest request){
         
-        Workspace workspace = workspaceService.updateWorkspace(workspaceId, userInfo.getUserId(), request);
+        Workspace workspace = workspaceService.updateWorkspace(workspaceId, request);
         
         UpdateWorkspaceResponse response = UpdateWorkspaceResponse.from(workspace);
         
@@ -55,10 +53,9 @@ public class WorkspaceController{
     // <== 워크스페이스 삭제 ==>
     @DeleteMapping("/v1/workspaces/{workspaceId}")
     @PermitUserRole(value = {UserRole.ADMIN})
-    public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId,
-                                                                    @AuthenticationPrincipal UserInfo userInfo){
+    public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId){
         
-        workspaceService.removeWorkspace(workspaceId, userInfo.getUserId());
+        workspaceService.removeWorkspace(workspaceId);
         
         return ResponseEntity.ok(new DeleteWorkspaceResponse());
     }
@@ -66,10 +63,9 @@ public class WorkspaceController{
     // <== 워크스페이스 유저 조회 ==>
 	@PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/workspaces/{workspaceId}/users")
-    public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId,
-                                                                @AuthenticationPrincipal UserInfo userInfo){
-        
-        Workspace workspace = workspaceService.findOne(workspaceId, userInfo.getUserId());
+    public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId){
+
+        Workspace workspace = workspaceService.findOne(workspaceId);
         
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
         
@@ -80,10 +76,9 @@ public class WorkspaceController{
     @PostMapping("/v1/workspaces/{workspaceId}/users")
     @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<FindWorkspaceUsersResponse> addUser(@PathVariable Long workspaceId,
-                                        @AuthenticationPrincipal UserInfo userInfo,
-                                        @Valid @RequestBody AddUserRequest request){
+                                                              @Valid @RequestBody AddUserRequest request){
 
-        Workspace workspace = workspaceService.addUser(workspaceId, userInfo.getUserId(), request.getUserId());
+        Workspace workspace = workspaceService.addUser(workspaceId, request.getUserId());
 		
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
         
@@ -92,14 +87,12 @@ public class WorkspaceController{
     
     // <== 유저 권한 수정 ==>
     @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.PENDING}) // 유저 워크스페이스 수락도 여기서 진행되므로 PENDING도 허가
+    @PermitUserRole(value = {UserRole.ADMIN, UserRole.PENDING}) // 워크스페이스 초대 수락도 여기서 진행되므로 PENDING도 허가
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
-                                        @AuthenticationPrincipal UserInfo userInfo,
-										@PathVariable Long userId,
-                                        @Valid @RequestBody UpdateUserRequest request){
+                                                                          @PathVariable Long userId,
+                                                                          @Valid @RequestBody UpdateUserRequest request){
         
-        Workspace workspace = workspaceService.changeUserAuthority(workspaceId, 
-                                                                   userInfo.getUserId(), 
+        Workspace workspace = workspaceService.changeUserAuthority(workspaceId,
                                                                    userId, 
                                                                    request.getAuthority());
         
@@ -112,10 +105,9 @@ public class WorkspaceController{
     @DeleteMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     @PermitUserRole(value={UserRole.ADMIN})
     public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId,
-                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                          @PathVariable Long userId){
         
-        workspaceService.removeUser(workspaceId, userInfo.getUserId(), userId);
+        workspaceService.removeUser(workspaceId, userId);
         
         RemoveUserResponse response = new RemoveUserResponse();
         
@@ -126,12 +118,11 @@ public class WorkspaceController{
     @GetMapping("/v1/workspaces/{workspaceId}/calendar")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<CalendarResponse> readCalendar(@PathVariable Long workspaceId,
-                                                         @AuthenticationPrincipal UserInfo userInfo,
                                                          @RequestParam String date){
         
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
         
-        CalendarResponse response = workspaceService.getCalendar(workspaceId, userInfo.getUserId(), dateTime);
+        CalendarResponse response = workspaceService.getCalendar(workspaceId, dateTime);
         
         return ResponseEntity.ok(response);
     }
@@ -140,12 +131,11 @@ public class WorkspaceController{
     @GetMapping("/v1/workspaces/{workspaceId}/schedules")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     public ResponseEntity<CalendarResponse> readDailySchedule(@PathVariable Long workspaceId,
-                                                                    @AuthenticationPrincipal UserInfo userInfo,
-                                                                    @RequestParam String date){
+                                                              @RequestParam String date){
         
         LocalDateTime dateTime = DateFormatUtil.parseStartOfDay(date);
         
-        CalendarResponse response = workspaceService.getDailySchedules(workspaceId, userInfo.getUserId(), dateTime);
+        CalendarResponse response = workspaceService.getDailySchedules(workspaceId, dateTime);
         
         return ResponseEntity.ok(response);
     }

@@ -1,5 +1,6 @@
 package project.domain.workspace.service;
 
+import project.common.util.UserUtil;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
 import project.domain.schedule.dao.ScheduleRepository;
@@ -40,6 +41,7 @@ public class WorkspaceService{
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
 	private final UserWorkspaceRepository userWorkspaceRepository;
+    private final UserUtil userUtil;
 	
 	private final EmailService emailService;
     
@@ -48,10 +50,9 @@ public class WorkspaceService{
     
     // <== 워크스페이스 제작 ==>
     @Transactional
-    public Workspace makeWorkspace(CreateWorkspaceRequest request, Long createUserId){
+    public Workspace makeWorkspace(CreateWorkspaceRequest request){
                 
-        User createUser = userRepository.findById(createUserId)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        User createUser = userUtil.getLoginUser();
         
         List<User> userList = userRepository.findByIdIn(request.getUsers());
         
@@ -74,9 +75,8 @@ public class WorkspaceService{
     
     // <== 워크스페이스 삭제 ==>
     @Transactional
-    public void removeWorkspace(Long workspaceId, Long loginUserId){
-		
-//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+    public void removeWorkspace(Long workspaceId){
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
         
@@ -85,9 +85,8 @@ public class WorkspaceService{
     
     // <== 워크스페이스 단일 조회 ==>
     @Transactional(readOnly = true)
-    public Workspace findOne(Long workspaceId, Long loginUserId){
-		
-//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
+    public Workspace findOne(Long workspaceId){
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
@@ -103,9 +102,8 @@ public class WorkspaceService{
     
     //<== 워크스페이스 수정 ==>
     @Transactional
-    public Workspace updateWorkspace(Long workspaceId, Long loginUserId, UpdateWorkspaceRequest request){
-        
-//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+    public Workspace updateWorkspace(Long workspaceId, UpdateWorkspaceRequest request){
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
@@ -119,9 +117,8 @@ public class WorkspaceService{
     
     // <== 워크스페이스 유저 추가 ==>
     @Transactional
-    public Workspace addUser(Long workspaceId, Long loginUserId, Long userId){
-		
-//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+    public Workspace addUser(Long workspaceId, Long userId){
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
@@ -145,8 +142,7 @@ public class WorkspaceService{
     
     // <== 워크스페이스 유저 삭제 ==>
     @Transactional
-    public void removeUser(Long workspaceId, Long loginUserId, Long userId){
-//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN);
+    public void removeUser(Long workspaceId, Long userId){
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
@@ -158,7 +154,8 @@ public class WorkspaceService{
     
     // <== 워크스페이스 유저 권한 변경 ==>
     @Transactional
-    public Workspace changeUserAuthority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
+    public Workspace changeUserAuthority(Long workspaceId, Long userId, UserRole authority){
+        Long loginUserId = userUtil.getLoginUserId();
         
 		Workspace workspace = validateChangeUserAutority(workspaceId, loginUserId, userId, authority);
 
@@ -180,9 +177,9 @@ public class WorkspaceService{
     
     // <== 캘린더 응답 반환 ==>
     @Transactional(readOnly = true)
-    public CalendarResponse getCalendar(Long workspaceId, Long loginUserId, LocalDateTime date){
-		
-//        Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
+    public CalendarResponse getCalendar(Long workspaceId, LocalDateTime date){
+        Long loginUserId = userUtil.getLoginUserId();
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
@@ -196,9 +193,9 @@ public class WorkspaceService{
     
     // <== 오늘의 일정 반환 ==>
     @Transactional(readOnly = true)
-    public CalendarResponse getDailySchedules(Long workspaceId, Long loginUserId, LocalDateTime date){
-		
-//		Workspace workspace = checkUserAuthority(workspaceId, loginUserId, UserRole.ADMIN, UserRole.USER);
+    public CalendarResponse getDailySchedules(Long workspaceId, LocalDateTime date){
+        Long loginUserId = userUtil.getLoginUserId();
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
