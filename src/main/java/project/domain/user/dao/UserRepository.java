@@ -17,12 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     
     public Optional<User> findByEmail(String email);
     
-    public Optional<User> findByNickName(String nickName);
-    
     public boolean existsByNickName(String nickName);
-    
-    @Query("select u from User u where u.email in :userEmails")
-    public List<User> findUsersByEmailList(@Param("userEmails") List<String> userEmails);
     
     public List<User> findByIdIn(List<Long> userIds);
     

@@ -1,12 +1,9 @@
 package project.domain.user.api;
 
-import project.common.security.oauth.UserInfo;
 import project.common.util.DateFormatUtil;
 import project.common.util.UserUtil;
-import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
-import project.domain.workspace.domain.UserWorkspace;
 import project.common.exception.PlantException;
 import project.domain.user.service.UserService;
 import project.common.service.EmailService;
@@ -20,7 +17,6 @@ import java.time.LocalDateTime;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import javax.validation.Valid;
 
