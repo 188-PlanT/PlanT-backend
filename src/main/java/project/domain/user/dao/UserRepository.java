@@ -9,7 +9,8 @@ import org.springframework.data.repository.query.Param;
 import project.domain.user.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom{
-	
+
+    @Query("select u from User u join fetch u.profile p where u.id=:id")
 	public Optional<User> findById(Long id);
     
     public boolean existsByEmail(String email);
