@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @RequiredArgsConstructor
 @RestController
@@ -140,13 +140,13 @@ public class WorkspaceController{
 
     @Getter @Setter
     static class AddUserRequest{
-        @NotBlank
+        @NotNull
         private Long userId;
     }
     
     @Getter @Setter
     static class UpdateUserRequest{
-        @NotBlank
+        @NotNull
         private UserRole authority;
     }
 }
