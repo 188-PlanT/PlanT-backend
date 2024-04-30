@@ -72,9 +72,7 @@ public class UserService implements UserDetailsService{
     // <== 회원가입 마무리 ==>
     @Transactional
     public User finishRegister(String nickName){
-        
-//        User user = userRepository.findByEmail(email)
-//            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+
         User user = userUtil.getLoginUser();
         
         validateUserNickName(nickName);
@@ -127,9 +125,6 @@ public class UserService implements UserDetailsService{
     public User updateUser(UpdateUserRequest request){
 		
 		User user = userUtil.getLoginUser();
-		
-		// lazy Loding
-		user.getProfile().getUrl();
 		
 		validateCurrentPassword(user, request.getCurrentPassword());
 		
@@ -193,19 +188,6 @@ public class UserService implements UserDetailsService{
         }
         
         redisService.deleteByKey(email);
-    }
-    
-    // <== 이메일로 조회 ==>
-    @Transactional(readOnly = true)
-    public User findByEmail(String email){
-        
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
-        
-        // lazy loding
-        user.getProfile().getUrl();
-        
-        return user;
     }
     
     // < == Security 메서드 ==>

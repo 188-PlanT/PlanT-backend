@@ -1,7 +1,7 @@
 package project.common;
 
 import project.domain.user.domain.User;
-import project.domain.user.service.UserService;
+import project.common.util.UserUtil;
 import project.common.security.jwt.JwtProvider;
 
 import javax.annotation.PostConstruct;
@@ -13,8 +13,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -22,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class IntegrationTest {
 	@Autowired
-	private UserService userService;
+	private UserUtil userUtil;
 	
 	@Autowired
 	private JwtProvider jwtProvider;
@@ -38,11 +36,12 @@ public class IntegrationTest {
 	
 	@PostConstruct
 	private void setAccessToken() {
-		User user = userService.findByEmail("test1@gmail.com");
+		User user = userUtil.getUserById(1L);
+
 		ACCESS_TOKEN = "Bearer " + jwtProvider.createAccessToken(user);
-		ACCESS_TOKEN_USER = "Bearer " + jwtProvider.createAccessToken(userService.findByEmail("test2@gmail.com"));
-		ACCESS_TOKEN_PENDING = "Bearer " + jwtProvider.createAccessToken(userService.findByEmail("test3@gmail.com"));
-		ACCESS_TOKEN_NO_NICKNAME = "Bearer " + jwtProvider.createAccessToken(userService.findByEmail("test4@gmail.com"));
+		ACCESS_TOKEN_USER = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(2L));
+		ACCESS_TOKEN_PENDING = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(3L));
+		ACCESS_TOKEN_NO_NICKNAME = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(4L));
 		REFRESH_TOKEN = "Bearer " + jwtProvider.createRefreshToken(user);
 	}
 }

@@ -18,11 +18,10 @@ import org.springframework.stereotype.Component;
 public class UserUtil {
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public User getLoginUser(){
         Long userId = getLoginUserId();
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        return getUserById(userId);
     }
 
     // 유저 조회가 아닌 단순히 pk 조회가 필요할때 사용
@@ -30,5 +29,10 @@ public class UserUtil {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserInfo userInfo = (UserInfo) authentication.getPrincipal();
         return userInfo.getUserId();
+    }
+    @Transactional
+    public User getUserById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
     }
 }
