@@ -54,9 +54,7 @@ public class WorkspaceService{
                 
         User createUser = userUtil.getLoginUser();
         
-        List<User> userList = userRepository.findByIdIn(request.getUsers());
-        
-        validateUserList(request.getUsers(), userList);
+        List<User> userList = userUtil.getUserByList(request.getUsers());
         
         Image defaultWorkspaceProfile = imageRepository.findByUrl(DEFAULT_WORKSPACE_IMAGE_URL)
                                             .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
@@ -77,8 +75,7 @@ public class WorkspaceService{
     @Transactional
     public void removeWorkspace(Long workspaceId){
 
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
         
         workspaceRepository.delete(workspace);
     }
@@ -87,8 +84,7 @@ public class WorkspaceService{
     @Transactional(readOnly = true)
     public Workspace findOne(Long workspaceId){
 
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
 
         // Lazy Loding
         workspace.getUserWorkspaces()
@@ -104,8 +100,7 @@ public class WorkspaceService{
     @Transactional
     public Workspace updateWorkspace(Long workspaceId, UpdateWorkspaceRequest request){
 
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
 
         Image profile = imageRepository.findByUrl(request.getProfile())
                                         .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
@@ -119,11 +114,9 @@ public class WorkspaceService{
     @Transactional
     public Workspace addUser(Long workspaceId, Long userId){
 
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        User user = userUtil.getUserById(userId);
         
         workspace.addUser(user);
         
@@ -143,11 +136,9 @@ public class WorkspaceService{
     // <== 워크스페이스 유저 삭제 ==>
     @Transactional
     public void removeUser(Long workspaceId, Long userId){
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        User user = userUtil.getUserById(userId);
         
         workspace.removeUser(user);
     }
@@ -159,8 +150,7 @@ public class WorkspaceService{
         
 		Workspace workspace = validateChangeUserAutority(workspaceId, loginUserId, userId, authority);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        User user = userUtil.getUserById(userId);
         
         workspace.giveAuthority(user, authority);
         
@@ -180,8 +170,7 @@ public class WorkspaceService{
     public CalendarResponse getCalendar(Long workspaceId, LocalDateTime date){
         Long loginUserId = userUtil.getLoginUserId();
 
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
 
         LocalDateTime startDate = getStartDate(date);
         LocalDateTime endDate = getEndDate(date);
@@ -196,19 +185,11 @@ public class WorkspaceService{
     public CalendarResponse getDailySchedules(Long workspaceId, LocalDateTime date){
         Long loginUserId = userUtil.getLoginUserId();
 
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        Workspace workspace = findWorkspaceById(workspaceId);
 
         List<Schedule> schedules = scheduleRepository.searchByDate(workspace, date, date.plusDays(1).minusSeconds(1));
         
         return CalendarResponse.of(workspace, schedules, loginUserId);
-    }
-    
-    
-    private void validateUserList(List<Long> userIds, List<User> userList){
-        if (userIds.size() != userList.size()){
-            throw new PlantException(ErrorCode.USER_NOT_FOUND, "잘못된 유저 정보가 포함되어 있습니다");
-        }
     }
     
     private LocalDateTime getStartDate(LocalDateTime dateTime){
@@ -221,6 +202,11 @@ public class WorkspaceService{
         LocalDate date = dateTime.toLocalDate();
         date = date.withDayOfMonth(date.lengthOfMonth());
         return date.atTime(LocalTime.MAX);
+    }
+
+    private Workspace findWorkspaceById(Long id){
+        return workspaceRepository.findById(id)
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
 
     //로직 분리할까 그냥...?

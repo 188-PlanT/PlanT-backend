@@ -23,6 +23,33 @@ public class WorkspaceApiTest extends IntegrationTest {
         //then
             .andExpect(status().isOk());
     }
+	@Test
+	public void 워크스페이스_생성_잘못된_유저아이디() throws Exception {
+		//given
+		String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [2,3,99] }";
+
+		//when
+		mvc.perform(post("/v1/workspaces")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				//then
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void 워크스페이스_생성_생성유저_포함() throws Exception {
+		//given
+		String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [1,2,3] }";
+
+		//when
+		mvc.perform(post("/v1/workspaces")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				//then
+				.andExpect(status().isBadRequest());
+	}
 	
 	@Test
     public void 워크스페이스_수정() throws Exception {

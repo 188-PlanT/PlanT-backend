@@ -69,6 +69,24 @@ public class ScheduleApiTest extends IntegrationTest {
 	 //then
 	 .andExpect(status().isForbidden());
 	 }
+	@Test // !!!여기 통과하도록 로직 수정해야함!!!
+	public void 스케줄_생성_없는유저() throws Exception {
+		//given
+		String request = "{ \"workspaceId\" : 1 ,"
+				+ " \"name\" : \"testSchedule3\" ,"
+				+ " \"users\" : [1, 2, 99] ,"
+				+ " \"startDate\" : \"20240101:00:00\" ,"
+				+ " \"endDate\" : \"20240101:00:00\" ,"
+				+ " \"content\" : \"hihi\" ,"
+				+ " \"state\" : \"TODO\" }";
+		//when
+		mvc.perform(post("/v1/schedules/")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				//then
+				.andExpect(status().isNotFound());
+	}
 	@Test
     public void 스케줄_상세_조회() throws Exception {
         //given
@@ -191,6 +209,24 @@ public class ScheduleApiTest extends IntegrationTest {
 	 //then
 	 	.andExpect(status().isForbidden());
 	 }
+
+	@Test // !!!여기 통과하도록 로직 수정해야함!!!
+	public void 스케줄_수정_없는_유저() throws Exception {
+		//given
+		String request = "{ \"name\" : \"testSchedule111\" ,"
+				+ " \"users\" : [1, 2, 99] ,"
+				+ " \"startDate\" : \"20240430:23:59\" ,"
+				+ " \"endDate\" : \"20240501:00:00\" ,"
+				+ " \"content\" : \"hihi\" ,"
+				+ " \"state\" : \"DONE\" }";
+		//when
+		mvc.perform(put("/v1/schedules/1")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				//then
+				.andExpect(status().isNotFound());
+	}
 	
 	@Test 
 	public void 스케줄_삭제() throws Exception {
