@@ -17,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${s3.cloudFront}")
+    private String cloudFront;
     
     private final AmazonS3Client amazonS3Client;
 
@@ -55,6 +58,7 @@ public class S3Service {
             e.printStackTrace();
         }
 
-        return amazonS3Client.getUrl(bucket, fileName).toString();
+//        return amazonS3Client.getUrl(bucket, fileName).toString();
+        return cloudFront + "/" + fileName;
     }
 }
