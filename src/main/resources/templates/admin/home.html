@@ -1,20 +1,160 @@
-<!DOCTYPE HTML>
-<html xmlns: th=”http://www.thymeleaf.org”>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>BlazingDevs Calender!</title>
-    <link th:href="@{/css/menu.css}" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Admin Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: white; /* 배경색 설정 */
+            width: 100vw;
+            height: 100vh;
+        }
+        .container {
+            width:100%;
+            height: 100%;
+            display: flex;
+            /*margin: 20px auto;*/
+        }
+        .content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-sizing: border-box;
+            align-items: center;
+            /*border: solid black 1px;*/
+        }
+
+        .content .stats{
+            display: flex;
+            flex-direction: row;
+            width: 95%;
+            justify-content: space-between;
+            margin: 20px;
+            /*border: solid black 1px;*/
+        }
+
+        .content .statbox {
+            padding: 5px;
+            width: 32%;
+            border-radius: 5px;
+            border: solid black 1px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .content .stats a:hover{
+            background-color: whitesmoke;
+        }
+
+        .content .statbox .title {
+            padding: 2px;
+            margin-left: 10px;
+            line-height: 5px;
+        }
+
+        .content .statbox .title p{
+            color: darkgray;
+        }
+
+        .content .statbox .count {
+            margin-left: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content .stats img{
+            margin-right: 10px;
+            width: 50px;
+            /*height: 40px;*/
+        }
+
+        .content .graphs {
+            width: 95%;
+            height: 50%;
+            border-radius: 10px;
+            border: solid black 2px;
+            margin-top: 30px;
+            margin: 10px;
+        }
+
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1><a href="/admin" th:text="#{admin}">Admin</a></h1>
+<div class="container">
+    <div th:replace="~{template/fragment/side :: sidebar}" class="sidebar"></div>
+    <div class="content">
+        <div class="stats">
+            <a href="/admin/users" class= "statbox">
+                <div class ="title">
+                    <h2>Users</h2>
+                    <p>가입한 유저의 수</p>
+                </div>
+                <div class="count">
+                    <h1>333</h1>
+                    <img src="https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png">
+                </div>
+            </a>
+            <a href="/admin/workspaces" class= "statbox">
+                <div class ="title">
+                    <h2>Workspaces</h2>
+                    <p>워크스페이스 개수</p>
+                </div>
+                <div class="count">
+                    <h1>100</h1>
+                    <img src="https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png">
+                </div>
+            </a>
+            <a href="/admin/schedules" class= "statbox">
+                <div class ="title">
+                    <h2>Schedules</h2>
+                    <p>스케줄 개수</p>
+                </div>
+                <div class="count">
+                    <h1>333</h1>
+                    <img src="https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png">
+                </div>
+            </a>
+        </div>
+        <div class="stats">
+            <a href="/admin/users" class= "statbox">
+                <div class ="title">
+                    <h2>Users</h2>
+                    <p>가입한 유저의 수</p>
+                </div>
+                <div class="count">
+                    <h1>333</h1>
+                    <img src="https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png">
+                </div>
+            </a>
+            <a href="/admin/workspaces" class= "statbox">
+                <div class ="title">
+                    <h2>Workspaces</h2>
+                    <p>워크스페이스 개수</p>
+                </div>
+                <div class="count">
+                    <h2>100</h2>
+                    <img src="https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png">
+                </div>
+            </a>
+            <a href="/admin/schedules" class= "statbox">
+                <div class ="title">
+                    <h2>Schedules</h2>
+                    <p>스케줄 개수</p>
+                </div>
+                <div class="count">
+                    <h2>333</h2>
+                    <img src="https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png">
+                </div>
+            </a>
+        </div>
     </div>
-    
-    <div class="container">
-        <ol>
-            <li><a href="/admin/login">로그인</a></li>
-            <li><a href="/admin/users/create-users">회원 가입</a></li>
-        </ol>
-    </div> <!-- /container -->
+</div>
 </body>
 </html>

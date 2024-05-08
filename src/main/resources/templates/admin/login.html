@@ -1,43 +1,67 @@
-<!DOCTYPE HTML>
-<html xmlns: th=”http://www.thymeleaf.org”>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>BlazingDevs Calender!</title>
-    <link th:href="@{/css/create-form.css}" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2; /* 배경색 설정 */
+        }
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #555;
+        }
+        .error{
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1><a href="/admin" th:text="#{admin}">Admin</a></h1>
-    </div>
-    
-    <div class="container">
-    <form role="form" th:action="@{/admin/login}" method="post" th:object="${signInRequest}">
-        <div class="form-group">
-            <label>이메일</label>
-            <input type="text" th:field="*{email}" th:errorclass="field-error"
-                   class="form-control" placeholder="이메일로 로그인">
+<div class="container">
+    <h2>Admin Page Login</h2>
+    <form th:action="@{/admin/login}" th:object="${loginRequest}" method="post">
+        <input th:field="*{email}" type="text" placeholder="email" required>
+        <p class = "error" th:errors="*{email}">에러 메시지</p>
+        <input th:field="*{password}" type="password" placeholder="Password" required>
+        <p class = "error" th:errors="*{password}">에러 메시지</p>
+        <input type="submit" value="로그인">
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p class="error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
         </div>
-        <div class="error" th:errors="*{email}">
-            에러 메세지
-        </div>
-        <div class="form-group">
-             <label>비밀번호</label>
-             <input type="password" th:field="*{password}"  th:errorclass="field-error"
-                    class="form-control" placeholder="비밀번호를 입력하세요">
-        </div>
-        <div class="error" th:errors="*{password}">
-            에러 메세지
-        </div>
-        <button type="submit" class="btn">로그인</button>
-        <div th:if="${#fields.hasGlobalErrors()}" th:each="err: ${#fields.globalErrors()}" class="error" th:text="${err}">
-            글로벌 오류 메세지
-        </div>
-        <!-- <div th:if="${error}" class="error" th:text="#{${error}}">
-            글로벌 오류 메세지
-        </div> -->
     </form>
-    <div>
-        <a href="/admin/users/create-users">회원가입</a>
-    </div>
-    </div> <!-- /container -->
+</div>
 </body>
 </html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link th:href="@{/css/side.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        button{
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: red;
+            color:white;
+        }
+        button:hover{
+            background-color: darkred;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{template/fragment/side :: sidebar}"></div>
+    <div class="content">
+        <h1>유저 관리</h1>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>이메일</th>
+                <th>권한</th>
+                <th>가입일</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${userList}">
+                <td><a th:href="|/admin/users/${user.id}|" th:text="${user.id}">아이디</a></td>
+                <td><a th:href="|/admin/users/${user.id}|" th:text="${user.email}">이메일</a></td>
+                <td>
+                    <label th:text="${user.userRole}">권한</label>
+                    <select>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="USER">USER</option>
+                    </select>
+                </td>
+                <td th:text="${user.createDate}">가입일</td>
+                <td>
+                    <form th:action="|/admin/users/${userId}/delete|" method="post">
+                        <button type="submit">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            <!-- Add more rows for other users -->
+            </tbody>
+        </table>
+        <a href="/admin/users/create" class="button">Create New User</a>
+    </div>
+</div>
+</body>
+</html>
