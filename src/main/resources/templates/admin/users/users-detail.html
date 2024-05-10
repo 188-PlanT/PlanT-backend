@@ -3,34 +3,129 @@
 <head>
     <meta charset="utf-8">
     <title>BlazingDevs Calender!</title>
-    <link th:href="@{/css/detail.css}" rel="stylesheet"/>
+    <link th:href="@{/css/side.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet"/>
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .btns{
+            display: flex;
+            flex-direction: row;
+            margin: 10px;
+        }
+
+        button{
+            margin: 10px;
+            padding: 15px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .update{
+            background-color: #007bff;
+        }
+        .update:hover{
+            background-color: #0056b3;
+        }
+        .delete{
+            background-color: red;
+        }
+        .delete:hover{
+            background-color: darkred;
+        }
+
+        a{
+            text-decoration: none;
+            color: black;
+        }
+
+        img{
+            width: 100px;
+        }
+
+    </style>
 </head>
 <body>
-    <div th:replace="~{template/fragment/header :: users_header ('유저상세조회')}" class="title">
-        <h1>유저상세조회</h1>
-    </div>
-
     <div class="container">
-        <ul>
-            <li th:text="|이메일 : ${user.email}|"></li>
-            <li th:text="|이름 : ${user.name}|"></li>
-            <li>참여중인 워크스페이스</li>
-            <ul class="lists">
-                <li th:each="workspace : ${user.workspaces}" th:text="${workspace}"></li>
-            </ul>
-            <li>참여중인 스케줄</li>
-            <ul class="lists">
-                <li th:each="schedule : ${user.schedules}" th:text="${schedule}"></li>
-            </ul>
-        </ul>
-        
-        <div class="btns">
-            <form th:action="|/admin/users/${userId}/update|" method="get">
-                <button type="submit">수정</button>
-            </form>
-            <form th:action="|/admin/users/${userId}/delete|" method="post">
-                <button type="submit">삭제</button>
-            </form>
+        <div th:replace="~{template/fragment/side :: sidebar}" class="title"></div>
+        <div class="content">
+            <h1>유저 상세 정보</h1>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <td th:text="${userId}">123</td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td th:text="${user.email}">john@example.com</td>
+                </tr>
+                <tr>
+                    <th>권한</th>
+                    <td th:text="${user.userRole}">ADMIN</td>
+                </tr>
+                <tr>
+                    <th>가입일</th>
+                    <td th:text="${user.createDate}">2024-01-01 00:00:00</td>
+                </tr>
+                <tr>
+                    <th>프로필</th>
+                    <td><img th:src="${user.profile.url}"></td>
+                </tr>
+            </table>
+            <h2>참여중인 워크스페이스</h2>
+            <table>
+                <tr>
+                    <th>워크스페이스 ID</th>
+                    <th>이름</th>
+                    <th>권한</th>
+                </tr>
+                <tr th:each="uw : ${user.userWorkspaces}">
+                    <td><a th:text="${uw.workspace.id}" th:href="|/admin/workspaces/${uw.workspace.id}|">1</a></td>
+                    <td><a th:text="${uw.workspace.name}" th:href="|/admin/workspaces/${uw.workspace.id}|">이름</a></td>
+                    <td th:text="${uw.userRole}">ADMIN</td>
+                </tr>
+            </table>
+            <h2>참여중인 스케줄</h2>
+            <table>
+                <tr>
+                    <th>스케줄 ID</th>
+                    <th>워크스페이스</th>
+                    <th>스케줄 제목</th>
+                    <th>진행도</th>
+                </tr>
+                <tr th:each="us : ${user.userSchedules}">
+                    <td><a th:text="${us.schedule.id}" th:href="|/admin/schedules/${us.schedule.id}|">1</a></td>
+                    <td><a th:text="${us.schedule.workspace.name}" th:href="|/admin/workspaces/${us.schedule.workspace.id}|">워크스페이스 이름</a></td>
+                    <td><a th:text="${us.schedule.name}" th:href="|/admin/schedules/${us.schedule.id}|">스케줄 이름</a></td>
+                    <td th:text="${us.schedule.state}">TODO</td>
+                </tr>
+            </table>
+
+            <div class="btns">
+                <form th:action="|/admin/users/${userId}/update|" method="get">
+                    <button class="update" type="submit">수정</button>
+                </form>
+                <form th:action="|/admin/users/${userId}/delete|" method="post">
+                    <button class="delete" type="submit">삭제</button>
+                </form>
+            </div>
         </div>
     </div> <!-- /container -->
 </body>

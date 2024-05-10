@@ -4,6 +4,7 @@ import project.common.util.UserUtil;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
 import project.domain.schedule.dao.UserScheduleRepository;
+import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
@@ -32,6 +33,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import project.domain.workspace.domain.Workspace;
 
 @Slf4j
 @Service
@@ -102,8 +104,9 @@ public class UserService implements UserDetailsService{
     
     // <== 워크스페이스 조회 ==>
     @Transactional(readOnly = true)
-    public UserWorkspacesResponse findWorkspaces(){
-        User user = userUtil.getLoginUser();
+    public UserWorkspacesResponse findWorkspaces(Long userId){
+
+        User user = userUtil.getUserById(userId);
 
         List<UserWorkspace> userWorkspaces =  userWorkspaceRepository.searchByUser(user);
 
@@ -112,8 +115,8 @@ public class UserService implements UserDetailsService{
     
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
-    public UserSchedulesResponse findSchedules(LocalDateTime date){
-        User loginUser = userUtil.getLoginUser();
+    public UserSchedulesResponse findSchedules(Long userId, LocalDateTime date){
+        User loginUser = userUtil.getUserById(userId);
 		
         List<UserSchedule> userSchedules = userScheduleRepository.searchByUser(loginUser.getEmail(), date, date.plusMonths(1).minusSeconds(1));
 
@@ -150,13 +153,12 @@ public class UserService implements UserDetailsService{
     }
     
     // // 유저 삭제
-    // @Transactional
-    // public void deleteUser(Long id){
-    //     User user = userRepository.findById(id)
-    //         .orElseThrow(NoSuchUserException::new);
-        
-    //     userRepository.delete(user);
-    // }
+     @Transactional
+     public void deleteUser(Long id){
+         User user = userUtil.getUserById(id);
+
+         userRepository.delete(user);
+     }
     
     // <== 유저 검색 ==>
     @Transactional(readOnly = true)
@@ -213,6 +215,24 @@ public class UserService implements UserDetailsService{
         else{
             throw new PlantException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호가 틀립니다");
         }
+    }
+
+    // admin 페이지용 조회
+    @Transactional(readOnly = true)
+    public User findOneDetail(Long userId){
+        User user = userUtil.getUserById(userId);
+        //lazy Loding
+        for(UserWorkspace uw : user.getUserWorkspaces()){
+            Workspace w = uw.getWorkspace();
+            w.getName();
+        }
+
+        for(UserSchedule us : user.getUserSchedules()){
+            Schedule s  = us.getSchedule();
+            s.getName();
+        }
+
+        return user;
     }
 	
 	// < == validate logic ==> //

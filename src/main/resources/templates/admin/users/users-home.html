@@ -78,7 +78,7 @@
                 <td th:text="${user.userRole}">권한</td>
                 <td th:text="${user.createDate}">가입일</td>
                 <td>
-                    <form th:action="|/admin/users/${userId}/delete|" method="post">
+                    <form th:action="|/admin/users/${user.id}/delete|" method="post">
                         <button type="submit">삭제</button>
                     </form>
                 </td>

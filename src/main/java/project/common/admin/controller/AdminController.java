@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import project.common.admin.util.Login;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
+import project.common.security.oauth.UserInfo;
 import project.domain.user.domain.UserRole;
 import project.domain.user.service.UserService;
 import project.domain.user.dto.login.LoginRequest;
@@ -100,7 +101,6 @@ public class AdminController{
 
     // //Set User Session
      private void setSessionUser(HttpServletRequest request, User user){
-
          HttpSession session = request.getSession(true);
          session.setAttribute(SessionConst.LOGIN_USER, user);
      }

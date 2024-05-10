@@ -92,10 +92,8 @@ public class UserController{
     // <== 유저 워크스페이스 리스트 조회 ==>
     @GetMapping("/v1/users/workspaces")
     public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(){
-		
-//        List<UserWorkspace> userWorkspaces = userService.findWorkspaces();
 
-        UserWorkspacesResponse response = userService.findWorkspaces();
+        UserWorkspacesResponse response = userService.findWorkspaces(userUtil.getLoginUserId());
         
         return ResponseEntity.ok(response);
     }
@@ -106,7 +104,7 @@ public class UserController{
 		
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
         
-        UserSchedulesResponse response  = userService.findSchedules(dateTime);
+        UserSchedulesResponse response  = userService.findSchedules(userUtil.getLoginUserId(), dateTime);
         
         return ResponseEntity.ok(response);
     }

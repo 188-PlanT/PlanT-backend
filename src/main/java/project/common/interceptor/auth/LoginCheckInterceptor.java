@@ -1,6 +1,9 @@
 package project.common.interceptor.auth;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
 import project.common.admin.util.SessionConst;
+import project.common.security.oauth.UserInfo;
 
 @Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor{
@@ -26,13 +30,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
              response.sendRedirect("/admin/login?redirectURL=" + requestURI);
              return false;
          }
-        return true;
+         return true;
     }
 
     private boolean checkSessionUserIsAdmin(HttpSession session){
-        User user = (User) session.getAttribute(SessionConst.LOGIN_USER);
+        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
 
-        if (user != null && UserRole.ADMIN.equals(user.getUserRole())){
+        if (user != null && UserRole.ADMIN.equals(user.getAuthority())){
             return true;
         }
 
