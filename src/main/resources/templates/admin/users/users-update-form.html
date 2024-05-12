@@ -3,85 +3,172 @@
 <head>
     <link th:href="@{/css/side.css}" rel="stylesheet" />
     <link th:href="@{/css/default.css}" rel="stylesheet" />
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button{
+            margin: 10px;
+            padding: 15px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+
+        img{
+            width: 100px;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
     <div th:replace="~{template/fragment/side :: sidebar}"></div>
     <div class="content">
-        <h1>유저 상세 정보</h1>
-        <table>
-            <tr>
-                <th>ID</th>
-                <td th:text="${userId}">123</td>
-            </tr>
-            <tr>
-                <th>이메일</th>
-                <td th:text="${user.email}">john@example.com</td>
-            </tr>
-            <tr>
-                <th>권한</th>
-                <td th:text="${user.userRole}">ADMIN</td>
-            </tr>
-            <tr>
-                <th>가입일</th>
-                <td th:text="${user.createDate}">2024-01-01 00:00:00</td>
-            </tr>
-            <tr>
-                <th>프로필</th>
-                <td><img th:src="${user.profile.url}"></td>
-            </tr>
-        </table>
-        <h2>참여중인 워크스페이스</h2>
-        <table>
-            <tr>
-                <th>워크스페이스 ID</th>
-                <th>이름</th>
-                <th>권한</th>
-            </tr>
-            <tr th:each="uw : ${user.userWorkspaces}">
-                <td><a th:text="${uw.workspace.id}" th:href="|/admin/workspaces/${uw.workspace.id}|">1</a></td>
-                <td><a th:text="${uw.workspace.name}" th:href="|/admin/workspaces/${uw.workspace.id}|">이름</a></td>
-                <td th:text="${uw.userRole}">ADMIN</td>
-            </tr>
-        </table>
-        <h2>참여중인 스케줄</h2>
-        <table>
-            <tr>
-                <th>스케줄 ID</th>
-                <th>워크스페이스</th>
-                <th>스케줄 제목</th>
-                <th>진행도</th>
-            </tr>
-            <tr th:each="us : ${user.userSchedules}">
-                <td><a th:text="${us.schedule.id}" th:href="|/admin/schedules/${us.schedule.id}|">1</a></td>
-                <td><a th:text="${us.schedule.workspace.name}" th:href="|/admin/workspaces/${us.schedule.workspace.id}|">워크스페이스 이름</a></td>
-                <td><a th:text="${us.schedule.name}" th:href="|/admin/schedules/${us.schedule.id}|">스케줄 이름</a></td>
-                <td th:text="${us.schedule.state}">TODO</td>
-            </tr>
-        </table>
-    <div class="content">
-        <form role="form" th:action="|/admin/users/${userId}/update|" method="post" th:object="${adminUpdateUserRequest}">
-            <div class="form-group">
-                <label>이메일<label>
-                    <input type="text" th:field="*{email}" th:errorclass="field-error"
-                           class="form-control" placeholder="email을 입력하세요">
-            </div>
-            <div class="error" th:errors="*{email}">
-                에러 메세지
-            </div>
-            <div class="form-group">
-                <label>비밀번호</label>
-                <input type="password" th:field="*{password}"  th:errorclass="field-error"
-                       class="form-control" placeholder="비밀번호를 입력하세요">
-            </div>
-            <div class="error" th:errors="*{password}">
-                에러 메세지
-            </div>
+            <h1>유저 상세 정보</h1>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <td th:text="${userId}">123</td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td>
+                        <form id="emailForm">
+                            <input type="text" th:field="${user.email}" th:errorclass="field-error">
+                            <input type="submit" value="확인">
+                        </form>
+                    </td>
+                </tr>
+                <form role="form" th:action="|/admin/users/${user.id}/update|" method="post" th:object="${adminUpdateUserRequest}">
+                    <tr>
+                        <th>비밀번호</th>
+                        <td>
+                            <input type="password" th:field="*{password}" th:errorclass="field-error">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>권한</th>
+                        <td>
+                            <select th:field="*{userRole}" th:errorclass="field-error">
+                                <option value="ADMIN" text="ADMIN"></option>
+                                <option value="USER" text="USER"></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>가입일</th>
+                        <td th:text="${user.createDate}">2024-01-01 00:00:00</td>
+                    </tr>
+                </form>
+                    <tr>
+                        <th>프로필</th>
+                        <td>
+                            <form id="imageForm" enctype="multipart/form-data">
+                                <img id="profile" th:src="${user.profile.url}">
+                                <input id="image" type="file" name="image"/>
+                                <input type="submit" value="변경">
+                            </form>
+                        </td>
+                    </tr>
+            </table>
+            <h2>참여중인 워크스페이스</h2>
+            <table>
+                <tr>
+                    <th>워크스페이스 ID</th>
+                    <th>이름</th>
+                    <th>권한</th>
+                </tr>
+                <tr th:each="uw : ${user.userWorkspaces}">
+                    <td><a th:text="${uw.workspace.id}" th:href="|/admin/workspaces/${uw.workspace.id}|">1</a></td>
+                    <td><a th:text="${uw.workspace.name}" th:href="|/admin/workspaces/${uw.workspace.id}|">이름</a></td>
+                    <td th:text="${uw.userRole}">ADMIN</td>
+                </tr>
+            </table>
+            <h2>참여중인 스케줄</h2>
+            <table>
+                <tr>
+                    <th>스케줄 ID</th>
+                    <th>워크스페이스</th>
+                    <th>스케줄 제목</th>
+                    <th>진행도</th>
+                </tr>
+                <tr th:each="us : ${user.userSchedules}">
+                    <td><a th:text="${us.schedule.id}" th:href="|/admin/schedules/${us.schedule.id}|">1</a></td>
+                    <td><a th:text="${us.schedule.workspace.name}" th:href="|/admin/workspaces/${us.schedule.workspace.id}|">워크스페이스 이름</a></td>
+                    <td><a th:text="${us.schedule.name}" th:href="|/admin/schedules/${us.schedule.id}|">스케줄 이름</a></td>
+                    <td th:text="${us.schedule.state}">TODO</td>
+                </tr>
+            </table>
             <button type="submit" class="btn">수정</button>
         </form>
-        <br/>
     </div>
 </div> <!-- /container -->
+
+<script>
+    document.getElementById("emailForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var email = document.getElementById("email").value;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/v1/users/email", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                console.log(response);
+                console.log(response.available);
+                if (response.available === true) {
+                    alert("사용 가능한 이메일입니다");
+                } else {
+                    alert("사용할 수 없는 이메일입니다");
+                }
+            } else {
+                console.error("Request failed with status:", xhr.status);
+            }
+        };
+        xhr.onerror = function() {
+            console.error("Request failed");
+        };
+        xhr.send(JSON.stringify({ email: email }));
+    });
+
+    document.getElementById("imageForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData();
+        const image = document.getElementById("image");
+        let profile = document.getElementById("profile");
+
+        console.log(image);
+        formData.append('image', image.files[0]);
+
+        fetch('http://localhost:8080/v1/image', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => profile.src = data.url);
+    });
+</script>
+
 </body>
 </html>

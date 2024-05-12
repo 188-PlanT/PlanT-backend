@@ -96,9 +96,9 @@ public class AdminUserController{
      //유저 수정 화면
      @GetMapping("/admin/users/{userId}/update")
      public String updateUserForm(@PathVariable Long userId, Model model){
-         User user = userUtil.getUserById(userId);
+         User user = userService.findOneDetail(userId);
 
-         model.addAttribute("userId", userId);
+         model.addAttribute("user", user);
          model.addAttribute("adminUpdateUserRequest", new AdminUpdateUserRequest(user));
 
          return "admin/users/users-update-form";
