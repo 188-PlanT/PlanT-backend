@@ -29,7 +29,7 @@ import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
-import project.common.service.EmailService;
+// import project.common.service.EmailService;
 
 @Slf4j
 @Service
@@ -43,7 +43,7 @@ public class WorkspaceService{
 	private final UserWorkspaceRepository userWorkspaceRepository;
     private final UserUtil userUtil;
 	
-	private final EmailService emailService;
+	// private final EmailService emailService;
     
     @Value("${s3.default-image-url.workspace}")
     private String DEFAULT_WORKSPACE_IMAGE_URL;
@@ -101,11 +101,21 @@ public class WorkspaceService{
     public Workspace updateWorkspace(Long workspaceId, UpdateWorkspaceRequest request){
 
         Workspace workspace = findWorkspaceById(workspaceId);
-
-        Image profile = imageRepository.findByUrl(request.getProfile())
-                                        .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
-        
-        workspace.updateWorkspace(request.getName(), profile);
+		
+		String name = workspace.getName();
+		// Optional 하도록 수정
+		Image profile = workspace.getProfile();
+		
+		if (request.getProfile() != null){
+			profile = imageRepository.findByUrl(request.getProfile())
+            	.orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));	
+		}
+		
+		if (request.getName() != null){
+			name = request.getName();
+		}
+			
+		workspace.updateWorkspace(name, profile);
 		
         return workspace;
     }
@@ -120,7 +130,7 @@ public class WorkspaceService{
         
         workspace.addUser(user);
         
-		emailService.sendInvitationMail(user.getEmail(), workspace.getName());
+		// emailService.sendInvitationMail(user.getEmail(), workspace.getName());
         
         // Lazy Loding
         workspace.getUserWorkspaces().stream()
@@ -148,8 +158,9 @@ public class WorkspaceService{
     public Workspace changeUserAuthority(Long workspaceId, Long userId, UserRole authority){
         Long loginUserId = userUtil.getLoginUserId();
         
-		Workspace workspace = validateChangeUserAutority(workspaceId, loginUserId, userId, authority);
-
+		// Workspace workspace = validateChangeUserAutority(workspaceId, loginUserId, userId, authority);
+		Workspace workspace = findWorkspaceById(workspaceId);
+		
         User user = userUtil.getUserById(userId);
         
         workspace.giveAuthority(user, authority);
@@ -210,20 +221,20 @@ public class WorkspaceService{
     }
 
     //로직 분리할까 그냥...?
-	private Workspace validateChangeUserAutority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
-        UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-			.orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+	// private Workspace validateChangeUserAutority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
+	// UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
+	// 		.orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
-        UserRole loginUserRole = userWorkspace.getUserRole();
+	// UserRole loginUserRole = userWorkspace.getUserRole();
 
-        if (UserRole.ADMIN.equals(loginUserRole)){
-            return userWorkspace.getWorkspace();
-        }
-        else if (UserRole.PENDING.equals(loginUserRole)){
-            if (loginUserId.equals(userId) && UserRole.USER.equals(authority)) {
-                return userWorkspace.getWorkspace();
-            }
-        }
-        throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-	}
+	// if (UserRole.ADMIN.equals(loginUserRole)){
+	// return userWorkspace.getWorkspace();
+	// }
+	// else if (UserRole.PENDING.equals(loginUserRole)){
+	// if (loginUserId.equals(userId) && UserRole.USER.equals(authority)) {
+	// return userWorkspace.getWorkspace();
+	// }
+	// }
+	// throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
+	// }
 }

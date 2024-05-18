@@ -85,7 +85,7 @@ public class WorkspaceController{
     
     // <== 유저 권한 수정 ==>
     @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.PENDING}) // 워크스페이스 초대 수락도 여기서 진행되므로 PENDING도 허가
+    @PermitUserRole(value = {UserRole.ADMIN})
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(@PathVariable Long workspaceId,
                                                                           @PathVariable Long userId,
                                                                           @Valid @RequestBody UpdateUserRequest request){

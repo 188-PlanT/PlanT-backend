@@ -63,7 +63,7 @@ public class Workspace extends BaseEntity {
         UserWorkspace userWorkspace = UserWorkspace.builder()
                                                     .user(user)
                                                     .workspace(this)
-                                                    .userRole(UserRole.PENDING)
+                                                    .userRole(UserRole.USER)
                                                     .build();
         
         this.userWorkspaces.add(userWorkspace);
