@@ -27,7 +27,7 @@
     </appender> -->
     
     <!-- 에러 파일 로깅 설정 -->
-<!--     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
@@ -44,13 +44,13 @@
             <totalSizeCap>100MB</totalSizeCap>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
-    </appender> -->
+    </appender>
     
     <!-- 루트 로깅 레벨 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <!-- <appender-ref ref="DEBUG_FILE"/> -->
-        <!-- <appender-ref ref="ERROR_FILE"/> -->
+        <appender-ref ref="ERROR_FILE"/>
     </root>
     
     <!-- 패키지 로깅 레벨 -->
