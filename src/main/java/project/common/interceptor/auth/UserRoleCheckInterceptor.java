@@ -8,6 +8,7 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.schedule.dao.ScheduleRepository;
+import project.domain.workspace.dao.WorkspaceRepository;
 
 import lombok.RequiredArgsConstructor;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class UserRoleCheckInterceptor implements HandlerInterceptor{
 	
 	private final ScheduleRepository scheduleRepository;
-	
+	private final WorkspaceRepository workspaceRepository;
 	private final UserWorkspaceRepository userWorkspaceRepository;
 	
     @Override
@@ -46,6 +47,8 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 			Long loginUserId = getUserId();
 			
 			Long workspaceId = getWorkspaceId(request);
+
+			validateWorkspaceId(workspaceId);
 			
 			checkUserAuthority(workspaceId, loginUserId, permitUserRole.value());
 			
@@ -80,8 +83,9 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 	}
 	
 	private void checkUserAuthority(Long workspaceId, Long loginUserId, UserRole... roles){
+		
 		UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-			.orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+			.orElseThrow(() -> new PlantException(ErrorCode.USER_AUTHORITY_INVALID));
 		
 		for (UserRole role : roles){
 			if (userWorkspace.getUserRole().equals(role)){
@@ -90,5 +94,11 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 		}
 		
 		throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
+	}
+	
+	private void validateWorkspaceId(Long workspaceId){
+		if (!workspaceRepository.existsById(workspaceId)){
+			throw new PlantException(ErrorCode.WORKSPACE_NOT_FOUND);
+		}
 	}
 }

@@ -67,7 +67,7 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.userId").value("4"))
 			.andExpect(jsonPath("$.nickName").value("test44"))
 			.andExpect(jsonPath("$.email").value("test4@gmail.com"))
-			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png"))
+			.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/user.png"))
 			.andExpect(jsonPath("$.accessToken").exists());
     }
 	
@@ -82,7 +82,7 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.userId").value("1"))
 			.andExpect(jsonPath("$.nickName").value("test11"))
 			.andExpect(jsonPath("$.email").value("test1@gmail.com"))
-			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png"))
+			.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/user.png"))
 			.andExpect(jsonPath("$.state").value("ADMIN"));
     }
 	
@@ -92,7 +92,7 @@ public class UserApiTest extends IntegrationTest {
 		String request = "{ \"nickName\" : \"test111\" ," +
 				"\"currentPassword\" : \"test1234\" , " +
 				"\"newPassword\" : \"test4321\" , " +
-				"\"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
+				"\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 		
         //when
         mvc.perform(put("/v1/users")
@@ -104,7 +104,7 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.userId").value("1"))
 			.andExpect(jsonPath("$.nickName").value("test111"))
 			.andExpect(jsonPath("$.email").value("test1@gmail.com"))
-			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+			.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 			.andExpect(jsonPath("$.state").value("ADMIN"));
     }
 
@@ -112,7 +112,7 @@ public class UserApiTest extends IntegrationTest {
 	public void 유저_정보_수정_옵셔널() throws Exception {
 		//given
 		String request = " { \"currentPassword\" : \"test1234\" , " +
-				"\"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
+				"\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
 		//when
 		mvc.perform(put("/v1/users")
@@ -124,7 +124,7 @@ public class UserApiTest extends IntegrationTest {
 				.andExpect(jsonPath("$.userId").value("1"))
 				.andExpect(jsonPath("$.nickName").value("test11"))
 				.andExpect(jsonPath("$.email").value("test1@gmail.com"))
-				.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+				.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 				.andExpect(jsonPath("$.state").value("ADMIN"));
 	}
 
@@ -132,7 +132,7 @@ public class UserApiTest extends IntegrationTest {
 	public void 유저_정보_수정_비밀번호오류() throws Exception {
 		//given
 		String request = " { \"currentPassword\" : \"test5555\" , " +
-				"\"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png\" }";
+				"\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
 		//when
 		mvc.perform(put("/v1/users")
@@ -156,11 +156,11 @@ public class UserApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.userId").value("1"))
 			.andExpect(jsonPath("$.workspaces[0].workspaceId").value("1"))
 			.andExpect(jsonPath("$.workspaces[0].workspaceName").value("testWorkspace1"))
-			.andExpect(jsonPath("$.workspaces[0].profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+			.andExpect(jsonPath("$.workspaces[0].profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 			.andExpect(jsonPath("$.workspaces[0].role").value("ADMIN"))
 			.andExpect(jsonPath("$.workspaces[1].workspaceId").value("2"))
 			.andExpect(jsonPath("$.workspaces[1].workspaceName").value("testWorkspace2"))
-			.andExpect(jsonPath("$.workspaces[1].profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+			.andExpect(jsonPath("$.workspaces[1].profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 			.andExpect(jsonPath("$.workspaces[1].role").value("ADMIN"));
     }
 	

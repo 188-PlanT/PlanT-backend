@@ -30,7 +30,7 @@ public class IntegrationTest {
 	
 	protected String ACCESS_TOKEN;
 	protected String ACCESS_TOKEN_USER;
-	protected String ACCESS_TOKEN_PENDING;
+	protected String ACCESS_TOKEN_OUTSIDER;
 	protected String REFRESH_TOKEN;
 	protected String ACCESS_TOKEN_NO_NICKNAME;
 	
@@ -40,7 +40,7 @@ public class IntegrationTest {
 
 		ACCESS_TOKEN = "Bearer " + jwtProvider.createAccessToken(user);
 		ACCESS_TOKEN_USER = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(2L));
-		ACCESS_TOKEN_PENDING = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(3L));
+		ACCESS_TOKEN_OUTSIDER = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(3L));
 		ACCESS_TOKEN_NO_NICKNAME = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(4L));
 		REFRESH_TOKEN = "Bearer " + jwtProvider.createRefreshToken(user);
 	}

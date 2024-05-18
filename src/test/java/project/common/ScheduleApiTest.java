@@ -15,7 +15,7 @@ public class ScheduleApiTest extends IntegrationTest {
         //given
         String request = "{ \"workspaceId\" : 1 ," 
 						+ " \"name\" : \"testSchedule3\" ,"
-						+ " \"users\" : [1, 2, 3] ,"  
+						+ " \"users\" : [1, 2] ,"  
   						+ " \"startDate\" : \"20240401:00:00\" ,"
 						+ " \"endDate\" : \"20240401:00:00\" ," 
 						+ " \"content\" : \"hihi\" ,"
@@ -40,10 +40,7 @@ public class ScheduleApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.users[1].userId").value("2"))
 			.andExpect(jsonPath("$.users[1].nickName").value("test22"))
 		
-			.andExpect(jsonPath("$.users[2].userId").value("3"))
-			.andExpect(jsonPath("$.users[2].nickName").value("test33"))
-		
-			.andExpect(jsonPath("$.users[3]").doesNotExist())
+			.andExpect(jsonPath("$.users[2]").doesNotExist())
 		
 			.andExpect(jsonPath("$.startDate").value("20240401:00:00"))
 			.andExpect(jsonPath("$.endDate").value("20240401:00:00"))
@@ -56,14 +53,14 @@ public class ScheduleApiTest extends IntegrationTest {
 	 //given
 	 String request = "{ \"workspaceId\" : 1 ,"
 	 					+ " \"name\" : \"testSchedule3\" ,"
-	 					+ " \"users\" : [1, 2, 3] ,"
+	 					+ " \"users\" : [1, 2] ,"
 	 + " \"startDate\" : \"20240101:00:00\" ,"
 	 					+ " \"endDate\" : \"20240101:00:00\" ,"
 	 					+ " \"content\" : \"hihi\" ,"
 	 					+ " \"state\" : \"TODO\" }";
 	 //when
 	 mvc.perform(post("/v1/schedules/")
-	 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
+	 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
 	 		.contentType(MediaType.APPLICATION_JSON)
 	 		.content(request))
 	 //then
@@ -129,21 +126,21 @@ public class ScheduleApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.chatList[2]").doesNotExist());
     }
 	
-	// @Test // !!!여기 통과하도록 로직 수정해야함!!!
-	// public void 스케줄_조회_권한없음() throws Exception {
-	// //given
-	// //when
-	// mvc.perform(get("/v1/schedules/1")
-	// 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING))
-	// //then
-	// .andExpect(status().isForbidden());
-	// }
+	@Test // !!!여기 통과하도록 로직 수정해야함!!!
+	public void 스케줄_조회_권한없음() throws Exception {
+	//given
+	//when
+	mvc.perform(get("/v1/schedules/1")
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER))
+	//then
+	.andExpect(status().isForbidden());
+	}
 	
 	@Test
     public void 스케줄_수정() throws Exception {
         //given
         String request = "{ \"name\" : \"testSchedule111\" ,"
-						+ " \"users\" : [1, 2, 3] ,"  
+						+ " \"users\" : [1] ,"  
   						+ " \"startDate\" : \"20240430:23:59\" ,"
 						+ " \"endDate\" : \"20240501:00:00\" ," 
 						+ " \"content\" : \"hihi\" ,"
@@ -164,13 +161,7 @@ public class ScheduleApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.users[0].userId").value("1"))
 			.andExpect(jsonPath("$.users[0].nickName").value("test11"))
 		
-			.andExpect(jsonPath("$.users[1].userId").value("2"))
-			.andExpect(jsonPath("$.users[1].nickName").value("test22"))
-			
-			.andExpect(jsonPath("$.users[2].userId").value("3"))
-			.andExpect(jsonPath("$.users[2].nickName").value("test33"))
-		
-			.andExpect(jsonPath("$.users[3]").doesNotExist())
+			.andExpect(jsonPath("$.users[1]").doesNotExist())
 			
 			.andExpect(jsonPath("$.startDate").value("20240430:23:59"))
 			.andExpect(jsonPath("$.endDate").value("20240501:00:00"))
@@ -196,14 +187,14 @@ public class ScheduleApiTest extends IntegrationTest {
 	 public void 스케줄_수정_권한없음() throws Exception {
 	 //given
 	 String request = "{ \"name\" : \"testSchedule111\" ,"
-	 				+ " \"users\" : [1, 2, 3] ,"
-	 + " \"startDate\" : \"20240430:23:59\" ,"
+	 				+ " \"users\" : [1, 2] ,"
+	 				+ " \"startDate\" : \"20240430:23:59\" ,"
 	 				+ " \"endDate\" : \"20240501:00:00\" ,"
 	 				+ " \"content\" : \"hihi\" ,"
 	 				+ " \"state\" : \"DONE\" }";
 	 //when
 	 mvc.perform(put("/v1/schedules/1")
-	 	.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
+	 	.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
 	 .contentType(MediaType.APPLICATION_JSON)
 	 	.content(request))
 	 //then
@@ -247,7 +238,7 @@ public class ScheduleApiTest extends IntegrationTest {
 	 //given
 	 //when
 	 mvc.perform(delete("/v1/schedules/1")
-	 	.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING))
+	 	.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER))
 	 //then
 	 	.andExpect(status().isForbidden());
 	 }
@@ -303,7 +294,7 @@ public class ScheduleApiTest extends IntegrationTest {
 	 String request = "{ \"state\" : \"DONE\" }";
 	 //when
 	 mvc.perform(put("/v1/schedules/1/state")
-	 	.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
+	 	.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
 	 .contentType(MediaType.APPLICATION_JSON)
 	 	.content(request))
 	 //then
@@ -327,18 +318,18 @@ public class ScheduleApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.nickName").value("test22"))
 			.andExpect(jsonPath("$.content").value("hello"));
     }
-	 @Test //!!!여기 통과하도록 로직 수정해야함!!!
-	 public void 스케줄_채팅_추가_권한없음() throws Exception {
-	 //given
-	 String request = "{ \"content\" : \"hello\" }";
-	 //when
-	 mvc.perform(post("/v1/schedules/1/chat")
-	 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
-	 .contentType(MediaType.APPLICATION_JSON)
-	 		.content(request))
-	 	//then
-	 		.andExpect(status().isForbidden());
-	 }
+	@Test //!!!여기 통과하도록 로직 수정해야함!!!
+	public void 스케줄_채팅_추가_권한없음() throws Exception {
+	//given
+	String request = "{ \"content\" : \"hello\" }";
+	//when
+	mvc.perform(post("/v1/schedules/1/chat")
+		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
+		.contentType(MediaType.APPLICATION_JSON)
+		.content(request))
+	//then
+		.andExpect(status().isForbidden());
+	}
 	
 	@Test
     public void 스케줄_댓글_수정() throws Exception {

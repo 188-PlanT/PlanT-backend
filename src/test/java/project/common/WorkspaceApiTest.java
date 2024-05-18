@@ -13,7 +13,7 @@ public class WorkspaceApiTest extends IntegrationTest {
 	@Test
     public void 워크스페이스_생성() throws Exception {
         //given
-        String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [2,3] }";
+        String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [2, 3] }";
 
         //when
         mvc.perform(post("/v1/workspaces")
@@ -54,7 +54,7 @@ public class WorkspaceApiTest extends IntegrationTest {
 	@Test
     public void 워크스페이스_수정() throws Exception {
         //given
-        String request = "{ \"name\" : \"testWorkspace11\" , \"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png\" }";
+        String request = "{ \"name\" : \"testWorkspace11\" , \"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
 
         //when
         mvc.perform(put("/v1/workspaces/1")
@@ -65,13 +65,13 @@ public class WorkspaceApiTest extends IntegrationTest {
             .andExpect(status().isOk())
 			.andExpect(jsonPath("$.workspaceId").value("1"))
 			.andExpect(jsonPath("$.name").value("testWorkspace11"))
-			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png"));
+			.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/user.png"));
     }
 	
 	@Test // admin 권한이 없는 유저가 워크스페이스 수정 시도시 forbidden 에러 응답 반환
     public void 워크스페이스_수정_일반_유저_권한() throws Exception {
         //given
-        String request = "{ \"name\" : \"testWorkspace11\" , \"profile\" : \"https://plant-s3.s3.ap-northeast-2.amazonaws.com/user.png\" }";
+        String request = "{ \"name\" : \"testWorkspace11\" , \"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
 
         //when
         mvc.perform(put("/v1/workspaces/1")
@@ -91,7 +91,7 @@ public class WorkspaceApiTest extends IntegrationTest {
         //then
 			.andExpect(status().isOk());
 		
-		mvc.perform(delete("/v1/workspaces/1")
+		mvc.perform(get("/v1/workspaces/1/users")
 			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
             .andExpect(status().isNotFound());
     }
@@ -117,7 +117,7 @@ public class WorkspaceApiTest extends IntegrationTest {
 			
 			.andExpect(jsonPath("$.workspaceId").value("1"))
 			.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-			.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+			.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 			
 			.andExpect(jsonPath("$.users[0].userId").value("1"))
 			.andExpect(jsonPath("$.users[0].nickName").value("test11"))
@@ -129,64 +129,48 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.users[1].email").value("test2@gmail.com"))
 			.andExpect(jsonPath("$.users[1].authority").value("USER"))
 			
-			.andExpect(jsonPath("$.users[2].userId").value("3"))
-			.andExpect(jsonPath("$.users[2].nickName").value("test33"))
-			.andExpect(jsonPath("$.users[2].email").value("test3@gmail.com"))
-			.andExpect(jsonPath("$.users[2].authority").value("PENDING"))
-			
-			.andExpect(jsonPath("$.users[3]").doesNotExist());
+			.andExpect(jsonPath("$.users[2]").doesNotExist());
     }
 	
-	@Test // 가입대기 중 유저가 워크스페이스 유저 조회시 권한 없음
-    public void 워크스페이스_유저_조회_권한없음() throws Exception {
+	@Test // 워크스페이스 초대안된 유저가 워크스페이스 유저 조회시 권한 없음
+    public void 워크스페이스_유저_조회_외부인() throws Exception {
         //given
         //when
         mvc.perform(get("/v1/workspaces/1/users")
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING))
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER))
         //then
             .andExpect(status().isForbidden());
     }
 	
-	// @Test // 이메일 로직 반복으로 비활성화
-	// public void 워크스페이스_유저_초대() throws Exception {
-	// //given
-	// String request = "{ \"userId\" : \"5\" }";
-	// //when
-	// mvc.perform(post("/v1/workspaces/1/users")
-	// 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-	// 		.contentType(MediaType.APPLICATION_JSON)
-	// 		.content(request))
-	// //then
-	// .andExpect(status().isOk())
+	public void 워크스페이스_유저_초대() throws Exception {
+	//given
+	String request = "{ \"userId\" : \"5\" }";
+	//when
+	mvc.perform(post("/v1/workspaces/1/users")
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(request))
+	//then
+	.andExpect(status().isOk())
 			
-	// 		.andExpect(jsonPath("$.workspaceId").value("1"))
-	// 		.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-	// 		.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+			.andExpect(jsonPath("$.workspaceId").value("1"))
+			.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
+			.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 			
-	// 		.andExpect(jsonPath("$.users[0].userId").value("1"))
-	// 		.andExpect(jsonPath("$.users[0].nickName").value("test11"))
-	// 		.andExpect(jsonPath("$.users[0].email").value("test1@gmail.com"))
-	// 		.andExpect(jsonPath("$.users[0].authority").value("ADMIN"))
+			.andExpect(jsonPath("$.users[0].userId").value("1"))
+			.andExpect(jsonPath("$.users[0].nickName").value("test11"))
+			.andExpect(jsonPath("$.users[0].email").value("test1@gmail.com"))
+			.andExpect(jsonPath("$.users[0].authority").value("ADMIN"))
 			
-	// 		.andExpect(jsonPath("$.users[1].userId").value("2"))
-	// 		.andExpect(jsonPath("$.users[1].nickName").value("test22"))
-	// 		.andExpect(jsonPath("$.users[1].email").value("test2@gmail.com"))
-	// 		.andExpect(jsonPath("$.users[1].authority").value("USER"))
+			.andExpect(jsonPath("$.users[1].userId").value("2"))
+			.andExpect(jsonPath("$.users[1].nickName").value("test22"))
+			.andExpect(jsonPath("$.users[1].email").value("test2@gmail.com"))
+			.andExpect(jsonPath("$.users[1].authority").value("USER"))
 			
-	// 		.andExpect(jsonPath("$.users[2].userId").value("3"))
-	// 		.andExpect(jsonPath("$.users[2].nickName").value("test33"))
-	// 		.andExpect(jsonPath("$.users[2].email").value("test3@gmail.com"))
-	// 		.andExpect(jsonPath("$.users[2].authority").value("PENDING"))
-			
-	// 		.andExpect(jsonPath("$.users[3].userId").value("5"))
-	// 		.andExpect(jsonPath("$.users[3].nickName").value("kimsh8580"))
-	// 		.andExpect(jsonPath("$.users[3].email").value("kimsh8580@gmail.com"))
-	// 		.andExpect(jsonPath("$.users[3].authority").value("PENDING"))
-			
-	// 		.andExpect(jsonPath("$.users[4]").doesNotExist());
-	// }
+			.andExpect(jsonPath("$.users[2]").doesNotExist());
+	}
 	
-	@Test // 가입대기 중 유저가 워크스페이스 유저 조회시 권한 없음
+	@Test // 일반 유저가 워크스페이스 유저 조회시 권한 없음
     public void 워크스페이스_유저_초대_권한없음() throws Exception {
         //given
         String request = "{ \"userId\" : \"5\" }";
@@ -213,7 +197,7 @@ public class WorkspaceApiTest extends IntegrationTest {
 
 				.andExpect(jsonPath("$.workspaceId").value("1"))
 				.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-				.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
+				.andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
 
 				.andExpect(jsonPath("$.users[0].userId").value("1"))
 				.andExpect(jsonPath("$.users[0].nickName").value("test11"))
@@ -225,67 +209,30 @@ public class WorkspaceApiTest extends IntegrationTest {
 				.andExpect(jsonPath("$.users[1].email").value("test2@gmail.com"))
 				.andExpect(jsonPath("$.users[1].authority").value("ADMIN"))
 
-				.andExpect(jsonPath("$.users[2].userId").value("3"))
-				.andExpect(jsonPath("$.users[2].nickName").value("test33"))
-				.andExpect(jsonPath("$.users[2].email").value("test3@gmail.com"))
-				.andExpect(jsonPath("$.users[2].authority").value("PENDING"))
-
-				.andExpect(jsonPath("$.users[3]").doesNotExist());
+				.andExpect(jsonPath("$.users[2]").doesNotExist());
 	}
-
-	@Test
-	public void 워크스페이스_가입_수락() throws Exception {
-		//given
-		String request = "{ \"authority\" : \"USER\" }";
-		//when
-		mvc.perform(put("/v1/workspaces/1/users/3")
-						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(request))
-				//then
-				.andExpect(status().isOk())
-
-				.andExpect(jsonPath("$.workspaceId").value("1"))
-				.andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-				.andExpect(jsonPath("$.profile").value("https://plant-s3.s3.ap-northeast-2.amazonaws.com/workspace.png"))
-
-				.andExpect(jsonPath("$.users[0].userId").value("1"))
-				.andExpect(jsonPath("$.users[0].nickName").value("test11"))
-				.andExpect(jsonPath("$.users[0].email").value("test1@gmail.com"))
-				.andExpect(jsonPath("$.users[0].authority").value("ADMIN"))
-
-				.andExpect(jsonPath("$.users[1].userId").value("2"))
-				.andExpect(jsonPath("$.users[1].nickName").value("test22"))
-				.andExpect(jsonPath("$.users[1].email").value("test2@gmail.com"))
-				.andExpect(jsonPath("$.users[1].authority").value("USER"))
-
-				.andExpect(jsonPath("$.users[2].userId").value("3"))
-				.andExpect(jsonPath("$.users[2].nickName").value("test33"))
-				.andExpect(jsonPath("$.users[2].email").value("test3@gmail.com"))
-				.andExpect(jsonPath("$.users[2].authority").value("USER"))
-
-				.andExpect(jsonPath("$.users[3]").doesNotExist());
-	}
+	
 
 	@Test
 	public void 워크스페이스_유저_권한변경_권한없이_시도() throws Exception {
 		//given
-		String request = "{ \"authority\" : \"USER\" }";
+		String request = "{ \"authority\" : \"ADMIN\" }";
 		//when
-		mvc.perform(put("/v1/workspaces/1/users/3")
+		mvc.perform(put("/v1/workspaces/1/users/2")
 						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(request))
 				//then
 				.andExpect(status().isForbidden());
 	}
-	@Test
-	public void 워크스페이스_초대수락_어드민_시도() throws Exception {
+	
+	@Test //외부인의 유저 권한 변경 시도
+	public void 워크스페이스_유저_권한변경_외부인_시도() throws Exception {
 		//given
 		String request = "{ \"authority\" : \"ADMIN\" }";
 		//when
-		mvc.perform(put("/v1/workspaces/1/users/3")
-						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
+		mvc.perform(put("/v1/workspaces/1/users/2")
+						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(request))
 				//then
@@ -297,7 +244,7 @@ public class WorkspaceApiTest extends IntegrationTest {
     public void 워크스페이스_유저_추방() throws Exception {
         //given
         //when
-        mvc.perform(delete("/v1/workspaces/1/users/3")
+        mvc.perform(delete("/v1/workspaces/1/users/2")
 			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
         //then
             .andExpect(status().isOk());
@@ -307,8 +254,7 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.users[0].userId").value("1"))
-			.andExpect(jsonPath("$.users[1].userId").value("2"))
-			.andExpect(jsonPath("$.users[2]").doesNotExist());
+			.andExpect(jsonPath("$.users[1]").doesNotExist());
     }
 	
 	@Test // ADMIN이 1명 뿐인 워크스페이스에서 ADMIN이 탈퇴시 404 에러 발생
@@ -319,28 +265,16 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
         //then
             .andExpect(status().isNotFound());
-		
-		// 추방 시 워크스페이스 유저 목록에서 유저 사라져야함
-		mvc.perform(get("/v1/workspaces/1/users")
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.users[0].userId").value("1"));
     }
 	
 	@Test // ADMIN이 아닌 유저가 유저 추방시 권한 없음
     public void 워크스페이스_유저_추방_권한없음() throws Exception {
         //given
         //when
-        mvc.perform(delete("/v1/workspaces/1/users/3")
+        mvc.perform(delete("/v1/workspaces/1/users/2")
 			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER))
         //then
             .andExpect(status().isForbidden());
-		
-		// 추방 시 워크스페이스 유저 목록에서 유저 사라져야함
-		mvc.perform(get("/v1/workspaces/1/users")
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.users[2].userId").value("3"));
     }
 	
 	@Test 
@@ -371,13 +305,13 @@ public class WorkspaceApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.schedules[2]").doesNotExist());
 	}
 	
-	@Test // 가입대기 유저가 캘린더 조회시 권한 없음
-    public void 워크스페이스_캘린더_조회_권한없음() throws Exception {
+	@Test // 외부 유저가 캘린더 조회시 권한 없음
+    public void 워크스페이스_캘린더_조회_외부인() throws Exception {
         //given
 		String date = "202404";
         //when
         mvc.perform(get("/v1/workspaces/1/calendar?date=" + date)
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING))
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER))
         //then
             .andExpect(status().isForbidden());
     }
@@ -452,13 +386,13 @@ public class WorkspaceApiTest extends IntegrationTest {
 				.andExpect(jsonPath("$.schedules[1]").doesNotExist());
 	}
 	
-	@Test // 가입대기 유저가 스케줄 조회시 권한 없음
+	@Test // 외부 유저가 스케줄 조회시 권한 없음
     public void 워크스페이스_스케줄_조회_권한없음() throws Exception {
         //given
 		String date = "20240401";
         //when
         mvc.perform(get("/v1/workspaces/1/schedules?date=" + date)
-			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_PENDING))
+			.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER))
         //then
             .andExpect(status().isForbidden());
     }
