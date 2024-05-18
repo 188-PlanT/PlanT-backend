@@ -13,18 +13,18 @@
         </encoder>
     </appender>
     
-    <!-- 디버그 파일 로깅 설정 -->
-<!--     <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- 서버용 파일 로깅 설정 -->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>../../log/debug/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>10KB</maxFileSize>
-            <totalSizeCap>100MB</totalSizeCap>
-            <maxHistory>30</maxHistory>
+            <fileNamePattern>../../log/info/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100KB</maxFileSize>
+            <totalSizeCap>10MB</totalSizeCap>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
-    </appender> -->
+    </appender>
     
     <!-- 에러 파일 로깅 설정 -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -41,17 +41,30 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>../../log/error/%d{yyyy-MM-dd}_ERROR.%i.log</fileNamePattern>
             <maxFileSize>100KB</maxFileSize>
-            <totalSizeCap>100MB</totalSizeCap>
+            <totalSizeCap>10MB</totalSizeCap>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
     </appender>
     
     <!-- 루트 로깅 레벨 -->
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <!-- <appender-ref ref="DEBUG_FILE"/> -->
-        <appender-ref ref="ERROR_FILE"/>
-    </root>
+	<springProfile name="local">
+		<root level="INFO">
+        	<appender-ref ref="CONSOLE"/>
+    	</root>
+	</springProfile>
+	
+	<springProfile name="dev">
+		<root level="INFO">
+        	<appender-ref ref="CONSOLE"/>
+    	</root>
+	</springProfile>
+	
+	<springProfile name="prod">
+		<root level="INFO">
+        	<appender-ref ref="INFO_FILE"/>
+        	<appender-ref ref="ERROR_FILE"/>
+    	</root>
+	</springProfile>
     
     <!-- 패키지 로깅 레벨 -->
     <logger name="project" level="DEBUG"/>

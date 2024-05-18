@@ -76,8 +76,9 @@ public class ControllerAdvice{
     @ExceptionHandler(RuntimeException.class) // 500 ERROR
     public ResponseEntity<ErrorResponse> RuntimeErrorHandler(RuntimeException e){
         
-        e.printStackTrace();
-        
+        // e.printStackTrace();
+        log.error("", e);
+		
         ErrorResponse response = new ErrorResponse("INTERNAL_SERVER_ERROR", e.getMessage());
         
         return ResponseEntity
