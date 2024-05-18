@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 ROOT_PATH="/home/ubuntu/spring-github-action"
 STOP_LOG="$ROOT_PATH/stop.log"
