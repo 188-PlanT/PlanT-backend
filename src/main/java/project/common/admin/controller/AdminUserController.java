@@ -10,6 +10,7 @@ import project.domain.user.dto.user.UserWorkspacesResponse;
 import project.domain.user.service.UserService;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
+import project.domain.workspace.domain.UserWorkspace;
 import project.common.util.UserUtil;
 import project.common.admin.dto.AdminUpdateUserRequest;
 
@@ -20,7 +21,6 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import project.domain.workspace.domain.UserWorkspace;
 
 @Slf4j
 @Controller

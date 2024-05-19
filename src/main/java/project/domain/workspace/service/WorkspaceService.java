@@ -80,6 +80,7 @@ public class WorkspaceService{
         workspaceRepository.delete(workspace);
     }
     
+	// 여기 쓰이는 로직 찾아서 findOneDetail로 수정 필요
     // <== 워크스페이스 단일 조회 ==>
     @Transactional(readOnly = true)
     public Workspace findOne(Long workspaceId){
@@ -202,6 +203,25 @@ public class WorkspaceService{
         
         return CalendarResponse.of(workspace, schedules, loginUserId);
     }
+	
+	// <== 어드민 페이지용 조회 ==>
+	@Transactional(readOnly = true)
+	public Workspace findOneDetail(Long workspaceId){
+		Workspace workspace = findWorkspaceById(workspaceId);
+		
+		workspace.getProfile().getUrl();
+		
+		for (UserWorkspace uw : workspace.getUserWorkspaces()){
+			uw.getUserRole();
+			uw.getUser().getEmail();
+		}
+		
+		for (Schedule s : workspace.getSchedules()){
+			s.getName();
+		}
+		
+		return workspace;
+	}
     
     private LocalDateTime getStartDate(LocalDateTime dateTime){
         LocalDate date = dateTime.toLocalDate();
