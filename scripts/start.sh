@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ROOT_PATH="/home/ubuntu/spring-github-action"
 JAR=blazingDevs_calendar-0.0.1-SNAPSHOT.jar
 
