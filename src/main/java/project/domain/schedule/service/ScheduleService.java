@@ -179,6 +179,7 @@ public class ScheduleService{
 
         for (DevLog chat : schedule.getDevLogs()){
             chat.getContent();
+            chat.getUser().getEmail();
         }
 
         return schedule;
