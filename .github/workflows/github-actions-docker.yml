@@ -44,7 +44,7 @@ jobs:
       - name: Deploy to prod
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }} # EC2 퍼블릭 IPv4 DNS
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
