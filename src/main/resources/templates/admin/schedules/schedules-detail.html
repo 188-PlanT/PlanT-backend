@@ -123,7 +123,7 @@
             <tr th:each="chat : ${schedule.devLogs}">
                 <td><a th:text="${chat.id}" th:href="|/admin/chats/${chat.id}|">1</a></td>
                 <td><a th:text="${chat.user.id}" th:href="|/admin/users/${chat.user.id}|">작성자 id</a></td>
-                <td><a th:text="${chat.user.id}" th:href="|/admin/users/${chat.user.email}|">작성자 email</a></td>
+                <td><a th:text="${chat.user.email}" th:href="|/admin/users/${chat.user.id}|">작성자 email</a></td>
                 <td th:text="${chat.content}">내용</td>
             </tr>
         </table>
