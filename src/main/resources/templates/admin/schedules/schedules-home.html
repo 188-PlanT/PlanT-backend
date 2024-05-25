@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link th:href="@{/css/side.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        button{
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            color:white;
+            background-color: red;
+        }
+        button:hover{
+            background-color: darkred;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{template/fragment/side :: sidebar}"></div>
+    <div class="content">
+        <h1>스케줄 관리</h1>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>워크스페이스 ID</th>
+                <th>이름</th>
+                <th>진행도</th>
+                <th>시작 날짜</th>
+                <th>끝 날짜</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="schedule : ${schedules}">
+                <td><a th:href="|/admin/schedules/${schedule.id}|" th:text="${schedule.id}">아이디</a></td>
+                <td><a th:href="|/admin/workspaces/${schedule.workspace.id}|" th:text="${schedule.workspace.id}">워크스페이스 아이디</a></td>
+                <td><a th:href="|/admin/schedules/${schedule.id}|" th:text="${schedule.name}">이름</a></td>
+                <td th:text="${schedule.state}">진행도</td>
+                <td th:text="${schedule.startDate}">2024.01.01</td>
+                <td th:text="${schedule.endDate}">진행도</td>
+                <td>
+                    <form th:action="|/admin/schedules/${schedule.id}/delete|" method="post">
+                        <button type="submit">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            <!-- Add more rows for other users -->
+            </tbody>
+        </table>
+        <a href="/admin/schedules/create" class="button">Create New Schedule</a>
+    </div>
+</div>
+</body>
+</html>

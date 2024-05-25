@@ -3,41 +3,138 @@
 <head>
     <meta charset="utf-8">
     <title>BlazingDevs Calender!</title>
-    <link th:href="@{/css/detail.css}" rel="stylesheet"/>
+    <link th:href="@{/css/side.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet"/>
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .btns{
+            display: flex;
+            flex-direction: row;
+            margin: 10px;
+        }
+
+        button{
+            margin: 10px;
+            padding: 15px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .update{
+            background-color: #007bff;
+        }
+        .update:hover{
+            background-color: #0056b3;
+        }
+        .delete{
+            background-color: red;
+        }
+        .delete:hover{
+            background-color: darkred;
+        }
+
+        a{
+            text-decoration: none;
+            color: black;
+        }
+
+        img{
+            width: 100px;
+        }
+
+    </style>
 </head>
 <body>
-    <div th:replace="~{template/fragment/header :: schedules_header ('스케줄관리')}" class="title">
-        <h1>스케줄 관리</h1>
-    </div>
+<div class="container">
+    <div th:replace="~{template/fragment/side :: sidebar}" class="title"></div>
+    <div class="content">
+        <h1>스케줄 상세 정보</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <td th:text="${schedule.id}">123</td>
+            </tr>
+            <tr>
+                <th>워크스페이스 ID</th>
+                <td><a th:href="|/admin/workspaces/${schedule.workspace.id}|" th:text="${schedule.id}">123</a></td>
+            </tr>
+            <tr>
+                <th>이름</th>
+                <td th:text="${schedule.name}">testWorkspace</td>
+            </tr>
+            <tr>
+                <th>진행도</th>
+                <td th:text="${schedule.state}">content</td>
+            </tr>
+            <tr>
+                <th>시작 날짜</th>
+                <td th:text="${schedule.startDate}">2024-01-01 00:00:00</td>
+            </tr>
+            <tr>
+                <th>끝 날짜</th>
+                <td th:text="${schedule.endDate}">2024-01-01 00:00:00</td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td th:text="${schedule.content}">content</td>
+            </tr>
+            <tr>
+                <th>생성일</th>
+                <td th:text="${schedule.createDate}">2024-01-01 00:00:00</td>
+            </tr>
+        </table>
+        <h2>참여중인 유저</h2>
+        <table>
+            <tr>
+                <th>유저 ID</th>
+                <th>이메일</th>
+            </tr>
+            <tr th:each="us : ${schedule.userSchedules}">
+                <td><a th:text="${us.user.id}" th:href="|/admin/users/${us.user.id}|">1</a></td>
+                <td><a th:text="${us.user.email}" th:href="|/admin/users/${us.user.id}|">이메일</a></td>
+            </tr>
+        </table>
+        <h2>댓글</h2>
+        <table>
+            <tr>
+                <th>댓글 ID</th>
+                <th>작성자</th>
+                <th>내용</th>
+            </tr>
+            <tr th:each="chat : ${schedule.devLogs}">
+                <td><a th:text="${chat.id}" th:href="|/admin/chats/${chat.id}|">1</a></td>
+                <td><a th:text="${chat.user.id}" th:href="|/admin/users/${chat.user.id}|">작성자 id</a></td>
+                <td th:text="${chat.content}">내용</td>
+            </tr>
+        </table>
 
-    <div class="container">
-        <ul>
-            <li th:text="|워크스페이스 : ${schedule.workspace}|"></li>
-            <li th:text="|이름 : ${schedule.name}|"></li>
-            <li>참여중인 유저</li>
-            <ul class="lists">
-                <li th:each="user : ${schedule.users}" th:text="${user}"></li>
-            </ul>
-            <li>개발일지</li>
-            <ul class="lists">
-                <li class="devLog" th:each="devLog : ${schedule.devLogs}">
-                    <br th:text="${devLog.userEmail}">
-                    <br th:text="${devLog.content}">
-                </li>
-            </ul>
-        </ul>
-        
         <div class="btns">
-            <form th:action="|/admin/schedules/${schedule.schedule_id}/update|" method="get">
-                <button type="submit">수정</button>
+            <form th:action="|/admin/schedules/${schedule.id}/update|" method="get">
+                <button class="update" type="submit">수정</button>
             </form>
-            <form th:action="|/admin/schedules/${schedule.schedule_id}/delete|" method="post">
-                <button type="submit">삭제</button>
-            </form>
-            <form th:action="|/admin/schedules/${schedule.schedule_id}/devLogs|" method="get">
-                <button type="submit">개발일지 추가</button>
+            <form th:action="|/admin/schedules/${schedule.id}/delete|" method="post">
+                <button class="delete" type="submit">삭제</button>
             </form>
         </div>
-    </div> <!-- /container -->
+    </div>
+</div> <!-- /container -->
 </body>
 </html>

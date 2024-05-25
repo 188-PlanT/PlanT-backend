@@ -3,6 +3,7 @@ package project.domain.schedule.service;
 import project.common.util.UserUtil;
 import project.domain.schedule.dao.DevLogRepository;
 import project.domain.schedule.domain.DevLog;
+import project.domain.schedule.domain.UserSchedule;
 import project.domain.schedule.dao.ScheduleRepository;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
@@ -165,6 +166,22 @@ public class ScheduleService{
         Schedule schedule = findScheduleById(scheduleId);
 
         schedule.removeChat(loginUser, chatId);
+    }
+
+    // <== admin용 전체 조회 ==>
+    @Transactional(readOnly = true)
+    public Schedule findOneDetail(Long id){
+        Schedule schedule = findScheduleById(id);
+
+        for (UserSchedule us : schedule.getUserSchedules()){
+            us.getUser().getEmail();
+        }
+
+        for (DevLog chat : schedule.getDevLogs()){
+            chat.getContent();
+        }
+
+        return schedule;
     }
 
     private Schedule findScheduleById(Long id){
