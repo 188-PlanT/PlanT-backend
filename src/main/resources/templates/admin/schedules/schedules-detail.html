@@ -38,6 +38,16 @@
             border: none;
             border-radius: 5px;
         }
+        .btns_small{
+            display: flex;
+            flex-direction: row;
+        }
+
+        .btns_small button{
+            margin: 10px;
+            padding: 10px;
+            font-size: 10px;
+        }
         .update{
             background-color: #007bff;
         }
@@ -119,12 +129,23 @@
                 <th>작성자 ID</th>
                 <th>작성자 email</th>
                 <th>내용</th>
+                <th>수정/삭제</th>
             </tr>
             <tr th:each="chat : ${schedule.devLogs}">
                 <td><a th:text="${chat.id}" th:href="|/admin/chats/${chat.id}|">1</a></td>
                 <td><a th:text="${chat.user.id}" th:href="|/admin/users/${chat.user.id}|">작성자 id</a></td>
                 <td><a th:text="${chat.user.email}" th:href="|/admin/users/${chat.user.id}|">작성자 email</a></td>
                 <td th:text="${chat.content}">내용</td>
+                <td>
+                    <div class="btns_small">
+                        <form th:action="|/admin/schedules/${schedule.id}/chats/${chat.id}/update|" method="get">
+                            <button class="update" type="submit">수정</button>
+                        </form>
+                        <form th:action="|/admin/schedules/${schedule.id}/chats/${chat.id}/delete|" method="post">
+                            <button class="delete" type="submit">삭제</button>
+                        </form>
+                    </div>
+                </td>
             </tr>
         </table>
 
