@@ -69,13 +69,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedOrigin("https://plant-front-bwmaj.run.goorm.site");
         configuration.addAllowedOrigin(MAIN_URL);
 	    configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
-        configuration.addAllowedOrigin("http://127.0.0.1:8080");
+//        configuration.addAllowedOrigin("http://127.0.0.1:8080");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
 
+        CorsConfiguration adminConfig = new CorsConfiguration();
+        adminConfig.addAllowedOrigin("**");
+        adminConfig.addAllowedHeader("*");
+        adminConfig.addAllowedMethod("*");
+        adminConfig.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/admin", adminConfig);
         return source;
     }
 }
