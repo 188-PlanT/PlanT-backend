@@ -53,9 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterAfter(new JwtAuthorizationFilter(authenticationManager(), jwtProvider), OAuth2LoginAuthenticationFilter.class)
             .authorizeRequests()
             .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up", "/v1/login/oauth2", "/v1/login/dumy", "/v1/users/email/code", "/v1/image").permitAll()
+            .antMatchers("/admin/**", "/css/**", "*.ico").permitAll()
             .antMatchers("/v1/users/nickname").hasAnyRole("PENDING", "USER", "ADMIN")
-            .antMatchers("/v1/**").hasAnyRole("PENDING", "USER", "ADMIN") //여기 런칭할때는 수정해야함
-            .anyRequest().permitAll()
+            .antMatchers("/v1/**").hasAnyRole("USER", "ADMIN") //여기 런칭할때는 수정해야함
+            .anyRequest().authenticated()
             .and()
             .exceptionHandling()
                 .accessDeniedHandler(customAccessDeniedHandler);
@@ -68,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedOrigin("https://plant-front-bwmaj.run.goorm.site");
         configuration.addAllowedOrigin(MAIN_URL);
 	    configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
-        configuration.addAllowedOrigin("localhost");
+        configuration.addAllowedOrigin("http://127.0.0.1:8080");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

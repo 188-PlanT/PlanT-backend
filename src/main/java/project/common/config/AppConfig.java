@@ -37,10 +37,10 @@ public class AppConfig implements WebMvcConfigurer{
             .addPathPatterns("/**")
             .excludePathPatterns("/css/**", "/*.ico","/error");
         
-//         registry.addInterceptor(new LoginCheckInterceptor())
-//             .order(2)
-//             .addPathPatterns("/admin/**")
-//             .excludePathPatterns("/admin/login", "/css/**", "/*.ico","/error");
+         registry.addInterceptor(new LoginCheckInterceptor())
+             .order(2)
+             .addPathPatterns("/admin/**")
+             .excludePathPatterns("/admin/login", "/css/**", "/*.ico","/error");
     }
     
     @Override

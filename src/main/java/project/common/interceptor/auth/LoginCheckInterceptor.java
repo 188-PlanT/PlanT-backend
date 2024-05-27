@@ -25,7 +25,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
 
         HttpSession session = request.getSession(false);
 
-         if (session == null || !checkSessionUserIsAdmin(session)){ // 세션이 존재하지 않거나, 어드민 유저가 없을 경우
+         if (session == null || !isSessionUserAdmin(session)){ // 세션이 존재하지 않거나, 어드민 유저가 아닐 경우
              log.info("위임 전 사용자 요청");
              response.sendRedirect("/admin/login?redirectURL=" + requestURI);
              return false;
@@ -33,10 +33,10 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
          return true;
     }
 
-    private boolean checkSessionUserIsAdmin(HttpSession session){
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+    private boolean isSessionUserAdmin(HttpSession session){
+        User user = (User) session.getAttribute(SessionConst.LOGIN_USER);
 
-        if (user != null && UserRole.ADMIN.equals(user.getAuthority())){
+        if (user != null && UserRole.ADMIN.equals(user.getUserRole())){
             return true;
         }
 
