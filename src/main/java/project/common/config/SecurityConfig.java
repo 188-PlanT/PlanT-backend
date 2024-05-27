@@ -32,9 +32,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final JwtProvider jwtProvider;
-	
+
+    @Value("${front.dev-url}")
+    private String FRONT_DEV_URL;
+
 	@Value("${front.main-url}")
-	private String MAIN_URL;
+	private String FRONT_MAIN_URL;
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -66,16 +69,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin("https://plant-front-bwmaj.run.goorm.site");
-        configuration.addAllowedOrigin(MAIN_URL);
-	    configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
-//        configuration.addAllowedOrigin("http://127.0.0.1:8080");
+        configuration.addAllowedOrigin(FRONT_DEV_URL);
+        configuration.addAllowedOrigin(FRONT_MAIN_URL);
+//	    configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
+////        configuration.addAllowedOrigin("http://127.0.0.1:8080");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
 
         CorsConfiguration adminConfig = new CorsConfiguration();
-        adminConfig.addAllowedOrigin("**");
+        adminConfig.addAllowedOrigin("*");
         adminConfig.addAllowedHeader("*");
         adminConfig.addAllowedMethod("*");
         adminConfig.setAllowCredentials(true);
