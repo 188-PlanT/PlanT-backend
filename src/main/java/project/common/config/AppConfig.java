@@ -21,7 +21,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 @RequiredArgsConstructor
 @EnableJpaAuditing //Auditing
 public class AppConfig implements WebMvcConfigurer{
-	
+
+    private final LoginCheckInterceptor loginCheckInterceptor;
 	private final UserRoleCheckInterceptor userRoleCheckInterceptor;
 
     //인터셉터 등록
@@ -37,7 +38,7 @@ public class AppConfig implements WebMvcConfigurer{
             .addPathPatterns("/**")
             .excludePathPatterns("/css/**", "/*.ico","/error");
         
-         registry.addInterceptor(new LoginCheckInterceptor())
+         registry.addInterceptor(loginCheckInterceptor)
              .order(2)
              .addPathPatterns("/admin/**")
              .excludePathPatterns("/admin/login", "/css/**", "/*.ico","/error");
