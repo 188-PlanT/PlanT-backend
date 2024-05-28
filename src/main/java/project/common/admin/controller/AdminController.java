@@ -2,6 +2,7 @@ package project.common.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import project.common.admin.util.Login;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
@@ -34,6 +35,9 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class AdminController{
 
+    @Value("${api.main-url}")
+    private String mainUrl;
+
     private final UserService userService;
 
     @GetMapping("/admin") //홈 화면
@@ -63,7 +67,7 @@ public class AdminController{
 
              setSessionUser(request, loginUser);
 
-             return "redirect:/admin";
+             return "redirect:" + mainUrl + "/admin";
          }
          catch(PlantException e){
              bindingResult.addError(new ObjectError("signInRequest", e.getMessage()));
