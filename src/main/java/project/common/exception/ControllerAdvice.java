@@ -17,12 +17,12 @@ import java.util.List;
 @RestControllerAdvice
 public class ControllerAdvice{
 
-    @ExceptionHandler(PlantException.class)
+    @ExceptionHandler(PlantException.class) // custom Exception
     public ResponseEntity<ErrorResponse> PlantExceptionHandler(PlantException e){
         ErrorCode errorCode = e.getErrorCode();
-        log.info("PlantException : {}", errorCode.name());
+        String message = e.getMessage();
 
-        ErrorResponse response = new ErrorResponse(errorCode.name(), e.getMessage());
+        ErrorResponse response = new ErrorResponse(errorCode.name(), message);
 
         return ResponseEntity
                 .status(errorCode.getStatus())
