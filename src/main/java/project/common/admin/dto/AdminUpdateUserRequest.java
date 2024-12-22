@@ -14,9 +14,6 @@ import javax.validation.constraints.NotNull;
 @Getter @Setter
 public class AdminUpdateUserRequest {
     @NotBlank
-    private String email;
-
-    @NotBlank
     private String password;
 
     @NotBlank
@@ -26,7 +23,6 @@ public class AdminUpdateUserRequest {
     private UserRole userRole;
 
     public AdminUpdateUserRequest(User user){
-        this.email = user.getEmail();
         this.url = user.getProfile().getUrl();
         this.userRole = user.getUserRole();
     }

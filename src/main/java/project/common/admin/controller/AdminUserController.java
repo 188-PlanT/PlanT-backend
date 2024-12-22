@@ -1,16 +1,10 @@
 package project.common.admin.controller;
 
 import org.springframework.validation.BindingResult;
-import project.common.exception.ErrorCode;
-import project.common.exception.PlantException;
-import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.dto.user.UpdateUserRequest;
-import project.domain.user.dto.user.UserSchedulesResponse;
-import project.domain.user.dto.user.UserWorkspacesResponse;
 import project.domain.user.service.UserService;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
-import project.domain.workspace.domain.UserWorkspace;
 import project.common.util.UserUtil;
 import project.common.admin.dto.AdminUpdateUserRequest;
 
@@ -21,6 +15,8 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -99,27 +95,25 @@ public class AdminUserController{
          User user = userService.findOneDetail(userId);
 
          model.addAttribute("user", user);
-         model.addAttribute("adminUpdateUserRequest", new AdminUpdateUserRequest(user));
+         model.addAttribute("updateUserRequest", new UpdateUserRequest(user));
 
          return "admin/users/users-update-form";
      }
 
      //유저 수정
-//     @PostMapping("/admin/users/{userId}/update")
-//     public String updateUser(@PathVariable Long userId,
-//                              @Valid UpdateUserRequest updateUserRequest,
-//                              BindingResult bindingResult){
-//
-//         if(bindingResult.hasErrors()){ // 검증 실패
-//             return "admin/users/users-update-form";
-//         }
-//         else { //검증 성공
-//             User updateUser = userService.updateUser(userId,
-//                                                      updateUserRequest.getPassword(),
-//                                                      updateUserRequest.getName());
-//             return "redirect:/admin/users/{userId}";
-//         }
-//     }
+     @PostMapping("/admin/users/{userId}/update")
+     public String updateUser(@PathVariable Long userId,
+                              @Valid UpdateUserRequest updateUserRequest,
+                              BindingResult bindingResult){
+
+         if(bindingResult.hasErrors()){ // 검증 실패
+             return "admin/users/users-update-form";
+         }
+         else { //검증 성공
+             User updateUser = userService.updateUser(updateUserRequest);
+             return "redirect:/admin/users/{userId}";
+         }
+     }
 
 
      //유저 삭제 화면

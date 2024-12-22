@@ -8,6 +8,10 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        form {
+            width: 100%;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -22,13 +26,14 @@
             background-color: #f2f2f2;
         }
 
-        button{
+        .button{
             margin: 10px;
             padding: 15px;
             font-size: 18px;
             color: white;
             border: none;
             border-radius: 5px;
+            background-color: #007bff;
         }
         a{
             text-decoration: none;
@@ -45,53 +50,53 @@
 <div class="container">
     <div th:replace="~{template/fragment/side :: sidebar}"></div>
     <div class="content">
-            <h1>유저 상세 정보</h1>
+        <h1>유저 상세 정보</h1>
+        <form role="form" th:action="|/admin/users/${user.id}/update|" method="post" th:object="${updateUserRequest}">
             <table>
                 <tr>
                     <th>ID</th>
-                    <td th:text="${userId}">123</td>
+                    <td th:text="${user.id}">123</td>
                 </tr>
                 <tr>
                     <th>이메일</th>
-                    <td>
-                        <form id="emailForm">
-                            <input type="text" th:field="${user.email}" th:errorclass="field-error">
-                            <input type="submit" value="확인">
-                        </form>
-                    </td>
+                    <td th:text="${user.email}"></td>
                 </tr>
-                <form role="form" th:action="|/admin/users/${user.id}/update|" method="post" th:object="${adminUpdateUserRequest}">
                     <tr>
-                        <th>비밀번호</th>
+                        <th>현재 비밀번호</th>
                         <td>
-                            <input type="password" th:field="*{password}" th:errorclass="field-error">
+                            <input type="password" th:field="*{currentPassword}" th:errorclass="field-error">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>새 비밀번호</th>
+                        <td>
+                            <input type="password" th:field="*{newPassword}" th:errorclass="field-error">
                         </td>
                     </tr>
                     <tr>
                         <th>권한</th>
-                        <td>
-                            <select th:field="*{userRole}" th:errorclass="field-error">
-                                <option value="ADMIN" text="ADMIN"></option>
-                                <option value="USER" text="USER"></option>
-                            </select>
-                        </td>
+                        <td th:text="${user.userRole}"></td>
                     </tr>
                     <tr>
                         <th>가입일</th>
                         <td th:text="${user.createDate}">2024-01-01 00:00:00</td>
                     </tr>
-                </form>
+                    <tr>
+                        <input id="profile_url" th:field="*{profile}" type="hidden">
+                    </tr>
                     <tr>
                         <th>프로필</th>
                         <td>
-                            <form id="imageForm" enctype="multipart/form-data">
-                                <img id="profile" th:src="${user.profile.url}">
-                                <input id="image" type="file" name="image"/>
-                                <input type="submit" value="변경">
-                            </form>
+                            <img id="profile" th:src="${user.profile.url}">
                         </td>
                     </tr>
             </table>
+            <input class="button" type="submit" value="수정" >
+        </form>
+            <form id="imageForm" enctype="multipart/form-data">
+                <input id="image" type="file" name="image"/>
+                <button class="button">확인</button>
+            </form>
             <h2>참여중인 워크스페이스</h2>
             <table>
                 <tr>
@@ -120,43 +125,42 @@
                     <td th:text="${us.schedule.state}">TODO</td>
                 </tr>
             </table>
-            <button type="submit" class="btn">수정</button>
-        </form>
     </div>
 </div> <!-- /container -->
 
 <script>
-    document.getElementById("emailForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-        var email = document.getElementById("email").value;
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/v1/users/email", true);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                console.log(response);
-                console.log(response.available);
-                if (response.available === true) {
-                    alert("사용 가능한 이메일입니다");
-                } else {
-                    alert("사용할 수 없는 이메일입니다");
-                }
-            } else {
-                console.error("Request failed with status:", xhr.status);
-            }
-        };
-        xhr.onerror = function() {
-            console.error("Request failed");
-        };
-        xhr.send(JSON.stringify({ email: email }));
-    });
+    // document.getElementById("emailForm").addEventListener("submit", function(event) {
+    //     event.preventDefault();
+    //     var email = document.getElementById("email").value;
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open("POST", "http://localhost:8080/v1/users/email", true);
+    //     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    //     xhr.onload = function() {
+    //         if (xhr.status === 200) {
+    //             var response = JSON.parse(xhr.responseText);
+    //             console.log(response);
+    //             console.log(response.available);
+    //             if (response.available === true) {
+    //                 alert("사용 가능한 이메일입니다");
+    //             } else {
+    //                 alert("사용할 수 없는 이메일입니다");
+    //             }
+    //         } else {
+    //             console.error("Request failed with status:", xhr.status);
+    //         }
+    //     };
+    //     xhr.onerror = function() {
+    //         console.error("Request failed");
+    //     };
+    //     xhr.send(JSON.stringify({ email: email }));
+    // });
 
-    document.getElementById("imageForm").addEventListener("submit", function (event) {
+    document.getElementById("imageForm").addEventListener("click", function (event) {
         event.preventDefault();
         const formData = new FormData();
         const image = document.getElementById("image");
         let profile = document.getElementById("profile");
+        let profile_url = document.getElementById("profile_url");
 
         console.log(image);
         formData.append('image', image.files[0]);
@@ -166,7 +170,8 @@
             body: formData
         })
             .then(response => response.json())
-            .then(data => profile.src = data.url);
+            .then(data => profile.src = data.url)
+            .then(data => profile_url.value = data.url);
     });
 </script>
 
