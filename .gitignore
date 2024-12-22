@@ -49,3 +49,6 @@ goorm.manifest
 
 # sqlß
 *.sql
+
+#key files
+*.pem
