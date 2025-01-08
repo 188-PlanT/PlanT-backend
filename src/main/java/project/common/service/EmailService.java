@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 @RequiredArgsConstructor
 public class EmailService{
     private final JavaMailSender javaMailSender;
-    private final UserRepository userRepository;
     private final RedisService redisService;
     
     private final Long CODE_EXP_TIME = 1000L * 60 * 5; //5분
