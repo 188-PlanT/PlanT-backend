@@ -12,11 +12,11 @@ import project.domain.user.dto.user.UserSchedulesResponse;
 import project.domain.user.dto.user.UserWorkspacesResponse;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
-import project.domain.user.dto.login.SignUpRequest;
+import project.domain.auth.dto.request.SignUpRequest;
 import project.domain.user.dto.user.UpdateUserRequest;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.common.security.oauth.UserInfo;
+import project.domain.auth.domain.UserInfo;
 import project.common.service.RedisService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -85,21 +85,6 @@ public class UserService implements UserDetailsService{
         user.getProfile().getUrl();
         
         return user;
-    }
-    
-    // <== 유저 로그인 ==>
-    @Transactional(readOnly = true)
-    public User signIn(String email, String password){
-        
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
-        
-        if (findUser.checkPassword(password, passwordEncoder)){
-            return findUser;
-        }
-        else{
-            throw new PlantException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호가 틀립니다");
-        }
     }
     
     // <== 워크스페이스 조회 ==>
@@ -200,21 +185,6 @@ public class UserService implements UserDetailsService{
                 .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
         return UserInfo.from(findUser);
-    }
-	
-	// < == dumyDB 조회용 로그인 ==>
-    @Transactional(readOnly = true)
-    public User signInDumy(String email, String password){
-        
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
-        
-        if (findUser.getPassword().equals(password)){
-            return findUser;
-        }
-        else{
-            throw new PlantException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호가 틀립니다");
-        }
     }
 
     // admin 페이지용 조회
