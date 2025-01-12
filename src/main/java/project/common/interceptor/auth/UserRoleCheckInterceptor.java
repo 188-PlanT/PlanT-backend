@@ -1,14 +1,12 @@
 package project.common.interceptor.auth;
 
-import project.common.security.oauth.UserInfo;
+import lombok.extern.slf4j.Slf4j;
+import project.domain.auth.domain.UserInfo;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.UserRole;
-import project.domain.workspace.domain.UserWorkspace;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.schedule.dao.ScheduleRepository;
-import project.domain.workspace.dao.WorkspaceRepository;
 
 import lombok.RequiredArgsConstructor;
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +23,10 @@ import org.springframework.stereotype.Component;
 // @Slf4j
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserRoleCheckInterceptor implements HandlerInterceptor{
 	
 	private final ScheduleRepository scheduleRepository;
-	private final WorkspaceRepository workspaceRepository;
-	private final UserWorkspaceRepository userWorkspaceRepository;
 	
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
@@ -44,23 +41,19 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 			return true;
 		}
 		else {
-			Long loginUserId = getUserId();
-			
 			Long workspaceId = getWorkspaceId(request);
 
-			validateWorkspaceId(workspaceId);
-			
-			checkUserAuthority(workspaceId, loginUserId, permitUserRole.value());
+			UserInfo loginUserInfo = getUserInfo();
+
+			checkUserAuthority(workspaceId, loginUserInfo, permitUserRole.value());
 			
 			return true;
 		}
     }
-	
-	private Long getUserId(){
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		UserInfo loginUser = (UserInfo) authentication.getPrincipal();
 
-		return loginUser.getUserId();
+	private UserInfo getUserInfo(){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return (UserInfo) authentication.getPrincipal();
 	}
 	
 	private Long getWorkspaceId(HttpServletRequest request){
@@ -81,24 +74,30 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 			throw new PlantException(ErrorCode.WORKSPACE_NOT_FOUND, "workspace 검증중 오류가 발생했습니다.");
 		}
 	}
-	
-	private void checkUserAuthority(Long workspaceId, Long loginUserId, UserRole... roles){
-		
-		UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-			.orElseThrow(() -> new PlantException(ErrorCode.USER_AUTHORITY_INVALID));
-		
-		for (UserRole role : roles){
-			if (userWorkspace.getUserRole().equals(role)){
-				return;
-			}
+	private void checkUserAuthority(Long workspaceId, UserInfo userInfo, UserRole... userRoles) {
+		UserRole loginUserRole = getLoginUserRole(workspaceId, userInfo);
+
+		if(loginUserRole == null || !checkUserRoleInUserRoles(loginUserRole, userRoles)) {
+			throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
 		}
-		
-		throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
 	}
-	
-	private void validateWorkspaceId(Long workspaceId){
-		if (!workspaceRepository.existsById(workspaceId)){
-			throw new PlantException(ErrorCode.WORKSPACE_NOT_FOUND);
+
+	private UserRole getLoginUserRole(Long workspaceId, UserInfo userInfo){
+		if(userInfo.getWorkspaceUserIds().stream()
+				.anyMatch((workspaceUserId) -> workspaceUserId.equals(workspaceId))) return UserRole.USER;
+
+
+		if (userInfo.getWorkspaceAdminIds().stream()
+				.anyMatch((workspaceAdminId) -> workspaceAdminId.equals(workspaceId))) return UserRole.ADMIN;
+
+		return null;
+	}
+
+	private boolean checkUserRoleInUserRoles(UserRole loginUserRole, UserRole[] userRoles){
+
+		for(UserRole userRole : userRoles){
+			if(userRole.equals(loginUserRole)) return true;
 		}
+		return false;
 	}
 }

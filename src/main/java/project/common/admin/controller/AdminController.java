@@ -3,28 +3,24 @@ package project.common.admin.controller;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
-import project.common.admin.util.Login;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.common.security.oauth.UserInfo;
+import project.domain.auth.service.LoginService;
+import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.UserRole;
 import project.domain.user.service.UserService;
-import project.domain.user.dto.login.LoginRequest;
+import project.domain.auth.dto.request.LoginRequest;
 import project.domain.user.domain.User;
 import project.common.admin.util.SessionConst;
 
 
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import javax.servlet.http.Cookie;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.ui.Model;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +34,8 @@ public class AdminController{
     @Value("${api.main-url}")
     private String mainUrl;
 
-    private final UserService userService;
+    private final LoginService loginService;
+    private final UserRepository userRepository;
 
     @GetMapping("/admin") //홈 화면
     public String home(){
@@ -61,7 +58,10 @@ public class AdminController{
          try{
              checkBindingResultHasError(bindingResult);
 
-             User loginUser = userService.signIn(loginRequest.getEmail(), loginRequest.getPassword());
+             loginService.loginByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+
+             User loginUser = userRepository.findByEmail(loginRequest.getEmail())
+                     .orElseThrow();
 
              checkUserHasAdmin(loginUser);
 

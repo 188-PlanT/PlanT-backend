@@ -38,10 +38,10 @@ public class IntegrationTest {
 	private void setAccessToken() {
 		User user = userUtil.getUserById(1L);
 
-		ACCESS_TOKEN = "Bearer " + jwtProvider.createAccessToken(user);
-		ACCESS_TOKEN_USER = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(2L));
-		ACCESS_TOKEN_OUTSIDER = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(3L));
-		ACCESS_TOKEN_NO_NICKNAME = "Bearer " + jwtProvider.createAccessToken(userUtil.getUserById(4L));
-		REFRESH_TOKEN = "Bearer " + jwtProvider.createRefreshToken(user);
+		ACCESS_TOKEN = "Bearer " + jwtProvider.createAccessTokenByUser(user);
+		ACCESS_TOKEN_USER = "Bearer " + jwtProvider.createAccessTokenByUser(userUtil.getUserById(2L));
+		ACCESS_TOKEN_OUTSIDER = "Bearer " + jwtProvider.createAccessTokenByUser(userUtil.getUserById(3L));
+		ACCESS_TOKEN_NO_NICKNAME = "Bearer " + jwtProvider.createAccessTokenByUser(userUtil.getUserById(4L));
+		REFRESH_TOKEN = "Bearer " + jwtProvider.createRefreshTokenByUser(user);
 	}
 }

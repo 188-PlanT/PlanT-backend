@@ -6,7 +6,6 @@ import project.domain.user.service.UserService;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.common.util.UserUtil;
-import project.common.admin.dto.AdminUpdateUserRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

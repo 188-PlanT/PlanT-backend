@@ -1,7 +1,10 @@
 package project.domain.user.api;
 
+import org.springframework.http.HttpStatus;
 import project.common.util.DateFormatUtil;
 import project.common.util.UserUtil;
+import project.domain.auth.dto.request.SignUpRequest;
+import project.domain.auth.dto.response.SignUpResponse;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
 import project.common.exception.PlantException;
@@ -29,7 +32,21 @@ public class UserController{
     private final EmailService emailService;
 	private final JwtProvider jwtProvider;
     private final UserUtil userUtil;
-    
+
+
+    // <==회원가입==>
+    @PostMapping("/v1/sign-up")
+    public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request){
+
+        User user = userService.register(request);
+
+        SignUpResponse response = new SignUpResponse(user.getId(), user.getEmail());
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
 
     // <==유저 이메일 검증==>
     @PostMapping("/v1/users/email")
@@ -64,7 +81,7 @@ public class UserController{
         
         User user = userService.finishRegister(request.getNickName());
 		
-		String accessToken = jwtProvider.createAccessToken(user);
+		String accessToken = jwtProvider.createAccessTokenByUser(user);
 
         return ResponseEntity.ok(FinishUserRegisterResponse.from(user, accessToken));
     }

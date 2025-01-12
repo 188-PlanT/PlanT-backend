@@ -1,4 +1,4 @@
-package project.common.security.oauth;
+package project.common.util;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -8,8 +8,11 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 
 @Getter
-public class OAuthAuthenticationProvider {
-    
+public class Oauth2UrlUtil {
+    /**
+     * Oauth2 Provider 마다 제공하는 Url을 파싱해주는 유틸 클래스입니다.
+     * Map을 이용해 provider 정보를 application.yml에서 읽어옵니다.
+     */
     private Map<String, Provider> provider = new HashMap<>();
     
     public String getTokenUrl(String code, String clientName){
@@ -53,6 +56,5 @@ public class OAuthAuthenticationProvider {
         private String redirectUri;
         private String tokenUri;
         private String userInfoUri;
-
     }
 }

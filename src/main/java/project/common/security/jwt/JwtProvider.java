@@ -1,10 +1,11 @@
 package project.common.security.jwt;
 
+import org.springframework.stereotype.Service;
 import project.domain.user.domain.User;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.service.RedisService;
-import project.common.security.oauth.UserInfo;
+import project.domain.auth.domain.UserInfo;
 import project.domain.user.dao.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,18 +15,21 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.*;
-import org.springframework.stereotype.Component;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import project.domain.user.domain.UserRole;
+import project.domain.workspace.dao.UserWorkspaceRepository;
 
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
+@Service
 public class JwtProvider {
     //만료시간 : 30분 -> 개발 기간동안 24시간으로 변경
     private final Long ACCESS_EXP_TIME = 1000L * 60 * 60 * 24;
@@ -34,6 +38,7 @@ public class JwtProvider {
     private final Long REFRESH_EXP_TIME = 1000L * 60 * 60 * 24;
     
     private final UserRepository userRepository;
+    private final UserWorkspaceRepository userWorkspaceRepository;
     private final RedisService redisService;
     
     @Value("${jwt.secret}")
@@ -47,7 +52,7 @@ public class JwtProvider {
     }
     
     //RefreshToken으로 AccesToken 생성
-    public String createAccessToken(String refreshToken){
+    public String createAccessTokenByRefreshToken(String refreshToken){
         
         Claims claims = validateRefreshToken(refreshToken);
         
@@ -56,31 +61,49 @@ public class JwtProvider {
         User user = userRepository.findByEmail(email)
                                     .orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
         
-        return createAccessToken(user);
+        return createAccessTokenByUser(user);
     }
-    
-    // User정보로 Access Token 생성
-    public String createAccessToken(User user){
+
+    /**
+     * LoginService 내에서 호출됩니다. @Transactional을 사용하지 않습니다.
+     */
+    public String createAccessTokenByUser(User user){
         
 		Long userId = user.getId();
 		
         String email = user.getEmail();
         
         String authorities = user.getRoleKey();
-        
+
+        List<Long> workspaceAdminIds = new ArrayList <>();
+
+        List<Long> workspaceUserIds = new ArrayList<>();
+
+        userWorkspaceRepository.searchByUser(user).forEach(
+                uw -> {
+                    if(uw.getUserRole().equals(UserRole.ADMIN)){
+                        workspaceAdminIds.add(uw.getWorkspace().getId());
+                    }else if(uw.getUserRole().equals(UserRole.USER)){
+                        workspaceUserIds.add(uw.getWorkspace().getId());
+                    }
+                }
+        );
+
         Date expiration = new Date(System.currentTimeMillis() + ACCESS_EXP_TIME);
-        
+
         return Jwts.builder()
 				.claim("userId", userId + "")
                 .claim("email", email)
                 .claim("authorities", authorities)
+                .claim("workspaceAdminIds", workspaceAdminIds)
+                .claim("workspaceUserIds", workspaceUserIds)
                 .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
     
     //User 정보로 Refresh Token 생성
-    public String createRefreshToken(User user){
+    public String createRefreshTokenByUser(User user){
         String email = user.getEmail();
         
         Date expiration = new Date(System.currentTimeMillis() + REFRESH_EXP_TIME);
@@ -103,18 +126,8 @@ public class JwtProvider {
     public Authentication getAuthentication(String accessToken){
         
         Claims claims = validateAccessToken(accessToken);
-		
-		String userId =  (String)claims.get("userId");
-        
-        String email = (String)claims.get("email");
-        
-        String authority = (String)claims.get("authorities");
-        
-        UserInfo principal = UserInfo.builder()
-										.userId(Long.parseLong(userId))
-                                        .username(email)
-                                        .authority(authority)
-                                        .build();
+
+        UserInfo principal = UserInfo.from(claims);
         
         return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities()); //principal, credential, authorities
 
@@ -124,7 +137,12 @@ public class JwtProvider {
         
         Claims claims = parseClaims(accessToken);
         
-        if (claims.get("userId") == null || claims.get("email") == null || claims.get("authorities") == null){
+        if (claims.get("userId") == null ||
+                claims.get("email") == null ||
+                claims.get("authorities") == null ||
+                claims.get("workspaceAdminIds") == null ||
+                claims.get("workspaceUserIds") == null
+        ){
             throw new PlantException(ErrorCode.TOKEN_INVALID);
         }
         
