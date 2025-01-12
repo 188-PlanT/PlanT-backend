@@ -1,7 +1,6 @@
 package project.common.config;
 
 import project.common.security.jwt.*;
-import project.common.security.oauth.*;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.web.cors.*;
 import org.springframework.beans.factory.annotation.Value;
+import project.domain.auth.service.CustomOAuth2UserService;
+import project.common.security.jwt.JwtProvider;
 
- 
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
