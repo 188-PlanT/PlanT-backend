@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.common.security.oauth.UserInfo;
+import project.domain.auth.domain.UserInfo;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 
