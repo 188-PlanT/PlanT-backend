@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    // global
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 처리할 수 없는 문제가 발생했습니다. 관리자에게 문의 바랍니다"),
+
     // auth
     PASSWORD_INVALD(HttpStatus.BAD_REQUEST, "올바르지 않은 비밀번호 양식입니다"),
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "올바르지 않은 토큰입니다"),

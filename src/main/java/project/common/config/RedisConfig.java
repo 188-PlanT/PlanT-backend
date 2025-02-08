@@ -1,24 +1,23 @@
 package project.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import project.common.property.RedisProperty;
 
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig{
     
-    @Value("${spring.data.redis.host}")
-    private String host;
-    
-    private int port = 6379;
+    private final RedisProperty redisProperty;
     
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-	    LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(host, port);
+	    LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisProperty.getHost(), redisProperty.getPort());
         return lettuceConnectionFactory;
     }
     

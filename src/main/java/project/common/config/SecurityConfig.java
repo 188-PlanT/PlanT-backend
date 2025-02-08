@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.web.cors.*;
-import org.springframework.beans.factory.annotation.Value;
-import project.domain.auth.service.CustomOAuth2UserService;
 import project.common.security.jwt.JwtProvider;
+
+import static project.common.constant.UrlConstant.*;
 
 
 @Slf4j
@@ -24,21 +24,14 @@ import project.common.security.jwt.JwtProvider;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    private final CustomOAuth2UserService customOAuth2UserService;
+
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final JwtProvider jwtProvider;
-
-    @Value("${front.dev-url}")
-    private String FRONT_DEV_URL;
-
-	@Value("${front.main-url}")
-	private String FRONT_MAIN_URL;
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -70,10 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        configuration.addAllowedOrigin(FRONT_LOCAL_URL);
         configuration.addAllowedOrigin(FRONT_DEV_URL);
-        configuration.addAllowedOrigin(FRONT_MAIN_URL);
-//	    configuration.addAllowedOrigin("https://blazingdevs-calendar-ubvam.run.goorm.io");
-////        configuration.addAllowedOrigin("http://127.0.0.1:8080");
+        configuration.addAllowedOrigin(FRONT_PROD_URL);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

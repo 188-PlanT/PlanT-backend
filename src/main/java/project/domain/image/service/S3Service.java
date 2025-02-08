@@ -11,16 +11,14 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import org.springframework.web.multipart.MultipartFile;
+import project.common.constant.UrlConstant;
+import project.common.property.S3Property;
 
 @Service
 @RequiredArgsConstructor
 public class S3Service {
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
 
-    @Value("${s3.cloudFront}")
-    private String cloudFront;
-    
+    private final S3Property s3Property;
     private final AmazonS3Client amazonS3Client;
 
     public String uploadFile(MultipartFile multipartFile) throws IOException {
@@ -50,7 +48,7 @@ public class S3Service {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
             metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), metadata)
+            amazonS3Client.putObject(new PutObjectRequest(s3Property.getBucket(), fileName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (AmazonServiceException e) { //여기 예외처리 필요
             e.printStackTrace();
@@ -58,7 +56,6 @@ public class S3Service {
             e.printStackTrace();
         }
 
-//        return amazonS3Client.getUrl(bucket, fileName).toString();
-        return cloudFront + "/" + fileName;
+        return UrlConstant.S3_DEV_URL + "/" + fileName;
     }
 }

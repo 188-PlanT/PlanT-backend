@@ -35,6 +35,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import project.domain.workspace.domain.Workspace;
 
+import static project.common.constant.UrlConstant.DEFAULT_USER_PROFILE_URL;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -42,9 +44,6 @@ public class UserService implements UserDetailsService{
     
     //왜 퍼블릭?
     public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
-    
-    @Value("${s3.default-image-url.user}")
-    private String DEFAULT_USER_IMAGE_URL;
     
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
@@ -61,7 +60,7 @@ public class UserService implements UserDetailsService{
         
         validateUserPassword(request.getPassword());
         
-        Image defaultUserProfile = imageRepository.findByUrl(DEFAULT_USER_IMAGE_URL)
+        Image defaultUserProfile = imageRepository.findByUrl(DEFAULT_USER_PROFILE_URL)
                                             .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         
         User user = User.ofEmailPassword(request.getEmail(), request.getPassword(), defaultUserProfile, passwordEncoder);   
