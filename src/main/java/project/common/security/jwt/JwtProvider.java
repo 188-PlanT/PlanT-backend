@@ -1,6 +1,7 @@
 package project.common.security.jwt;
 
 import org.springframework.stereotype.Service;
+import project.common.property.JwtProperty;
 import project.domain.user.domain.User;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
@@ -40,15 +41,12 @@ public class JwtProvider {
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
     private final RedisService redisService;
-    
-    @Value("${jwt.secret}")
-    private String salt;
-    
+    private final JwtProperty jwtProperty;
     private Key secretKey;
     
     @PostConstruct
     protected void init(){
-        secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
+        secretKey = Keys.hmacShaKeyFor(jwtProperty.getSalt().getBytes(StandardCharsets.UTF_8));
     }
     
     //RefreshToken으로 AccesToken 생성
