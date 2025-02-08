@@ -28,7 +28,8 @@ import java.time.LocalTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Value;
+
+import static project.common.constant.UrlConstant.DEFAULT_WORKSPACE_PROFILE_URL;
 // import project.common.service.EmailService;
 
 @Slf4j
@@ -38,15 +39,8 @@ public class WorkspaceService{
     
     private final WorkspaceRepository workspaceRepository;
     private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
     private final ImageRepository imageRepository;
-	private final UserWorkspaceRepository userWorkspaceRepository;
     private final UserUtil userUtil;
-	
-	// private final EmailService emailService;
-    
-    @Value("${s3.default-image-url.workspace}")
-    private String DEFAULT_WORKSPACE_IMAGE_URL;
     
     // <== 워크스페이스 제작 ==>
     @Transactional
@@ -56,7 +50,7 @@ public class WorkspaceService{
         
         List<User> userList = userUtil.getUserByList(request.getUsers());
         
-        Image defaultWorkspaceProfile = imageRepository.findByUrl(DEFAULT_WORKSPACE_IMAGE_URL)
+        Image defaultWorkspaceProfile = imageRepository.findByUrl(DEFAULT_WORKSPACE_PROFILE_URL)
                                             .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
 
         Workspace workspace = Workspace.builder()
@@ -239,22 +233,4 @@ public class WorkspaceService{
         return workspaceRepository.findById(id)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
     }
-
-    //로직 분리할까 그냥...?
-	// private Workspace validateChangeUserAutority(Long workspaceId, Long loginUserId, Long userId, UserRole authority){
-	// UserWorkspace userWorkspace = userWorkspaceRepository.searchByUserIdAndWorkspaceId(loginUserId, workspaceId)
-	// 		.orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
-
-	// UserRole loginUserRole = userWorkspace.getUserRole();
-
-	// if (UserRole.ADMIN.equals(loginUserRole)){
-	// return userWorkspace.getWorkspace();
-	// }
-	// else if (UserRole.PENDING.equals(loginUserRole)){
-	// if (loginUserId.equals(userId) && UserRole.USER.equals(authority)) {
-	// return userWorkspace.getWorkspace();
-	// }
-	// }
-	// throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-	// }
 }
