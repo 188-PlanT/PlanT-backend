@@ -27,10 +27,6 @@ spring-test/test-output/
 *.tar.gz
 *.rar
 
-# Properties #
-#*.properties
-*.yml
-
 # Goorm ide #
 goorm.manifest
 
@@ -52,3 +48,6 @@ goorm.manifest
 
 #key files
 *.pem
+
+# secret
+.env

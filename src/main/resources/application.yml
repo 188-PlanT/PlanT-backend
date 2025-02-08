@@ -1,0 +1,36 @@
+spring:
+  profiles:
+    group:
+      local: "local, h2, swagger"
+      dev: "dev, datasource, swagger"
+      prod: "prod, datasource"
+    include:
+      - redis
+      - sms
+      - security
+      - s3
+  jpa:
+    hibernate:
+      use-new-id-generator-mappings: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: true #custom exception handler 사용
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true #페이지 파라미터 -1 처리
+
+logging.level:
+  org.hibernate.SQL: debug
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie #정적 로드시 url에 나오는 sessionId 숨기기
