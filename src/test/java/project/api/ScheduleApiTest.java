@@ -1,9 +1,11 @@
-package project.common;
+package project.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 
 import org.junit.jupiter.api.*;
+import project.common.IntegrationTest;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -201,7 +203,7 @@ public class ScheduleApiTest extends IntegrationTest {
 	 	.andExpect(status().isForbidden());
 	 }
 
-	@Test // !!!여기 통과하도록 로직 수정해야함!!!
+	@Test //
 	public void 스케줄_수정_없는_유저() throws Exception {
 		//given
 		String request = "{ \"name\" : \"testSchedule111\" ,"
@@ -233,7 +235,7 @@ public class ScheduleApiTest extends IntegrationTest {
 		.andExpect(status().isNotFound());
 	}
 	
-	 @Test //!!!여기 통과하도록 로직 수정해야함!!!
+	 @Test
 	 public void 스케줄_삭제_권한없음() throws Exception {
 	 //given
 	 //when
@@ -318,7 +320,7 @@ public class ScheduleApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.nickName").value("test22"))
 			.andExpect(jsonPath("$.content").value("hello"));
     }
-	@Test //!!!여기 통과하도록 로직 수정해야함!!!
+	@Test
 	public void 스케줄_채팅_추가_권한없음() throws Exception {
 	//given
 	String request = "{ \"content\" : \"hello\" }";
@@ -349,7 +351,7 @@ public class ScheduleApiTest extends IntegrationTest {
 			.andExpect(jsonPath("$.content").value("hello"));
     }
 	
-	@Test //!!!여기 통과하도록 로직 수정해야함!!!
+	@Test
 	public void 스케줄_채팅_수정_권한없음() throws Exception {
 	//given
 	String request = "{ \"content\" : \"hello\" }";
@@ -372,7 +374,7 @@ public class ScheduleApiTest extends IntegrationTest {
             .andExpect(status().isOk());
     }
 	
-	 @Test //!!!여기 통과하도록 로직 수정해야함!!!
+	 @Test
 	 public void 스케줄_채팅_삭제_권한없음() throws Exception {
 	 //given
 	 //when

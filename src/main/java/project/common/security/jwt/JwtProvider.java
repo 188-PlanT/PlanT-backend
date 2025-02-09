@@ -5,7 +5,7 @@ import project.common.property.JwtProperty;
 import project.domain.user.domain.User;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.common.service.RedisService;
+import project.common.service.RedisServiceImpl;
 import project.domain.auth.domain.UserInfo;
 import project.domain.user.dao.UserRepository;
 
@@ -16,12 +16,10 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import project.domain.user.domain.UserRole;
@@ -40,7 +38,7 @@ public class JwtProvider {
     
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
-    private final RedisService redisService;
+    private final RedisServiceImpl redisService;
     private final JwtProperty jwtProperty;
     private Key secretKey;
     

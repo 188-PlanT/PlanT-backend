@@ -1,0 +1,7 @@
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  jpa:
+    hibernate:
+      ddl-auto: none  # 개발환경에서만 create/update 사용하기

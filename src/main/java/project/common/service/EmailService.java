@@ -19,7 +19,7 @@ import static project.common.constant.MailContant.VALIDATE_EMAIL_CONTENT;
 public class EmailService{
 
     private final JavaMailSender javaMailSender;
-    private final RedisService redisService;
+    private final RedisServiceImpl redisService;
     private final UrlUtil urlUtil;
     private final Long CODE_EXP_TIME = 1000L * 60 * 5; //5분
 	
