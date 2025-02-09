@@ -17,7 +17,7 @@ import project.domain.user.dto.user.UpdateUserRequest;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.domain.auth.domain.UserInfo;
-import project.common.service.RedisService;
+import project.common.service.RedisServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.beans.factory.annotation.Value;
 import project.domain.workspace.domain.Workspace;
 
 import static project.common.constant.UrlConstant.DEFAULT_USER_PROFILE_URL;
@@ -50,7 +49,7 @@ public class UserService implements UserDetailsService{
     private final UserScheduleRepository userScheduleRepository;
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RedisService redisService;
+    private final RedisServiceImpl redisService;
     private final UserUtil userUtil;
     
     //<== 회원가입 ==>
