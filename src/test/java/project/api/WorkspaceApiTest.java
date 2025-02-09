@@ -1,9 +1,11 @@
-package project.common;
+package project.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 
 import org.junit.jupiter.api.*;
+import project.common.IntegrationTest;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
