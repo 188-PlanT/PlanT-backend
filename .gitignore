@@ -12,6 +12,9 @@ buildSrc/build
 spring-test/test-output/
 /src/main/generated
 
+#IntelliJ build files
+/out
+
 # Compiled class file
 *.class
 
