@@ -1,0 +1,8 @@
+spring:
+  config:
+    activate:
+      on-profile: "test"
+
+server:
+  error:
+    include-message: always

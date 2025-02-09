@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "sms"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMS_USERNAME}
+    password: ${SMS_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
