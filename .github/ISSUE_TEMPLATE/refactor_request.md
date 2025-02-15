@@ -1,5 +1,5 @@
 ---
-name: "♻️ Refactor Request"
+name: "♻️ Refactor Issue"
 about: 리펙토링에 관한 이슈
 title: "♻️ "
 labels: "♻️ refactor"

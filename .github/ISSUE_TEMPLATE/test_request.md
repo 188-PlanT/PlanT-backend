@@ -1,5 +1,5 @@
 ---
-name: "✅ Test Request"
+name: "✅ Test Issue"
 about: 테스트에 관한 이슈
 title: "✅ "
 labels: "✅ test"
