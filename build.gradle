@@ -57,7 +57,7 @@ dependencies {
     )
     
     //swagger
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+    implementation 'org.springdoc:springdoc-openapi-ui:2.6.0'
     
     //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
