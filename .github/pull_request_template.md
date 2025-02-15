@@ -1,13 +1,11 @@
-## 제목
+## 관련 이슈
+- close #
 
 ## 변경사항
+-
+
+## 참고사항
+-
 
 ## 기타
-Issue number : N/A
-
-- [ ] Bug fix
-- [ ] Feature
-- [ ] Code style update
-- [ ] Refactoring
-- [ ] Documentation content changes
-- [ ] Other... Please describe:
+-
