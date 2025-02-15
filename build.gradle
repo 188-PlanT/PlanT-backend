@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.5'
+    id 'org.springframework.boot' version '2.7.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'io.goorm'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '13'
 
 repositories {
     mavenCentral()
@@ -18,7 +18,7 @@ configurations {
     }
 }
 // querydsl 추가
-ext.querydslVersion = "4.4.0"
+ext.querydslVersion = "5.0.0"
 def querydslSrcDir = 'src/main/generated'
 clean {
     delete file(querydslSrcDir)
@@ -65,7 +65,7 @@ dependencies {
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.4.3'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
     
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
