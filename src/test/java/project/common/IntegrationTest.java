@@ -1,5 +1,6 @@
 package project.common;
 
+import org.springframework.test.context.ActiveProfiles;
 import project.domain.user.domain.User;
 import project.common.util.UserUtil;
 import project.common.security.jwt.JwtProvider;
@@ -16,7 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Tag("integration")
+@ActiveProfiles("test")
 @Transactional
 public class IntegrationTest {
 	@Autowired
