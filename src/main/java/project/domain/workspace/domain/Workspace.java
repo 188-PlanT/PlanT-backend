@@ -10,7 +10,7 @@ import project.common.exception.PlantException;
 
 import java.util.List;
 import java.util.ArrayList;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

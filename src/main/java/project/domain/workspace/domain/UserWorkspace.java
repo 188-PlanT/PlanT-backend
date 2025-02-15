@@ -1,6 +1,6 @@
 package project.domain.workspace.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;

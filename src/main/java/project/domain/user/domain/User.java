@@ -1,6 +1,6 @@
 package project.domain.user.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Builder;
 import java.util.*;

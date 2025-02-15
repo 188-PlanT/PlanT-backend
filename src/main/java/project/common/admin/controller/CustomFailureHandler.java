@@ -2,9 +2,9 @@
 //
 //import org.springframework.stereotype.Component;
 //import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//import javax.servlet.ServletException;
+//import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletResponse;
+//import jakarta.servlet.ServletException;
 //import org.springframework.security.core.userdetails.UsernameNotFoundException;
 //import org.springframework.security.authentication.AccountExpiredException;
 //import org.springframework.security.authentication.AuthenticationServiceException;
@@ -18,7 +18,7 @@
 //import lombok.extern.slf4j.Slf4j;
 //
 //import org.springframework.ui.Model;
-//import javax.validation.Valid;
+//import jakarta.validation.Valid;
 //import org.springframework.validation.BindingResult;
 //import org.springframework.web.bind.annotation.ModelAttribute;
 //

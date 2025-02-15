@@ -1,7 +1,7 @@
 package project.common.config;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;

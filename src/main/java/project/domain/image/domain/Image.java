@@ -2,7 +2,7 @@ package project.domain.image.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Getter

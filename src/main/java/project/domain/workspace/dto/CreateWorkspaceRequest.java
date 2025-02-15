@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter

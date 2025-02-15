@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
 
