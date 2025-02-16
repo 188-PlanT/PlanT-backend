@@ -1,6 +1,7 @@
 package project.common.interceptor.auth;
 
 import lombok.extern.slf4j.Slf4j;
+import project.common.util.UserUtil;
 import project.domain.auth.domain.UserInfo;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.UserRole;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 public class UserRoleCheckInterceptor implements HandlerInterceptor{
 	
 	private final ScheduleRepository scheduleRepository;
+	private final UserUtil userUtil;
 	
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
@@ -43,18 +45,11 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 		else {
 			Long workspaceId = getWorkspaceId(request);
 
-			UserInfo loginUserInfo = getUserInfo();
-
-			checkUserAuthority(workspaceId, loginUserInfo, permitUserRole.value());
+			checkUserAuthority(workspaceId, permitUserRole.value());
 			
 			return true;
 		}
     }
-
-	private UserInfo getUserInfo(){
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return (UserInfo) authentication.getPrincipal();
-	}
 	
 	private Long getWorkspaceId(HttpServletRequest request){
 		Map <String, String> pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -74,23 +69,12 @@ public class UserRoleCheckInterceptor implements HandlerInterceptor{
 			throw new PlantException(ErrorCode.WORKSPACE_NOT_FOUND, "workspace 검증중 오류가 발생했습니다.");
 		}
 	}
-	private void checkUserAuthority(Long workspaceId, UserInfo userInfo, UserRole... userRoles) {
-		UserRole loginUserRole = getLoginUserRole(workspaceId, userInfo);
+	private void checkUserAuthority(Long workspaceId, UserRole... userRoles) {
+		UserRole loginUserRole = userUtil.getLoginUserRole(workspaceId);
 
 		if(loginUserRole == null || !checkUserRoleInUserRoles(loginUserRole, userRoles)) {
 			throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
 		}
-	}
-
-	private UserRole getLoginUserRole(Long workspaceId, UserInfo userInfo){
-		if(userInfo.getWorkspaceUserIds().stream()
-				.anyMatch((workspaceUserId) -> workspaceUserId.equals(workspaceId))) return UserRole.USER;
-
-
-		if (userInfo.getWorkspaceAdminIds().stream()
-				.anyMatch((workspaceAdminId) -> workspaceAdminId.equals(workspaceId))) return UserRole.ADMIN;
-
-		return null;
 	}
 
 	private boolean checkUserRoleInUserRoles(UserRole loginUserRole, UserRole[] userRoles){
