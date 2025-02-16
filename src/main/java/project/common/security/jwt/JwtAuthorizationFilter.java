@@ -5,26 +5,21 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 
 @Slf4j
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
+@RequiredArgsConstructor
+@Component
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    
-    @Autowired
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
-                                 JwtProvider jwtProvider){
-        super(authenticationManager);
-        this.jwtProvider = jwtProvider;
-    }
     
     @Override
     protected void doFilterInternal(HttpServletRequest request,

@@ -1,20 +1,19 @@
 package project.common.config;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.SecurityFilterChain;
 import project.common.security.jwt.*;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.web.cors.*;
-import project.common.security.jwt.JwtProvider;
 
 import static project.common.constant.UrlConstant.*;
 
@@ -22,43 +21,49 @@ import static project.common.constant.UrlConstant.*;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
+
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+    private final CustomExceptionHandlerFilter customExceptionHandlerFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final JwtProvider jwtProvider;
-    
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        
-        http.csrf().disable();
-        http.headers().frameOptions().disable();
-        
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+
         http
-            .httpBasic().disable()
-            .formLogin().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .cors().configurationSource(corsConfigurationSource())
-            .and()
-            .addFilterBefore(new CustomExceptionHandlerFilter(), OAuth2LoginAuthenticationFilter.class)
-            .addFilterAfter(new JwtAuthorizationFilter(authenticationManager(), jwtProvider), OAuth2LoginAuthenticationFilter.class)
-            .authorizeRequests()
-            .antMatchers("/v1/login", "/v1/refresh", "/v1/users/email", "/v1/sign-up", "/v1/login/oauth2", "/v1/login/dumy", "/v1/users/email/code", "/v1/image").permitAll()
-            .antMatchers("/admin/**", "/css/**", "*.ico").permitAll()
-            .antMatchers("/v1/users/nickname").hasAnyRole("PENDING", "USER", "ADMIN")
-            .antMatchers("/v1/**").hasAnyRole("USER", "ADMIN") //여기 런칭할때는 수정해야함
-            .anyRequest().authenticated()
-            .and()
-            .exceptionHandling()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.cors().configurationSource(corsConfigurationSource());
+
+        http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/v1/login", "/v1/refresh", "/v1/login/oauth2", "/v1/login/dumy")
+                        .permitAll()
+                        .requestMatchers( "/v1/sign-up", "/v1/users/email", "/v1/users/email/code", "/v1/users/nickname", "/v1/image")
+                        .permitAll()
+                        .requestMatchers("/admin/**", "/css/**", "*.ico")
+                        .permitAll()
+                        .requestMatchers("/v1/**")
+                        .hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated()
+                );
+
+        http.exceptionHandling()
                 .accessDeniedHandler(customAccessDeniedHandler);
+
+        http.addFilterBefore(customExceptionHandlerFilter, OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthorizationFilter, OAuth2LoginAuthenticationFilter.class);
+
+        return http.build();
     }
-    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

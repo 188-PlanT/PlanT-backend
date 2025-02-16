@@ -1,5 +1,6 @@
 package project.common.security.jwt;
 
+import org.springframework.stereotype.Component;
 import project.common.exception.ErrorCode;
 import project.common.exception.ErrorResponse;
 
@@ -17,6 +18,7 @@ import project.common.exception.PlantException;
 
 // 필터에서 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러를 처리하는 필터
 @Slf4j
+@Component
 public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
