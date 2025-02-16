@@ -10,7 +10,7 @@ import project.domain.user.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom{
 
-    @Query("select u from User u join fetch u.profile p where u.id=:id")
+    @Query(value = "select u from User u join fetch u.profile p where u.id=:id")
 	public Optional<User> findById(Long id);
     
     public boolean existsByEmail(String email);
@@ -20,10 +20,4 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     public boolean existsByNickName(String nickName);
     
     public List<User> findByIdIn(List<Long> userIds);
-    
-    @Query("select u from User u " +
-		   "join fetch u.profile p " +
-		   "where (u.email like concat('%', :keyword, '%') or u.nickName like concat('%', :keyword, '%')) " +
-		   "and u.userRole != 'PENDING' and u.id != :loginUserId")
-    public List<User> searchByKeyword(Long loginUserId, String keyword);
 }
