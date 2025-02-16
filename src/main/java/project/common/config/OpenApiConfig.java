@@ -22,16 +22,6 @@ public class OpenApiConfig {
                 .version("v0.0.1")
                 .description("API 명세서입니다.");
         
-        //-------------------- 인가 방식 지정 ---------------------
-        // SecurityScheme auth = new SecurityScheme()
-        //   .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE).name("JSESSIONID");
-        // SecurityRequirement securityRequirement = new SecurityRequirement().addList("basicAuth");
-
-        // return new OpenAPI()
-        //   .components(new Components().addSecuritySchemes("basicAuth", auth))
-        //   .addSecurityItem(securityRequirement)
-        //   .info(info);
-        
         SecurityScheme securityScheme = new SecurityScheme()
             .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
             .in(SecurityScheme.In.HEADER).name("Authorization");
