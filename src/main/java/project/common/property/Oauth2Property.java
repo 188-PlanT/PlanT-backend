@@ -2,17 +2,11 @@ package project.common.property;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
-
-import java.util.HashMap;
 import java.util.Map;
-
 
 @AllArgsConstructor
 @ConfigurationProperties(prefix = "oauth2")
-@ConstructorBinding
 public class Oauth2Property {
 
     /**
