@@ -56,12 +56,12 @@ public class ScheduleApiTest extends IntegrationTest {
 	 String request = "{ \"workspaceId\" : 1 ,"
 	 					+ " \"name\" : \"testSchedule3\" ,"
 	 					+ " \"users\" : [1, 2] ,"
-	 + " \"startDate\" : \"20240101:00:00\" ,"
+	 					+ " \"startDate\" : \"20240101:00:00\" ,"
 	 					+ " \"endDate\" : \"20240101:00:00\" ,"
 	 					+ " \"content\" : \"hihi\" ,"
 	 					+ " \"state\" : \"TODO\" }";
 	 //when
-	 mvc.perform(post("/v1/schedules/")
+	 mvc.perform(post("/v1/schedules")
 	 		.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
 	 		.contentType(MediaType.APPLICATION_JSON)
 	 		.content(request))
@@ -79,7 +79,7 @@ public class ScheduleApiTest extends IntegrationTest {
 				+ " \"content\" : \"hihi\" ,"
 				+ " \"state\" : \"TODO\" }";
 		//when
-		mvc.perform(post("/v1/schedules/")
+		mvc.perform(post("/v1/schedules")
 						.header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(request))

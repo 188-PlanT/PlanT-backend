@@ -3,7 +3,7 @@ package project.domain.schedule.domain;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.Getter;
 // import lombok.Builder;

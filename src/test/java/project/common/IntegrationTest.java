@@ -5,7 +5,7 @@ import project.domain.user.domain.User;
 import project.common.util.UserUtil;
 import project.common.security.jwt.JwtProvider;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,7 +14,7 @@ import project.domain.auth.service.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;

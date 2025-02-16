@@ -2,7 +2,7 @@ package project.domain.user.dto.user;
 
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 public class FinishUserRegisterRequest{

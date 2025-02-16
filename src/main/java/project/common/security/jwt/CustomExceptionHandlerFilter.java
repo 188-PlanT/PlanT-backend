@@ -1,13 +1,14 @@
 package project.common.security.jwt;
 
+import org.springframework.stereotype.Component;
 import project.common.exception.ErrorCode;
 import project.common.exception.ErrorResponse;
 
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +18,7 @@ import project.common.exception.PlantException;
 
 // 필터에서 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러를 처리하는 필터
 @Slf4j
+@Component
 public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(

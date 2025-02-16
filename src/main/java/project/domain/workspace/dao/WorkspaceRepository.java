@@ -15,6 +15,6 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long>{
     
     public boolean existsByName(String name);
 
-    @Query("select w from Workspace w join fetch w.profile where w.id = :id")
+    @Query(value = "select w from Workspace w join fetch w.profile where w.id = :id")
     public Optional<Workspace> findById(Long id);
 }

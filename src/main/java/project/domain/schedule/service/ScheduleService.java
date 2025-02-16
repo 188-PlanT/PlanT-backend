@@ -13,6 +13,7 @@ import project.domain.schedule.dto.ScheduleDto;
 import project.domain.schedule.dto.UpdateScheduleRequest;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
+import project.domain.user.domain.UserRole;
 import project.domain.workspace.dao.WorkspaceRepository;
 import project.domain.workspace.domain.Workspace;
 import project.common.exception.ErrorCode;
@@ -55,10 +56,8 @@ public class ScheduleService{
         Workspace workspace = workspaceRepository.findById(request.getWorkspaceId())
             .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
 
-        Long loginUserId = userUtil.getLoginUserId();
-
         // api url에 workspaceId 가 들어가지 않으므로 Interceptor에서 검증 불가능 -> 서비스에서 검증
-        workspace.checkUser(loginUserId);
+        validateLoginUserRole(workspace.getId());
 
         List <User> users = userUtil.getUserByList(request.getUsers());
         
@@ -77,6 +76,14 @@ public class ScheduleService{
         ScheduleDto dto = ScheduleDto.from(schedule);
         
         return dto;
+    }
+
+    private void validateLoginUserRole(Long workspaceId){
+        UserRole userRole = userUtil.getLoginUserRole(workspaceId);
+
+        if (userRole == null){
+            throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
+        }
     }
     
     // <== 스케줄 수정 ==>
