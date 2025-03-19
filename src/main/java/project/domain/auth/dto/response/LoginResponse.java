@@ -1,13 +1,12 @@
 package project.domain.auth.dto.response;
 
-import lombok.Getter;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Getter 
+@Getter
 @AllArgsConstructor
-public class LoginResponse{
-    
+public class LoginResponse {
+
     private String accessToken;
     private String refreshToken;
-    
 }

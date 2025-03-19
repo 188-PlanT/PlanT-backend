@@ -1,7 +1,7 @@
 package project.domain.user.dto.user;
 
-import lombok.Getter;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor

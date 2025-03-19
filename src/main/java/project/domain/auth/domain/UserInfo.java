@@ -1,14 +1,13 @@
 package project.domain.auth.domain;
 
-import lombok.Getter;
-import lombok.Builder;
-
+import io.jsonwebtoken.Claims;
 import java.util.*;
 import java.util.stream.Collectors;
-import io.jsonwebtoken.Claims;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
 
@@ -23,7 +22,13 @@ public class UserInfo implements UserDetails {
     private final List<Long> workspaceUserIds;
 
     @Builder
-    public UserInfo(Long userId, String username, String authority, String password, List<Long> workspaceAdminIds,List<Long> workspaceUserIds){
+    public UserInfo(
+            Long userId,
+            String username,
+            String authority,
+            String password,
+            List<Long> workspaceAdminIds,
+            List<Long> workspaceUserIds) {
         this.userId = userId;
         this.username = username;
         this.authority = authority;
@@ -32,7 +37,7 @@ public class UserInfo implements UserDetails {
         this.workspaceUserIds = workspaceUserIds;
     }
 
-    public static UserInfo from(User user){
+    public static UserInfo from(User user) {
         return UserInfo.builder()
                 .userId(user.getId())
                 .password(user.getPassword())
@@ -43,19 +48,19 @@ public class UserInfo implements UserDetails {
                 .build();
     }
 
-    private static List<Long> getWorkspaceIds(User user, UserRole userRole){
+    private static List<Long> getWorkspaceIds(User user, UserRole userRole) {
         return user.getUserWorkspaces().stream()
                 .filter(uw -> uw.getUserRole().equals(userRole))
                 .map(uw -> uw.getWorkspace().getId())
                 .collect(Collectors.toList());
     }
 
-    public static UserInfo from(Claims claims){
-        String userId =  (String)claims.get("userId");
+    public static UserInfo from(Claims claims) {
+        String userId = (String) claims.get("userId");
 
-        String email = (String)claims.get("email");
+        String email = (String) claims.get("email");
 
-        String authority = (String)claims.get("authorities");
+        String authority = (String) claims.get("authorities");
 
         List<Long> workspaceAdminIds = ((List<Integer>) claims.get("workspaceAdminIds"))
                 .stream().map(Integer::longValue).collect(Collectors.toList());
@@ -72,37 +77,39 @@ public class UserInfo implements UserDetails {
                 .build();
     }
 
-    //<== UserDetails ==>//
+    // <== UserDetails ==>//
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(){
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(this.authority));
     }
 
     @Override
-    public String getPassword(){
+    public String getPassword() {
         return this.password;
     }
 
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return this.username;
     }
 
     @Override
-    public boolean isAccountNonExpired(){
+    public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
-    public boolean isAccountNonLocked(){
+    public boolean isAccountNonLocked() {
         return true;
     }
+
     @Override
-    public boolean isCredentialsNonExpired(){
+    public boolean isCredentialsNonExpired() {
         return true;
     }
+
     @Override
-    public boolean isEnabled(){
+    public boolean isEnabled() {
         return true;
     }
 }

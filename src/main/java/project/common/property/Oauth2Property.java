@@ -1,9 +1,9 @@
 package project.common.property;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import java.util.Map;
 
 @AllArgsConstructor
 @ConfigurationProperties(prefix = "oauth2")
@@ -15,13 +15,13 @@ public class Oauth2Property {
      */
     private final Map<String, Provider> provider;
 
-    public Provider getProvider(String name){
+    public Provider getProvider(String name) {
         return provider.get(name);
     }
 
     @Getter
     @AllArgsConstructor
-    public static class Provider{
+    public static class Provider {
         private final String clientId;
         private final String clientSecret;
         private final String redirectUri;
