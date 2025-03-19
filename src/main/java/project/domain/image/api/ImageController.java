@@ -1,15 +1,13 @@
 package project.domain.image.api;
 
-import project.domain.image.dto.ImageUploadResponse;
-import project.domain.image.service.ImageService;
-import project.domain.image.service.S3Service;
-
-import lombok.RequiredArgsConstructor;
 import java.io.IOException;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import project.domain.image.dto.ImageUploadResponse;
+import project.domain.image.service.ImageService;
+import project.domain.image.service.S3Service;
 
 @RestController
 @RequiredArgsConstructor

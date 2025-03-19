@@ -1,13 +1,12 @@
 package project.domain.workspace.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-public class RemoveUserResponse{
+public class RemoveUserResponse {
     private String message;
-    
-    public RemoveUserResponse(){
+
+    public RemoveUserResponse() {
         this.message = "successfully delete user";
     }
 }

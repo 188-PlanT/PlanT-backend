@@ -6,10 +6,6 @@ import project.common.property.JwtProperty;
 import project.common.property.Oauth2Property;
 import project.common.property.RedisProperty;
 
-@EnableConfigurationProperties({
-        JwtProperty.class,
-        Oauth2Property.class,
-        RedisProperty.class
-})
+@EnableConfigurationProperties({JwtProperty.class, Oauth2Property.class, RedisProperty.class})
 @Configuration
 public class PropertyConfig {}

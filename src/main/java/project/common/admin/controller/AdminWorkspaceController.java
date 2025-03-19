@@ -1,147 +1,144 @@
 package project.common.admin.controller;
 
-import project.domain.workspace.service.WorkspaceService;
-import project.domain.workspace.dao.WorkspaceRepository;
-import project.domain.workspace.domain.Workspace;
-import project.domain.user.service.UserService;
-import project.common.util.UserUtil;
-
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import project.common.util.UserUtil;
+import project.domain.user.service.UserService;
+import project.domain.workspace.dao.WorkspaceRepository;
+import project.domain.workspace.domain.Workspace;
+import project.domain.workspace.service.WorkspaceService;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class AdminWorkspaceController{
+public class AdminWorkspaceController {
 
     private final WorkspaceService workspaceService;
-	private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceRepository workspaceRepository;
     private final UserService userService;
-	private final UserUtil userUtil;
+    private final UserUtil userUtil;
 
-   // 메뉴 화면
-   @GetMapping("/admin/workspaces")
-   public String workspaceMenu(Model model){
-	   List<Workspace> workspaces = workspaceRepository.findAll();
-	   
-	   model.addAttribute("workspaces", workspaces);
-	   
-       return "admin/workspaces/workspaces-home";
-   }
+    // 메뉴 화면
+    @GetMapping("/admin/workspaces")
+    public String workspaceMenu(Model model) {
+        List<Workspace> workspaces = workspaceRepository.findAll();
 
-   // // 전체 워크스페이스 리스트
-   // @GetMapping("/admin/workspaces/read-workspaces")
-   // public String readWorkspaceList(Model model){
+        model.addAttribute("workspaces", workspaces);
 
-   //     Pageable pageable = PageRequest.of(0,20);
+        return "admin/workspaces/workspaces-home";
+    }
 
-   //     Page<Workspace> page = workspaceService.findAll(pageable);
+    // // 전체 워크스페이스 리스트
+    // @GetMapping("/admin/workspaces/read-workspaces")
+    // public String readWorkspaceList(Model model){
 
-   //     List<WorkspaceDto> workspaceList = page.getContent()
-   //         .stream()
-   //         .map(WorkspaceDto::new)
-   //         .collect(toList());
+    //     Pageable pageable = PageRequest.of(0,20);
 
-   //     model.addAttribute("workspaceList", workspaceList);
+    //     Page<Workspace> page = workspaceService.findAll(pageable);
 
-   //     return "admin/workspaces/workspaces-list";
-   // }
+    //     List<WorkspaceDto> workspaceList = page.getContent()
+    //         .stream()
+    //         .map(WorkspaceDto::new)
+    //         .collect(toList());
 
-   // 워크스페이스 상세 화면
-   @GetMapping("/admin/workspaces/{workspaceId}")
-   public String readWorkspaceDetail(@PathVariable Long workspaceId, Model model){
+    //     model.addAttribute("workspaceList", workspaceList);
 
-       Workspace workspace = workspaceService.findOneDetail(workspaceId);
+    //     return "admin/workspaces/workspaces-list";
+    // }
 
-       model.addAttribute("workspace", workspace);
+    // 워크스페이스 상세 화면
+    @GetMapping("/admin/workspaces/{workspaceId}")
+    public String readWorkspaceDetail(@PathVariable Long workspaceId, Model model) {
 
-       return "admin/workspaces/workspaces-detail";
-   }
+        Workspace workspace = workspaceService.findOneDetail(workspaceId);
 
-   // // 워크스페이스 생성 화면
-   // @GetMapping("/admin/workspaces/create-workspaces")
-   // public String createWorkspaceForm(Model model){
+        model.addAttribute("workspace", workspace);
 
-   //     Pageable pageable = PageRequest.of(0,20);
-   //     List<User> users = userService.findAllUsers(pageable).getContent();
+        return "admin/workspaces/workspaces-detail";
+    }
 
-   //     List<String> userList = users.stream()
-   //         .map(u -> u.getEmail())
-   //         .collect(toList());
+    // // 워크스페이스 생성 화면
+    // @GetMapping("/admin/workspaces/create-workspaces")
+    // public String createWorkspaceForm(Model model){
 
-   //     model.addAttribute("userList", userList);
-   //     model.addAttribute("createWorkspaceRequest", new CreateWorkspaceRequest());
+    //     Pageable pageable = PageRequest.of(0,20);
+    //     List<User> users = userService.findAllUsers(pageable).getContent();
 
-   //     return "admin/workspaces/workspaces-create-form";
-   // }
+    //     List<String> userList = users.stream()
+    //         .map(u -> u.getEmail())
+    //         .collect(toList());
 
-   // //워크스페이스 생성
-   // @PostMapping("/admin/workspaces/create-workspaces")
-   // public String createWorkspace(@Valid CreateWorkspaceRequest createWorkspaceRequest,
-   //                               BindingResult bindingResult,
-   //                               @RequestParam List<String> userList,
-   //                               Model model){
+    //     model.addAttribute("userList", userList);
+    //     model.addAttribute("createWorkspaceRequest", new CreateWorkspaceRequest());
 
-   //     if(bindingResult.hasErrors()){ // 검증 실패
-   //         model.addAttribute("userList", userList);
-   //         return "admin/workspaces/workspaces-create-form";
-   //     }
-   //     else { //검증 성공
-   //         workspaceService.makeWorkspace(createWorkspaceRequest);
-   //         return "redirect:/admin/workspaces/read-workspaces";
-   //     }
-   // }
+    //     return "admin/workspaces/workspaces-create-form";
+    // }
 
-   // //워크스페이스 수정 화면
-   // @GetMapping("/admin/workspaces/{workspaceId}/update")
-   // public String updateWorkspaceForm(@PathVariable Long workspaceId, Model model){
+    // //워크스페이스 생성
+    // @PostMapping("/admin/workspaces/create-workspaces")
+    // public String createWorkspace(@Valid CreateWorkspaceRequest createWorkspaceRequest,
+    //                               BindingResult bindingResult,
+    //                               @RequestParam List<String> userList,
+    //                               Model model){
 
-   //     Workspace workspace = workspaceService.findOne(workspaceId);
+    //     if(bindingResult.hasErrors()){ // 검증 실패
+    //         model.addAttribute("userList", userList);
+    //         return "admin/workspaces/workspaces-create-form";
+    //     }
+    //     else { //검증 성공
+    //         workspaceService.makeWorkspace(createWorkspaceRequest);
+    //         return "redirect:/admin/workspaces/read-workspaces";
+    //     }
+    // }
 
-   //     Pageable pageable = PageRequest.of(0,20);
-   //     List<User> users = userService.findAllUsers(pageable).getContent();
+    // //워크스페이스 수정 화면
+    // @GetMapping("/admin/workspaces/{workspaceId}/update")
+    // public String updateWorkspaceForm(@PathVariable Long workspaceId, Model model){
 
-   //     List<String> userList = users.stream()
-   //         .map(u -> u.getEmail())
-   //         .collect(toList());
+    //     Workspace workspace = workspaceService.findOne(workspaceId);
 
-   //     model.addAttribute("userList", userList);
-   //     model.addAttribute("workspaceId", workspaceId);
-   //     model.addAttribute("createWorkspaceRequest", new CreateWorkspaceRequest(workspace));
+    //     Pageable pageable = PageRequest.of(0,20);
+    //     List<User> users = userService.findAllUsers(pageable).getContent();
 
-   //     return "admin/workspaces/workspaces-update-form";
-   // }
+    //     List<String> userList = users.stream()
+    //         .map(u -> u.getEmail())
+    //         .collect(toList());
 
-   // @PostMapping("/admin/workspaces/{workspaceId}/update")
-   // public String updateWorkspace(@PathVariable Long workspaceId,
-   //                               @Valid CreateWorkspaceRequest request,
-   //                               BindingResult bindingResult,
-   //                               @RequestParam List<String> userList,
-   //                               Model model){
+    //     model.addAttribute("userList", userList);
+    //     model.addAttribute("workspaceId", workspaceId);
+    //     model.addAttribute("createWorkspaceRequest", new CreateWorkspaceRequest(workspace));
 
-   //     if(bindingResult.hasErrors()){ // 검증 실패
-   //         model.addAttribute("userList", userList);
-   //         model.addAttribute("workspaceId", workspaceId);
-   //         return "admin/workspaces/workspaces-update-form";
-   //     }
-   //     else { //검증 성공
-   //         workspaceService.updateWorkspace(workspaceId, request);
-   //         return "redirect:/admin/workspaces/{workspaceId}";
-   //     }
-   // }
+    //     return "admin/workspaces/workspaces-update-form";
+    // }
 
+    // @PostMapping("/admin/workspaces/{workspaceId}/update")
+    // public String updateWorkspace(@PathVariable Long workspaceId,
+    //                               @Valid CreateWorkspaceRequest request,
+    //                               BindingResult bindingResult,
+    //                               @RequestParam List<String> userList,
+    //                               Model model){
 
-   // //워크스페이스 삭제 화면
-   // @PostMapping("/admin/workspaces/{workspaceId}/delete")
-   // public String deleteWorkspace(@PathVariable Long workspaceId){
+    //     if(bindingResult.hasErrors()){ // 검증 실패
+    //         model.addAttribute("userList", userList);
+    //         model.addAttribute("workspaceId", workspaceId);
+    //         return "admin/workspaces/workspaces-update-form";
+    //     }
+    //     else { //검증 성공
+    //         workspaceService.updateWorkspace(workspaceId, request);
+    //         return "redirect:/admin/workspaces/{workspaceId}";
+    //     }
+    // }
 
-   //     workspaceService.removeWorkspace(workspaceId);
+    // //워크스페이스 삭제 화면
+    // @PostMapping("/admin/workspaces/{workspaceId}/delete")
+    // public String deleteWorkspace(@PathVariable Long workspaceId){
 
-   //     return "redirect:/admin/workspaces/read-workspaces";
-   // }
+    //     workspaceService.removeWorkspace(workspaceId);
+
+    //     return "redirect:/admin/workspaces/read-workspaces";
+    // }
 }

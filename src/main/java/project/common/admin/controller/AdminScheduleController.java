@@ -1,37 +1,34 @@
 package project.common.admin.controller;
 
-import project.domain.schedule.service.ScheduleService;
-import project.domain.schedule.dao.ScheduleRepository;
-import project.domain.workspace.service.WorkspaceService;
-import project.domain.user.service.UserService;
-import project.domain.schedule.domain.Schedule;
-
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import project.domain.schedule.dao.ScheduleRepository;
+import project.domain.schedule.domain.Schedule;
+import project.domain.schedule.service.ScheduleService;
+import project.domain.user.service.UserService;
+import project.domain.workspace.service.WorkspaceService;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class AdminScheduleController{
+public class AdminScheduleController {
 
     private final ScheduleService scheduleService;
     private final ScheduleRepository scheduleRepository;
     private final WorkspaceService workspaceService;
     private final UserService userService;
 
-//     메뉴 화면
-     @GetMapping("/admin/schedules")
-     public String scheduleMenu(Model model){
-         List<Schedule> schedules = scheduleRepository.findAll();
-         model.addAttribute("schedules", schedules);
-         return "admin/schedules/schedules-home";
-     }
+    //     메뉴 화면
+    @GetMapping("/admin/schedules")
+    public String scheduleMenu(Model model) {
+        List<Schedule> schedules = scheduleRepository.findAll();
+        model.addAttribute("schedules", schedules);
+        return "admin/schedules/schedules-home";
+    }
 
     // // 전체 스케줄 리스트
     // @GetMapping("/admin/schedules/read-schedules")
@@ -51,16 +48,16 @@ public class AdminScheduleController{
     //     return "admin/schedules/schedules-list";
     // }
 
-     // 스케줄 상세 화면
-     @GetMapping("/admin/schedules/{scheduleId}")
-     public String readScheduleDetail(@PathVariable Long scheduleId, Model model){
+    // 스케줄 상세 화면
+    @GetMapping("/admin/schedules/{scheduleId}")
+    public String readScheduleDetail(@PathVariable Long scheduleId, Model model) {
 
-         Schedule schedule = scheduleService.findOneDetail(scheduleId);
+        Schedule schedule = scheduleService.findOneDetail(scheduleId);
 
-         model.addAttribute("schedule", schedule);
+        model.addAttribute("schedule", schedule);
 
-         return "admin/schedules/schedules-detail";
-     }
+        return "admin/schedules/schedules-detail";
+    }
 
     // // 스케줄 생성 화면
     // @GetMapping("/admin/schedules/create-schedules")
@@ -146,7 +143,6 @@ public class AdminScheduleController{
     //         return "redirect:/admin/schedules/{scheduleId}";
     //     }
     // }
-
 
     // //스케줄 삭제 화면
     // @PostMapping("/admin/schedules/{scheduleId}/delete")

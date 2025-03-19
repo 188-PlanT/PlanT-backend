@@ -1,15 +1,12 @@
 package project.domain.image.service;
 
-import lombok.RequiredArgsConstructor;
-import java.util.List;
-import java.io.IOException;
-
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import java.io.IOException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import project.common.constant.UrlConstant;
 import project.common.property.S3Property;
@@ -24,11 +21,11 @@ public class S3Service {
     public String uploadFile(MultipartFile multipartFile) throws IOException {
         String fileName = multipartFile.getOriginalFilename();
 
-        //파일 형식 구하기
+        // 파일 형식 구하기
         String ext = fileName.split("\\.")[1];
         String contentType = "";
 
-        //content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이 되서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
+        // content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이 되서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
         switch (ext) {
             case "jpeg":
                 contentType = "image/jpeg";
@@ -48,9 +45,10 @@ public class S3Service {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
             metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(new PutObjectRequest(s3Property.getBucket(), fileName, multipartFile.getInputStream(), metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (AmazonServiceException e) { //여기 예외처리 필요
+            amazonS3Client.putObject(
+                    new PutObjectRequest(s3Property.getBucket(), fileName, multipartFile.getInputStream(), metadata)
+                            .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (AmazonServiceException e) { // 여기 예외처리 필요
             e.printStackTrace();
         } catch (SdkClientException e) {
             e.printStackTrace();

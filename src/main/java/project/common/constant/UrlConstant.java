@@ -13,5 +13,5 @@ public class UrlConstant {
     public static final String S3_PROD_URL = "";
 
     public static final String DEFAULT_USER_PROFILE_URL = "https://d12v02yfguudwt.cloudfront.net/user.png";
-    public static final String DEFAULT_WORKSPACE_PROFILE_URL =  "https://d12v02yfguudwt.cloudfront.net/workspace.png";
+    public static final String DEFAULT_WORKSPACE_PROFILE_URL = "https://d12v02yfguudwt.cloudfront.net/workspace.png";
 }

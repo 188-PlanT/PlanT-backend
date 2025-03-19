@@ -1,61 +1,53 @@
 package project.domain.user.api;
 
+import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import project.common.exception.PlantException;
+import project.common.security.jwt.JwtProvider;
+import project.common.service.EmailService;
 import project.common.util.DateFormatUtil;
 import project.common.util.UserUtil;
 import project.domain.auth.dto.request.SignUpRequest;
 import project.domain.auth.dto.response.SignUpResponse;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
-import project.common.exception.PlantException;
 import project.domain.user.service.UserService;
-import project.common.service.EmailService;
-import project.common.security.jwt.JwtProvider;
-
-import java.util.List;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import java.time.LocalDateTime;
-
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-
-import jakarta.validation.Valid;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class UserController{
-    
+public class UserController {
+
     private final UserService userService;
     private final EmailService emailService;
-	private final JwtProvider jwtProvider;
+    private final JwtProvider jwtProvider;
     private final UserUtil userUtil;
-
 
     // <==회원가입==>
     @PostMapping("/v1/sign-up")
-    public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request){
+    public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request) {
 
         User user = userService.register(request);
 
         SignUpResponse response = new SignUpResponse(user.getId(), user.getEmail());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
 
     // <==유저 이메일 검증==>
     @PostMapping("/v1/users/email")
-    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@Valid @RequestBody EmailCheckRequest request){
-        
-        try{
+    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@Valid @RequestBody EmailCheckRequest request) {
+
+        try {
             userService.validateUserEmail(request.getEmail());
-        } 
-        catch (PlantException e){
+        } catch (PlantException e) {
             return ResponseEntity.ok(new EmailCheckResponse(false));
         }
 
@@ -63,101 +55,97 @@ public class UserController{
     }
 
     // <==유저 닉네임 검증==>
-    @PostMapping("/v1/users/nickname") //응답 결과 양식은 이메일과 같으므로 공유함
-    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@Valid @RequestBody NickNameCheckRequest request){
-        
-        try{
+    @PostMapping("/v1/users/nickname") // 응답 결과 양식은 이메일과 같으므로 공유함
+    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@Valid @RequestBody NickNameCheckRequest request) {
+
+        try {
             userService.validateUserNickName(request.getNickName());
             return ResponseEntity.ok(new EmailCheckResponse(true));
-        } 
-        catch (PlantException e){
+        } catch (PlantException e) {
             return ResponseEntity.ok(new EmailCheckResponse(false));
         }
     }
-    
+
     // <== 유저 닉네임 추가 ==>
     @PutMapping("/v1/users/nickname")
-    public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(@Valid @RequestBody FinishUserRegisterRequest request){
-        
+    public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(
+            @Valid @RequestBody FinishUserRegisterRequest request) {
+
         User user = userService.finishRegister(request.getNickName());
-		
-		String accessToken = jwtProvider.createAccessTokenByUser(user);
+
+        String accessToken = jwtProvider.createAccessTokenByUser(user);
 
         return ResponseEntity.ok(FinishUserRegisterResponse.from(user, accessToken));
     }
-    
-    
+
     // <== 유저 정보 확인 ==>
     @GetMapping("/v1/users")
-    public ResponseEntity<UserDto> findUserDetails(){
-        
+    public ResponseEntity<UserDto> findUserDetails() {
+
         User loginUser = userUtil.getLoginUser();
-        
+
         return ResponseEntity.ok(UserDto.from(loginUser));
     }
-    
-    
+
     // <== 유저 정보 수정 ==>
     @PutMapping("/v1/users")
-    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UpdateUserRequest request){
-        
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UpdateUserRequest request) {
+
         User updateUser = userService.updateUser(request);
-        
+
         return ResponseEntity.ok(UserDto.from(updateUser));
     }
-    
+
     // <== 유저 워크스페이스 리스트 조회 ==>
     @GetMapping("/v1/users/workspaces")
-    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces(){
+    public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces() {
 
         UserWorkspacesResponse response = userService.findWorkspaces(userUtil.getLoginUserId());
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     // <== 유저 스케줄 리스트 조회 ==>
     @GetMapping("/v1/users/schedules")
-    public ResponseEntity<UserSchedulesResponse> readUserSchedules(@RequestParam String date){
-		
+    public ResponseEntity<UserSchedulesResponse> readUserSchedules(@RequestParam String date) {
+
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
-        
-        UserSchedulesResponse response  = userService.findSchedules(userUtil.getLoginUserId(), dateTime);
-        
+
+        UserSchedulesResponse response = userService.findSchedules(userUtil.getLoginUserId(), dateTime);
+
         return ResponseEntity.ok(response);
     }
-    
+
     // <== 유저 검색 ==>
     @GetMapping("/v1/users/search")
-    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword){
+    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword) {
 
         List<User> users = userService.searchUser(keyword);
-        
+
         return ResponseEntity.ok(SearchUserResponse.from(users));
     }
-    
-    
+
     // <== 이메일 인증 메일 보내기 ==>
     @GetMapping("/v1/users/email/code")
-    public ResponseEntity<String> getEmailValidateCode(@RequestParam String email){
-        
+    public ResponseEntity<String> getEmailValidateCode(@RequestParam String email) {
+
         int code = userService.getEmailValidateCode(email);
-        
+
         emailService.sendValidateMail(email, code);
-        
+
         return ResponseEntity.ok("successfully send email");
     }
-    
+
     @PostMapping("/v1/users/email/code")
-    public ResponseEntity<String> validateCode(@RequestParam String email,
-                                               @RequestBody CodeRequest request){
-        
+    public ResponseEntity<String> validateCode(@RequestParam String email, @RequestBody CodeRequest request) {
+
         userService.validateEmailCode(email, request.getCode());
 
         return ResponseEntity.ok("code success");
     }
-    
+
     @Getter
-    static class CodeRequest{
+    static class CodeRequest {
         int code;
-    } 
+    }
 }

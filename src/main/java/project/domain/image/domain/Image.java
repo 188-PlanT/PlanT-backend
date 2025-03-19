@@ -1,8 +1,8 @@
 package project.domain.image.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
 
 @Entity
 @Getter
@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 public class Image {
 
     @Id
-    @Column(name="image_id")
+    @Column(name = "image_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

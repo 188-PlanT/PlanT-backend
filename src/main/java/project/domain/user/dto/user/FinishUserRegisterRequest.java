@@ -1,12 +1,10 @@
 package project.domain.user.dto.user;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
-import jakarta.validation.constraints.NotBlank;
-
 @Getter
-public class FinishUserRegisterRequest{
+public class FinishUserRegisterRequest {
 
-    @NotBlank
-    private String nickName;
+    @NotBlank private String nickName;
 }

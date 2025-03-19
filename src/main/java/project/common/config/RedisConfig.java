@@ -11,16 +11,17 @@ import project.common.property.RedisProperty;
 
 @Configuration
 @RequiredArgsConstructor
-public class RedisConfig{
-    
+public class RedisConfig {
+
     private final RedisProperty redisProperty;
-    
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-	    LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisProperty.getHost(), redisProperty.getPort());
+        LettuceConnectionFactory lettuceConnectionFactory =
+                new LettuceConnectionFactory(redisProperty.getHost(), redisProperty.getPort());
         return lettuceConnectionFactory;
     }
-    
+
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();

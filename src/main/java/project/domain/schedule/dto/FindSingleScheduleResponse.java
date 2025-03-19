@@ -1,18 +1,14 @@
 package project.domain.schedule.dto;
 
-import project.domain.schedule.domain.Progress;
-
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-
+import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
-
 
 @Getter
 @NoArgsConstructor
-public class FindSingleScheduleResponse{
+public class FindSingleScheduleResponse {
     private Long schedule_id;
     private String workspace;
     private String name;
@@ -20,11 +16,11 @@ public class FindSingleScheduleResponse{
     private LocalDateTime endDate;
     private String content;
     private Progress state;
-    
+
     // private List<String> users = new ArrayList <> ();
     // private List<SimpleDevLogDto> devLogs = new ArrayList<>();
-        
-    public FindSingleScheduleResponse(Schedule schedule){
+
+    public FindSingleScheduleResponse(Schedule schedule) {
         this.schedule_id = schedule.getId();
         this.workspace = schedule.getWorkspace().getName();
         this.name = schedule.getName();
@@ -33,13 +29,13 @@ public class FindSingleScheduleResponse{
         this.content = schedule.getContent();
         this.state = schedule.getState();
     }
-    
+
     // @Getter
     // static class SimpleDevLogDto{
     //     private Long devLogId;
     //     private String userEmail;
     //     private String content;
-        
+
     //     public SimpleDevLogDto(DevLog devLog){
     //         this.devLogId = devLog.getId();
     //         this.userEmail = devLog.getUser().getEmail();
