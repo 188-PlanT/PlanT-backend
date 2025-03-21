@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.common.service.RedisServiceImpl;
 import project.common.util.UserUtil;
 import project.domain.auth.domain.UserInfo;
 import project.domain.auth.dto.request.SignUpRequest;
@@ -33,6 +32,7 @@ import project.domain.user.dto.user.UserWorkspacesResponse;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.workspace.domain.Workspace;
+import project.infra.redis.application.RedisServiceImpl;
 
 @Slf4j
 @Service

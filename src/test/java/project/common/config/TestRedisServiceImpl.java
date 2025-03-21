@@ -2,7 +2,7 @@ package project.common.config;
 
 import java.util.HashMap;
 import java.util.Map;
-import project.common.service.RedisService;
+import project.infra.redis.application.RedisService;
 
 public class TestRedisServiceImpl implements RedisService {
 
