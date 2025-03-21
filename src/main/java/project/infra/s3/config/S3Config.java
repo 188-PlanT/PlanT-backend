@@ -1,4 +1,4 @@
-package project.common.config;
+package project.infra.s3.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

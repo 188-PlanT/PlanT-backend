@@ -1,4 +1,4 @@
-package project.domain.image.service;
+package project.infra.s3.application;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
