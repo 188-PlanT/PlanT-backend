@@ -1,4 +1,4 @@
-package project.domain.image.service;
+package project.infra.s3.application;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -13,11 +13,12 @@ import project.common.property.S3Property;
 
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class S3ServiceImpl implements S3Service {
 
     private final S3Property s3Property;
     private final AmazonS3Client amazonS3Client;
 
+    @Override
     public String uploadFile(MultipartFile multipartFile) throws IOException {
         String fileName = multipartFile.getOriginalFilename();
 
