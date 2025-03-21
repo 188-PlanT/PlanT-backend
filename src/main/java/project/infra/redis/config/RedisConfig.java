@@ -1,4 +1,4 @@
-package project.common.config;
+package project.infra.redis.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

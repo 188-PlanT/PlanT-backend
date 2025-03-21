@@ -1,4 +1,4 @@
-package project.common.service;
+package project.infra.mail.application;
 
 import static project.common.constant.MailContant.VALIDATE_EMAIL_CONTENT;
 
@@ -10,17 +10,19 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import project.common.util.UrlUtil;
+import project.infra.redis.application.RedisServiceImpl;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailService {
+public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender javaMailSender;
     private final RedisServiceImpl redisService;
     private final UrlUtil urlUtil;
     private final Long CODE_EXP_TIME = 1000L * 60 * 5; // 5분
 
+    @Override
     public void sendValidateMail(String email, int code) {
         String subject = "[PLANT] 이메일 인증 메일입니다";
         sendMail(email, subject, getCodeEmailContent(code));

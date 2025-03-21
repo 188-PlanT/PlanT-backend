@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.common.exception.PlantException;
 import project.common.security.jwt.JwtProvider;
-import project.common.service.EmailService;
 import project.common.util.DateFormatUtil;
 import project.common.util.UserUtil;
 import project.domain.auth.dto.request.SignUpRequest;
@@ -19,6 +18,7 @@ import project.domain.auth.dto.response.SignUpResponse;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
 import project.domain.user.service.UserService;
+import project.infra.mail.application.EmailService;
 
 @Slf4j
 @RestController

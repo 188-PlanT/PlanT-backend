@@ -1,4 +1,4 @@
-package project.common.service;
+package project.infra.redis.application;
 
 public interface RedisService {
 

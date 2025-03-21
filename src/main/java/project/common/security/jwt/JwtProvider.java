@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.property.JwtProperty;
-import project.common.service.RedisServiceImpl;
 import project.domain.auth.domain.UserInfo;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
 import project.domain.workspace.dao.UserWorkspaceRepository;
+import project.infra.redis.application.RedisServiceImpl;
 
 @Slf4j
 @RequiredArgsConstructor
