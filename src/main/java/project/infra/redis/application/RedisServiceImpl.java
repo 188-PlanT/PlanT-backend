@@ -1,4 +1,4 @@
-package project.common.service;
+package project.infra.redis.application;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
