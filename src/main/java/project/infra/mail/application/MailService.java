@@ -2,9 +2,7 @@ package project.infra.mail.application;
 
 import project.infra.mail.dto.MailDto;
 
-public interface EmailService {
-
-    void sendValidateMail(String email, int code);
+public interface MailService {
 
     void sendMail(MailDto mailDto);
 }
