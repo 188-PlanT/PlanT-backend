@@ -7,6 +7,10 @@ spring:
 jwt:
   salt: ${JWT_SALT:DEFAULT_SALT123_ijdksafhiwhelfksdhfWIOERHQBDJKkdhfioq2kl124i4}
 
+#Email Verification
+email-verification:
+  expiration-seconds: {$EMAIL_VERIFICATION_EXPIRATION_SECONDS:300}
+
 #Oauth2 Provider
 oauth2:
   provider:
