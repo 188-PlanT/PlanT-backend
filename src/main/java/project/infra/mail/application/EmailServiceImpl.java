@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import project.common.util.UrlUtil;
+import project.infra.mail.dto.MailDto;
 import project.infra.redis.application.RedisServiceImpl;
 
 @Slf4j
@@ -29,6 +30,11 @@ public class EmailServiceImpl implements EmailService {
 
         redisService.setValues(email, code + "");
         redisService.setExpiration(email, CODE_EXP_TIME);
+    }
+
+    @Override
+    public void sendMail(MailDto mailDto){
+        return;
     }
 
     private void sendMail(String email, String subject, String content) {
