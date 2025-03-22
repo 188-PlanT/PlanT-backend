@@ -18,7 +18,6 @@ import project.domain.auth.dto.response.SignUpResponse;
 import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
 import project.domain.user.service.UserService;
-import project.infra.mail.application.EmailService;
 
 @Slf4j
 @RestController
@@ -26,7 +25,6 @@ import project.infra.mail.application.EmailService;
 public class UserController {
 
     private final UserService userService;
-    private final EmailService emailService;
     private final JwtProvider jwtProvider;
     private final UserUtil userUtil;
 
@@ -125,15 +123,14 @@ public class UserController {
         return ResponseEntity.ok(SearchUserResponse.from(users));
     }
 
+    // TODO: 이벤트 기반 처리 시에 도메인 분리 검토
     // <== 이메일 인증 메일 보내기 ==>
     @GetMapping("/v1/users/email/code")
-    public ResponseEntity<String> getEmailValidateCode(@RequestParam String email) {
+    public ResponseEntity<Void> getEmailValidateCode(@RequestParam String email) {
 
-        int code = userService.getEmailValidateCode(email);
+        userService.sendEmailVerificationCodeMail(email);
 
-        emailService.sendValidateMail(email, code);
-
-        return ResponseEntity.ok("successfully send email");
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/v1/users/email/code")

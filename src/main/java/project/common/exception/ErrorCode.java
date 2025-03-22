@@ -39,7 +39,8 @@ public enum ErrorCode {
     DATE_INVALID(HttpStatus.BAD_REQUEST, "잘못된 날짜 입력입니다"),
 
     // email
-    EMAIL_CODE_INVALID(HttpStatus.NOT_FOUND, "인증번호가 올바르지 않습니다");
+    EMAIL_CODE_INVALID(HttpStatus.NOT_FOUND, "인증번호가 올바르지 않습니다"),
+    MAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "메일 전송에 실패했습니다. 다시 시도해주세요.");
 
     private final HttpStatus status;
     private final String message;

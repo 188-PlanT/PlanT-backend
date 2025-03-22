@@ -14,8 +14,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.common.constant.MailContant;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
+import project.common.property.EmailVerificationProperty;
 import project.common.util.UserUtil;
 import project.domain.auth.domain.UserInfo;
 import project.domain.auth.dto.request.SignUpRequest;
@@ -32,7 +34,9 @@ import project.domain.user.dto.user.UserWorkspacesResponse;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.workspace.domain.Workspace;
-import project.infra.redis.application.RedisServiceImpl;
+import project.infra.mail.application.MailService;
+import project.infra.mail.dto.MailDto;
+import project.infra.redis.application.RedisService;
 
 @Slf4j
 @Service
@@ -47,7 +51,9 @@ public class UserService implements UserDetailsService {
     private final UserScheduleRepository userScheduleRepository;
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RedisServiceImpl redisService;
+    private final RedisService redisService;
+    private final MailService mailService;
+    private final EmailVerificationProperty emailVerificationProperty;
     private final UserUtil userUtil;
 
     // <== 회원가입 ==>
@@ -155,11 +161,27 @@ public class UserService implements UserDetailsService {
         return users;
     }
 
-    // <== 이메일 검증 코드 제작 ==>
-    public int getEmailValidateCode(String email) {
+    // <== 이메일 검증 메일 발송 ==>
+    public void sendEmailVerificationCodeMail(String email) {
         validateUserEmail(email);
 
+        int code = generateSixDigitCode();
+
+        MailDto emailVerificationMail = createEmailVerificationMail(email, code);
+
+        mailService.sendMail(emailVerificationMail);
+        redisService.setValues(email, String.valueOf(code));
+        redisService.setExpiration(email, emailVerificationProperty.getExpirationSeconds());
+    }
+
+    private int generateSixDigitCode() {
         return ThreadLocalRandom.current().nextInt(100000, 1000000);
+    }
+
+    private MailDto createEmailVerificationMail(String email, int code) {
+        String subject = MailContant.VERIFICATION_MAIL_SUBJECT;
+        String content = String.format(MailContant.VERIFICATION_MAIL_CONTENT, String.valueOf(code));
+        return MailDto.from(email, subject, content);
     }
 
     // <== 이메일 검증 코드 검증 ==>
