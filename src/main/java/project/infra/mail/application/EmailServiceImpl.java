@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import project.common.exception.ErrorCode;
+import project.common.exception.PlantException;
 import project.common.util.UrlUtil;
 import project.infra.mail.dto.MailDto;
 import project.infra.redis.application.RedisServiceImpl;
@@ -33,8 +35,20 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendMail(MailDto mailDto){
-        return;
+    public void sendMail(MailDto dto){
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            mimeMessageHelper.setTo(dto.recipient());
+            mimeMessageHelper.setSubject(dto.subject());
+            mimeMessageHelper.setText(dto.content(), true); // 메일 본문 내용, HTML 여부
+            javaMailSender.send(mimeMessage);
+            log.info("Mail Success");
+        } catch (MessagingException e) {
+            log.info("Mail sending error");
+            throw new PlantException(ErrorCode.MAIL_SEND_FAILED);
+        }
     }
 
     private void sendMail(String email, String subject, String content) {
