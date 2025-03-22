@@ -17,7 +17,7 @@ import project.common.util.UrlUtil;
  */
 @Configuration
 @RequiredArgsConstructor
-public class OpenApiConfig {
+public class SwaggerConfig {
 
     private final UrlUtil urlUtil;
 
@@ -34,6 +34,7 @@ public class OpenApiConfig {
                 .info(info);
     }
 
+    // 실행 환경에 따라 스웨거 서버 url 변경
     private List<Server> getSwaggerServers() {
         Server server = new Server().url(urlUtil.getApiUrl());
         return List.of(server);
