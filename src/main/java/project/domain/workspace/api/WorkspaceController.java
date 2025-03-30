@@ -34,8 +34,8 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 수정", description = "워크스페이스 정보를 수정합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @PutMapping("/v1/workspaces/{workspaceId}")
     @PermitUserRole(value = {UserRole.ADMIN})
+    @PutMapping("/v1/workspaces/{workspaceId}")
     public ResponseEntity<UpdateWorkspaceResponse> findAllWorkspaces(
             @PathVariable Long workspaceId, @Valid @RequestBody UpdateWorkspaceRequest request) {
 
@@ -47,8 +47,8 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 삭제", description = "워크스페이스를 삭제합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @DeleteMapping("/v1/workspaces/{workspaceId}")
     @PermitUserRole(value = {UserRole.ADMIN})
+    @DeleteMapping("/v1/workspaces/{workspaceId}")
     public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId) {
 
         workspaceService.removeWorkspace(workspaceId);
@@ -69,8 +69,8 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 유저 추가", description = "워크스페이스에 유저를 추가합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @PostMapping("/v1/workspaces/{workspaceId}/users")
     @PermitUserRole(value = {UserRole.ADMIN})
+    @PostMapping("/v1/workspaces/{workspaceId}/users")
     public ResponseEntity<FindWorkspaceUsersResponse> addUser(
             @PathVariable Long workspaceId, @Valid @RequestBody AddUserRequest request) {
 
@@ -82,8 +82,8 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 유저 권한 변경", description = "워크스페이스 유저의 권한을 변경합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     @PermitUserRole(value = {UserRole.ADMIN})
+    @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(
             @PathVariable Long workspaceId, @PathVariable Long userId, @Valid @RequestBody UpdateUserRequest request) {
 
@@ -95,8 +95,8 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 유저 삭제", description = "워크스페이스 유저를 삭제합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @DeleteMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     @PermitUserRole(value = {UserRole.ADMIN})
+    @DeleteMapping("/v1/workspaces/{workspaceId}/users/{userId}")
     public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId, @PathVariable Long userId) {
 
         workspaceService.removeUser(workspaceId, userId);
@@ -108,8 +108,8 @@ public class WorkspaceController {
 
     // TODO: 패키지 이동 검토
     @Operation(summary = "워크스페이스 별 스케줄 달력 조회", description = "워크스페이스 별 입력한 달의 스케줄 달력을 조회합니다.")
-    @GetMapping("/v1/workspaces/{workspaceId}/calendar")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
+    @GetMapping("/v1/workspaces/{workspaceId}/calendar")
     public ResponseEntity<CalendarResponse> readCalendar(
             @PathVariable Long workspaceId, @Parameter(required = true, description = "yyyyMM") String date) {
 
@@ -121,8 +121,8 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 별 일일 스케줄 조회", description = "워크스페이스 별 입력한 날짜의 일일 스케줄을 조회합니다.")
-    @GetMapping("/v1/workspaces/{workspaceId}/schedules")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
+    @GetMapping("/v1/workspaces/{workspaceId}/schedules")
     public ResponseEntity<CalendarResponse> readDailySchedule(
             @PathVariable Long workspaceId, @Parameter(required = true, description = "yyyyMMdd") String date) {
 
