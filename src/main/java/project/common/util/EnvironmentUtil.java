@@ -17,15 +17,16 @@ public class EnvironmentUtil {
     private final Environment env;
 
     public EnvironmentConstant getCurrentProfile() {
-        return EnvironmentConstant.valueOf(getActiveProfiles()
-                .filter(profile -> profile.equals(LOCAL.getValue())
+        return EnvironmentConstant.getByValue(getCurrentProfileString());
+    }
+
+    private String getCurrentProfileString() {
+        return Stream.of(env.getActiveProfiles())
+                .filter(profile -> profile.equals(TEST.getValue())
+                        || profile.equals(LOCAL.getValue())
                         || profile.equals(DEV.getValue())
                         || profile.equals(PROD.getValue()))
                 .findFirst()
-                .orElseThrow(() -> new PlantException(ErrorCode.INTERNAL_SERVER_ERROR)));
-    }
-
-    private Stream<String> getActiveProfiles() {
-        return Stream.of(env.getActiveProfiles());
+                .orElseThrow(() -> new PlantException(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }

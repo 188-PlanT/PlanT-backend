@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,16 @@ import project.common.exception.ErrorCode;
 import project.common.exception.ErrorResponse;
 import project.common.exception.PlantException;
 
-// 필터에서 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러를 처리하는 필터
+/**
+ * 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러를 처리하는 필터 (401 Unauthorized)
+ */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
+
+    private final ObjectMapper objectMapper;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -31,7 +38,6 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
     }
 
     private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode) {
-        ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
@@ -40,7 +46,7 @@ public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("CustomExceptionHandlerFilter.setErrorResponse: {}", e.getMessage());
         }
     }
 }

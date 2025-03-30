@@ -8,9 +8,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +16,6 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.property.EmailVerificationProperty;
 import project.common.util.UserUtil;
-import project.domain.auth.domain.UserInfo;
 import project.domain.auth.dto.request.SignUpRequest;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
@@ -41,7 +37,7 @@ import project.infra.redis.application.RedisService;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     // 왜 퍼블릭?
     public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
@@ -197,16 +193,6 @@ public class UserService implements UserDetailsService {
         }
 
         redisService.deleteByKey(email);
-    }
-
-    // < == Security 메서드 ==>
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        User findUser =
-                userRepository.findByEmail(email).orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
-
-        return UserInfo.from(findUser);
     }
 
     // admin 페이지용 조회
