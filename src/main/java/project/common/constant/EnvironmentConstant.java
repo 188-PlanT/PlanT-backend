@@ -17,9 +17,10 @@ public enum EnvironmentConstant {
 
     public static EnvironmentConstant getByValue(String value) {
         return switch (value) {
+            case "test" -> TEST;
             case "local" -> LOCAL;
             case "dev" -> DEV;
-            case "PROD" -> PROD;
+            case "prod" -> PROD;
             default -> throw new PlantException(ErrorCode.INTERNAL_SERVER_ERROR);
         };
     }
