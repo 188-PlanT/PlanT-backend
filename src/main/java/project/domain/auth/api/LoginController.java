@@ -1,12 +1,11 @@
 package project.domain.auth.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.common.exception.ErrorCode;
-import project.common.exception.PlantException;
 import project.common.security.jwt.JwtProvider;
 import project.domain.auth.dto.request.LoginRequest;
 import project.domain.auth.dto.request.Oauth2LoginRequest;
@@ -15,7 +14,7 @@ import project.domain.auth.dto.response.LoginResponse;
 import project.domain.auth.service.CustomOAuth2UserService;
 import project.domain.auth.service.LoginService;
 
-@Slf4j
+@Tag(name = "1. [Login]", description = "로그인, 로그아웃 API")
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
@@ -24,7 +23,7 @@ public class LoginController {
     private final JwtProvider jwtProvider;
     private final LoginService loginService;
 
-    // String으로 토큰 반환하기
+    @Operation(summary = "이메일 로그인", description = "이메일과 비밀번호 기반으로 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login")
     public ResponseEntity<LoginResponse> loginUserByEmailAndPassword(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = loginService.loginByEmailAndPassword(request.getEmail(), request.getPassword());
@@ -32,6 +31,9 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "Oauth2 로그인",
+            description = "Oauth2 기반으로 로그인합니다. Authentication code와 provider 정보를 입력하면, 사용자 정보 확인 후 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/oauth2")
     public ResponseEntity<LoginResponse> oauth2Login(@Valid @RequestBody Oauth2LoginRequest request) {
         String loginUserEmail =
@@ -42,6 +44,7 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 기반으로 액세스 토큰을 재발급합니다.")
     @PostMapping("/v1/refresh")
     public ResponseEntity<AccessTokenResponse> loginByRefreshToken(
             @RequestHeader("Refresh-Token") String refreshToken) {
@@ -52,16 +55,7 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * SpringSecurityFilter에서 발생한 에러를 ControllerAdvice에서 공통으로 처리하기 위한 에러 핸들링 uri입니다.
-     * JwtAuthenticationFilter -> CutomExceptionHandlerFilter -> /noToken (GET) -> controllerAdvice
-     */
-    @GetMapping("/noToken")
-    public ResponseEntity<String> noTokenError() {
-        throw new PlantException(ErrorCode.USER_UNAUTHORIZED);
-    }
-
-    // ### 더미 데이터 테스트용 로그인 기능 ###
+    @Operation(summary = "더비 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/dumy")
     public ResponseEntity<LoginResponse> dumyLogin(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = loginService.loginInDumy(request.getEmail(), request.getPassword());
