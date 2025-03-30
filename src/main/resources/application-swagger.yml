@@ -8,3 +8,7 @@ springdoc:
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
     operations-sorter: alpha
+
+basic-auth:
+  username: ${BASIC_AUTH_USERNAME:default}
+  password: ${BASIC_AUTH_PASSWORD:default}
