@@ -1,11 +1,12 @@
 package project.domain.user.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import project.domain.user.domain.User;
 import project.domain.user.dto.user.*;
 import project.domain.user.service.UserService;
 
-@Slf4j
+@Tag(name = "2. [User]", description = "유저 정보 관리 API")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -28,7 +29,7 @@ public class UserController {
     private final JwtProvider jwtProvider;
     private final UserUtil userUtil;
 
-    // <==회원가입==>
+    @Operation(summary = "이메일 회원가입", description = "이메일을 이용해 회원가입을 진행합니다.")
     @PostMapping("/v1/sign-up")
     public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request) {
 
@@ -39,32 +40,34 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // <==유저 이메일 검증==>
+    @Operation(summary = "이메일 사용 여부 검증", description = "사용중인 이메일인지 확인합니다.")
     @PostMapping("/v1/users/email")
-    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@Valid @RequestBody EmailCheckRequest request) {
+    public ResponseEntity<EmailOrNicknameCheckResponse> checkEmailAvailable(
+            @Valid @RequestBody EmailCheckRequest request) {
 
         try {
             userService.validateUserEmail(request.getEmail());
         } catch (PlantException e) {
-            return ResponseEntity.ok(new EmailCheckResponse(false));
+            return ResponseEntity.ok(new EmailOrNicknameCheckResponse(false));
         }
 
-        return ResponseEntity.ok(new EmailCheckResponse(true));
+        return ResponseEntity.ok(new EmailOrNicknameCheckResponse(true));
     }
 
-    // <==유저 닉네임 검증==>
-    @PostMapping("/v1/users/nickname") // 응답 결과 양식은 이메일과 같으므로 공유함
-    public ResponseEntity<EmailCheckResponse> checkNickNameAvailable(@Valid @RequestBody NickNameCheckRequest request) {
+    @Operation(summary = "닉네임 사용 여부 검증", description = "사용중인 닉네임인지 확인합니다.")
+    @PostMapping("/v1/users/nickname")
+    public ResponseEntity<EmailOrNicknameCheckResponse> checkNickNameAvailable(
+            @Valid @RequestBody NickNameCheckRequest request) {
 
         try {
             userService.validateUserNickName(request.getNickName());
-            return ResponseEntity.ok(new EmailCheckResponse(true));
+            return ResponseEntity.ok(new EmailOrNicknameCheckResponse(true));
         } catch (PlantException e) {
-            return ResponseEntity.ok(new EmailCheckResponse(false));
+            return ResponseEntity.ok(new EmailOrNicknameCheckResponse(false));
         }
     }
 
-    // <== 유저 닉네임 추가 ==>
+    @Operation(summary = "유저 닉네임 변경", description = "유저 닉네임을 변경합니다. 회원가입이 끝나지 않은 유저는 회원가입 완료도 같이 진행합니다.")
     @PutMapping("/v1/users/nickname")
     public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(
             @Valid @RequestBody FinishUserRegisterRequest request) {
@@ -76,7 +79,7 @@ public class UserController {
         return ResponseEntity.ok(FinishUserRegisterResponse.from(user, accessToken));
     }
 
-    // <== 유저 정보 확인 ==>
+    @Operation(summary = "유저 정보 조회", description = "로그인 유저의 정보를 조회합니다.")
     @GetMapping("/v1/users")
     public ResponseEntity<UserDto> findUserDetails() {
 
@@ -85,7 +88,7 @@ public class UserController {
         return ResponseEntity.ok(UserDto.from(loginUser));
     }
 
-    // <== 유저 정보 수정 ==>
+    @Operation(summary = "유저 정보 수정", description = "로그인 유저의 정보를 수정합니다.")
     @PutMapping("/v1/users")
     public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UpdateUserRequest request) {
 
@@ -94,7 +97,7 @@ public class UserController {
         return ResponseEntity.ok(UserDto.from(updateUser));
     }
 
-    // <== 유저 워크스페이스 리스트 조회 ==>
+    @Operation(summary = "유저 워크스페이스 정보 조회", description = "로그인 유저의 워크스페이스 정보를 조회합니다.")
     @GetMapping("/v1/users/workspaces")
     public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces() {
 
@@ -103,9 +106,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // <== 유저 스케줄 리스트 조회 ==>
+    @Operation(summary = "유저 스케줄 정보 달력 조회", description = "해당 달에 로그인 유저가 속한 스케줄 정보를 조회합니다.")
     @GetMapping("/v1/users/schedules")
-    public ResponseEntity<UserSchedulesResponse> readUserSchedules(@RequestParam String date) {
+    public ResponseEntity<UserSchedulesResponse> readUserSchedules(
+            @Parameter(required = true, description = "yyyyMM") String date) {
 
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
 
@@ -114,7 +118,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // <== 유저 검색 ==>
+    @Operation(summary = "유저 검색", description = "이메일 또는 닉네임 기반으로 유저를 검색합니다.")
     @GetMapping("/v1/users/search")
     public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword) {
 
@@ -124,7 +128,7 @@ public class UserController {
     }
 
     // TODO: 이벤트 기반 처리 시에 도메인 분리 검토
-    // <== 이메일 인증 메일 보내기 ==>
+    @Operation(summary = "이메일 인증 코드 발급", description = "요청 본문에 입력한 이메일로 인증 코드를 발송합니다.")
     @GetMapping("/v1/users/email/code")
     public ResponseEntity<Void> getEmailValidateCode(@RequestParam String email) {
 
@@ -133,6 +137,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "이메일 인증 코드 검증", description = "이메일 인증 코드를 검증합니다.")
     @PostMapping("/v1/users/email/code")
     public ResponseEntity<String> validateCode(@RequestParam String email, @RequestBody CodeRequest request) {
 
