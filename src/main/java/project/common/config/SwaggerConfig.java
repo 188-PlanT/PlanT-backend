@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import project.common.util.UrlUtil;
 
 /**
@@ -22,6 +23,7 @@ public class SwaggerConfig {
     private final UrlUtil urlUtil;
 
     @Bean
+    @Profile({"local", "dev"})
     public OpenAPI openAPI() {
         Info info = new Info().title("도마잎 API Document").version("v0.0.1").description("API 명세서입니다.");
 
