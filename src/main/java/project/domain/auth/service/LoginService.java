@@ -63,8 +63,10 @@ public class LoginService {
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    // <== Dumy DB 로그인 ==>
-    // 비밀번호 암호화 과정 X
+    /**
+     * 더미 데이터는 유저 비밀번호를 암호화하지 않고 저장합니다.
+     * 따라서, 더미 데이터 로그인 시에는 비밀번호를 암호화하지 않고 비교합니다.
+     */
     @Transactional(readOnly = true)
     public LoginResponse loginInDumy(String email, String password) {
         User findUser =
