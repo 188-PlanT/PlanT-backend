@@ -8,6 +8,7 @@ import project.common.exception.PlantException;
 @Getter
 @AllArgsConstructor
 public enum EnvironmentConstant {
+    TEST("test"),
     LOCAL("local"),
     DEV("dev"),
     PROD("prod");

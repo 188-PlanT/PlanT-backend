@@ -22,7 +22,8 @@ public class EnvironmentUtil {
 
     private String getCurrentProfileString() {
         return Stream.of(env.getActiveProfiles())
-                .filter(profile -> profile.equals(LOCAL.getValue())
+                .filter(profile -> profile.equals(TEST.getValue())
+                        || profile.equals(LOCAL.getValue())
                         || profile.equals(DEV.getValue())
                         || profile.equals(PROD.getValue()))
                 .findFirst()
