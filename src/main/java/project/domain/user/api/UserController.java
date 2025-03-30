@@ -145,9 +145,4 @@ public class UserController {
 
         return ResponseEntity.ok("code success");
     }
-
-    @Getter
-    static class CodeRequest {
-        int code;
-    }
 }
