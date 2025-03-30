@@ -132,16 +132,4 @@ public class WorkspaceController {
 
         return ResponseEntity.ok(response);
     }
-
-    @Getter
-    @Setter
-    static class AddUserRequest {
-        @NotNull private Long userId;
-    }
-
-    @Getter
-    @Setter
-    static class UpdateUserRequest {
-        @NotNull private UserRole authority;
-    }
 }
