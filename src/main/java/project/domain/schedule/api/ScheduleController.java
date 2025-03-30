@@ -75,7 +75,7 @@ public class ScheduleController {
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @PostMapping("/v1/schedules/{scheduleId}/chat")
     public ResponseEntity<AddChatResponse> addScheduleChat(
-            @PathVariable Long scheduleId, @RequestBody AddChatRequest request) {
+            @PathVariable Long scheduleId, @RequestBody ScheduleChatRequest request) {
 
         AddChatResponse response = scheduleService.addChat(scheduleId, request.getContent());
 
@@ -86,7 +86,7 @@ public class ScheduleController {
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @PutMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
     public ResponseEntity<AddChatResponse> updateScheduleChat(
-            @PathVariable Long scheduleId, @PathVariable Long chatId, @RequestBody AddChatRequest request) {
+            @PathVariable Long scheduleId, @PathVariable Long chatId, @RequestBody ScheduleChatRequest request) {
 
         AddChatResponse response = scheduleService.updateChat(scheduleId, chatId, request.getContent());
 
@@ -104,15 +104,5 @@ public class ScheduleController {
         RemoveChatResponse response = new RemoveChatResponse();
 
         return ResponseEntity.ok(response);
-    }
-
-    @Getter
-    static class UpdateScheduleStateRequest {
-        @NotNull private Progress state;
-    }
-
-    @Getter
-    static class AddChatRequest {
-        private String content;
     }
 }
