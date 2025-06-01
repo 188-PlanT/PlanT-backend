@@ -22,9 +22,9 @@ import project.domain.user.domain.UserRole;
 import project.domain.workspace.dao.WorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.workspace.domain.Workspace;
-import project.domain.workspace.dto.CalendarResponse;
-import project.domain.workspace.dto.CreateWorkspaceRequest;
-import project.domain.workspace.dto.UpdateWorkspaceRequest;
+import project.domain.workspace.dto.response.CalendarResponse;
+import project.domain.workspace.dto.request.CreateWorkspaceRequest;
+import project.domain.workspace.dto.request.UpdateWorkspaceRequest;
 
 @Slf4j
 @Service
