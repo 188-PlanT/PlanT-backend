@@ -13,6 +13,11 @@ import project.common.util.DateFormatUtil;
 import project.domain.user.domain.UserRole;
 import project.domain.workspace.domain.Workspace;
 import project.domain.workspace.dto.*;
+import project.domain.workspace.dto.request.AddUserRequest;
+import project.domain.workspace.dto.request.CreateWorkspaceRequest;
+import project.domain.workspace.dto.request.UpdateUserRequest;
+import project.domain.workspace.dto.request.UpdateWorkspaceRequest;
+import project.domain.workspace.dto.response.*;
 import project.domain.workspace.service.WorkspaceService;
 
 @Tag(name = "3. [Workspace]", description = "워크스페이스 관리 API")

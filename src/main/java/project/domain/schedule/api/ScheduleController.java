@@ -9,6 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.common.interceptor.auth.PermitUserRole;
 import project.domain.schedule.dto.*;
+import project.domain.schedule.dto.request.CreateScheduleRequest;
+import project.domain.schedule.dto.request.ScheduleChatRequest;
+import project.domain.schedule.dto.request.UpdateScheduleRequest;
+import project.domain.schedule.dto.request.UpdateScheduleStateRequest;
+import project.domain.schedule.dto.response.AddChatResponse;
+import project.domain.schedule.dto.response.DeleteScheduleResponse;
+import project.domain.schedule.dto.response.RemoveChatResponse;
 import project.domain.schedule.service.ScheduleService;
 import project.domain.user.domain.UserRole;
 

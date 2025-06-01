@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import project.common.util.UserUtil;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
-import project.domain.user.dto.user.UpdateUserRequest;
+import project.domain.user.dto.request.UpdateUserRequest;
 import project.domain.user.service.UserService;
 
 @Slf4j

@@ -17,7 +17,9 @@ import project.common.util.UserUtil;
 import project.domain.auth.dto.request.SignUpRequest;
 import project.domain.auth.dto.response.SignUpResponse;
 import project.domain.user.domain.User;
-import project.domain.user.dto.user.*;
+import project.domain.user.dto.UserDto;
+import project.domain.user.dto.request.*;
+import project.domain.user.dto.response.*;
 import project.domain.user.service.UserService;
 
 @Tag(name = "2. [User]", description = "유저 정보 관리 API")
