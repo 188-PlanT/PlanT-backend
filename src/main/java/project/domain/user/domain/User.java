@@ -2,6 +2,8 @@ package project.domain.user.domain;
 
 import jakarta.persistence.*;
 import java.util.*;
+
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,8 +55,8 @@ public class User extends BaseEntity {
     // JPA용 생성자
     protected User() {}
 
-    @Builder // builder
-    public User(String email, String nickName, String password, Image profile, UserRole userRole) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private User(String email, String nickName, String password, Image profile, UserRole userRole) {
         this.email = email;
         this.nickName = nickName;
         this.password = password;
