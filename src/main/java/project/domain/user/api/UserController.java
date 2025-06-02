@@ -33,7 +33,7 @@ public class UserController {
 
     @Operation(summary = "이메일 회원가입", description = "이메일을 이용해 회원가입을 진행합니다.")
     @PostMapping("/v1/sign-up")
-    public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request) {
+    public ResponseEntity<SignUpResponse> registerEmailUser(@Valid @RequestBody SignUpRequest request) {
 
         User user = userService.registerEmailUser(request);
 
