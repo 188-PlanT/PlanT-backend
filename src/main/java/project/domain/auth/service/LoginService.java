@@ -27,7 +27,9 @@ public class LoginService {
         User findUser =
                 userRepository.findByEmail(email).orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
 
-        findUser.checkPassword(password, passwordEncoder);
+        if (!passwordEncoder.matches(password, findUser.getPassword())) {
+            throw new PlantException(ErrorCode.PASSWORD_INVALD);
+        }
 
         return createJwtTokenResponseByUser(findUser);
     }
