@@ -56,12 +56,12 @@ public class User extends BaseEntity {
     protected User() {}
 
     @Builder(access = AccessLevel.PRIVATE)
-    private User(String email, String nickName, String password, Image profile, UserRole userRole) {
+    private User(String email, String nickName, String password, Image profile) {
+        this.userRole = UserRole.PENDING;
         this.email = email;
         this.nickName = nickName;
         this.password = password;
         this.profile = profile;
-        this.userRole = userRole;
     }
 
     // <== 정적 팩토리 메서드 ==>
@@ -69,21 +69,15 @@ public class User extends BaseEntity {
         return User.builder()
                 .email(email)
                 .profile(profile)
-                .userRole(UserRole.PENDING)
                 .build();
     }
 
-    public static User ofEmailPassword(String email, String password, Image profile, PasswordEncoder passwordEncoder) {
-
-        User user = User.builder()
+    public static User ofEmailPassword(String email, String password, Image profile) {
+        return User.builder()
                 .email(email)
                 .password(password)
                 .profile(profile)
-                .userRole(UserRole.PENDING)
                 .build();
-
-        user.encodePassword(passwordEncoder);
-        return user;
     }
 
     // <== 비즈니스 로직 ==>
@@ -95,10 +89,6 @@ public class User extends BaseEntity {
         return !this.userRole.equals(UserRole.PENDING);
     }
 
-    public void encodePassword(PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(this.password);
-    }
-
     public boolean checkPassword(String password, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(password, this.password);
     }
@@ -108,14 +98,10 @@ public class User extends BaseEntity {
         this.userRole = UserRole.USER;
     }
 
-    public void update(String nickName, String password, Image profile, PasswordEncoder passwordEncoder) {
+    public void update(String nickName, String password, Image profile) {
 
-        this.nickName = (nickName != null) ? nickName : this.nickName;
-
-        if (password != null) {
-            this.password = password;
-            encodePassword(passwordEncoder);
-        }
-        this.profile = (profile != null) ? profile : this.profile;
+        this.nickName = nickName != null ? nickName : this.nickName;
+        this.password = password != null ? password : this.password;
+        this.profile = profile != null ? profile : this.profile;
     }
 }
