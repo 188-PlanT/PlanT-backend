@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping("/v1/sign-up")
     public ResponseEntity<SignUpResponse> registerUser(@Valid @RequestBody SignUpRequest request) {
 
-        User user = userService.register(request);
+        User user = userService.registerEmailUser(request);
 
         SignUpResponse response = new SignUpResponse(user.getId(), user.getEmail());
 

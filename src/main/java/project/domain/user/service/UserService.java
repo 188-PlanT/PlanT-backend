@@ -39,8 +39,7 @@ import project.infra.redis.application.RedisService;
 @RequiredArgsConstructor
 public class UserService {
 
-    // 왜 퍼블릭?
-    public static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
+    private static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
 
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
@@ -54,21 +53,23 @@ public class UserService {
 
     // <== 회원가입 ==>
     @Transactional
-    public User register(SignUpRequest request) {
+    public User registerEmailUser(SignUpRequest request) {
         validateUserEmail(request.getEmail());
-
-        validateUserPassword(request.getPassword());
+        validatePasswordPattern(request.getPassword());
 
         Image defaultUserProfile = imageRepository
                 .findByUrl(DEFAULT_USER_PROFILE_URL)
                 .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
 
-        User user =
-                User.ofEmailPassword(request.getEmail(), request.getPassword(), defaultUserProfile, passwordEncoder);
+        User user = User.ofEmailPassword(request.getEmail(), encodePassword(request.getPassword()), defaultUserProfile);
 
         userRepository.save(user);
 
         return user;
+    }
+
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
     // <== 회원가입 마무리 ==>
@@ -123,7 +124,7 @@ public class UserService {
         }
 
         String newPassword = request.getNewPassword(); // 비밀번호 변경값 검증
-        if (newPassword != null) validateUserPassword(newPassword);
+        if (newPassword != null) validatePasswordPattern(newPassword);
 
         String profileUrl = request.getProfile();
         Image profile = null;
@@ -134,7 +135,7 @@ public class UserService {
                     .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         }
 
-        user.update(nickName, newPassword, profile, passwordEncoder);
+        user.update(nickName, encodePassword(newPassword), profile);
 
         return user;
     }
@@ -216,7 +217,6 @@ public class UserService {
     // < == validate logic ==> //
     // <== 이메일 중복 검증 ==>
     public void validateUserEmail(String email) {
-
         if (userRepository.existsByEmail(email)) {
             throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
         }
@@ -228,15 +228,14 @@ public class UserService {
         }
     }
 
-    private void validateUserPassword(String password) {
+    private void validatePasswordPattern(String password) {
         if (!Pattern.matches(PASSWORD_PATTERN, password)) {
             throw new PlantException(ErrorCode.PASSWORD_INVALD);
         }
     }
 
-    // 업데이트 로직에서 현재 비밀번호 확인
     private void validateCurrentPassword(User user, String password) {
-        if (!user.checkPassword(password, passwordEncoder)) {
+        if (passwordEncoder.matches(password, user.getPassword())) {
             throw new PlantException(ErrorCode.USER_NOT_FOUND, "비밀번호가 올바르지 않습니다");
         }
     }

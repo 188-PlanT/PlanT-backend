@@ -2,11 +2,9 @@ package project.domain.user.domain;
 
 import jakarta.persistence.*;
 import java.util.*;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import project.domain.BaseEntity;
 import project.domain.image.domain.Image;
 import project.domain.schedule.domain.DevLog;
@@ -66,18 +64,11 @@ public class User extends BaseEntity {
 
     // <== 정적 팩토리 메서드 ==>
     public static User fromOAuth2Attributes(String email, Image profile) {
-        return User.builder()
-                .email(email)
-                .profile(profile)
-                .build();
+        return User.builder().email(email).profile(profile).build();
     }
 
     public static User ofEmailPassword(String email, String password, Image profile) {
-        return User.builder()
-                .email(email)
-                .password(password)
-                .profile(profile)
-                .build();
+        return User.builder().email(email).password(password).profile(profile).build();
     }
 
     // <== 비즈니스 로직 ==>
@@ -87,10 +78,6 @@ public class User extends BaseEntity {
 
     public boolean checkFinishSignUp() {
         return !this.userRole.equals(UserRole.PENDING);
-    }
-
-    public boolean checkPassword(String password, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(password, this.password);
     }
 
     public void setNickName(String nickName) {
