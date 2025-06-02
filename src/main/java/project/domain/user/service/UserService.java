@@ -235,7 +235,7 @@ public class UserService {
     }
 
     private void validateCurrentPassword(User user, String password) {
-        if (passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PlantException(ErrorCode.USER_NOT_FOUND, "비밀번호가 올바르지 않습니다");
         }
     }
