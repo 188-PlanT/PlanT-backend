@@ -2,9 +2,9 @@ package project.domain.user.domain;
 
 import jakarta.persistence.*;
 import java.util.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import project.domain.BaseEntity;
 import project.domain.image.domain.Image;
 import project.domain.schedule.domain.DevLog;
@@ -53,35 +53,22 @@ public class User extends BaseEntity {
     // JPA용 생성자
     protected User() {}
 
-    @Builder // builder
-    public User(String email, String nickName, String password, Image profile, UserRole userRole) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private User(String email, String nickName, String password, Image profile) {
+        this.userRole = UserRole.PENDING;
         this.email = email;
         this.nickName = nickName;
         this.password = password;
         this.profile = profile;
-        this.userRole = userRole;
     }
 
     // <== 정적 팩토리 메서드 ==>
     public static User fromOAuth2Attributes(String email, Image profile) {
-        return User.builder()
-                .email(email)
-                .profile(profile)
-                .userRole(UserRole.PENDING)
-                .build();
+        return User.builder().email(email).profile(profile).build();
     }
 
-    public static User ofEmailPassword(String email, String password, Image profile, PasswordEncoder passwordEncoder) {
-
-        User user = User.builder()
-                .email(email)
-                .password(password)
-                .profile(profile)
-                .userRole(UserRole.PENDING)
-                .build();
-
-        user.encodePassword(passwordEncoder);
-        return user;
+    public static User ofEmailPassword(String email, String password, Image profile) {
+        return User.builder().email(email).password(password).profile(profile).build();
     }
 
     // <== 비즈니스 로직 ==>
@@ -93,27 +80,15 @@ public class User extends BaseEntity {
         return !this.userRole.equals(UserRole.PENDING);
     }
 
-    public void encodePassword(PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(this.password);
-    }
-
-    public boolean checkPassword(String password, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(password, this.password);
-    }
-
     public void setNickName(String nickName) {
         this.nickName = nickName;
         this.userRole = UserRole.USER;
     }
 
-    public void update(String nickName, String password, Image profile, PasswordEncoder passwordEncoder) {
+    public void update(String nickName, String password, Image profile) {
 
-        this.nickName = (nickName != null) ? nickName : this.nickName;
-
-        if (password != null) {
-            this.password = password;
-            encodePassword(passwordEncoder);
-        }
-        this.profile = (profile != null) ? profile : this.profile;
+        this.nickName = nickName != null ? nickName : this.nickName;
+        this.password = password != null ? password : this.password;
+        this.profile = profile != null ? profile : this.profile;
     }
 }

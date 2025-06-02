@@ -108,6 +108,7 @@ public class UserApiTest extends IntegrationTest {
     public void 유저_정보_수정_옵셔널() throws Exception {
         // given
         String request = " { \"currentPassword\" : \"test1234\" , "
+                + "\"newPassword\" : \"test4321\" , "
                 + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
         // when
@@ -128,6 +129,7 @@ public class UserApiTest extends IntegrationTest {
     public void 유저_정보_수정_비밀번호오류() throws Exception {
         // given
         String request = " { \"currentPassword\" : \"test5555\" , "
+                + "\"newPassword\" : \"test4321\" , "
                 + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
         // when
