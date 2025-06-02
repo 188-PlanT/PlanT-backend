@@ -125,6 +125,7 @@ public class UserService {
 
         String newPassword = request.getNewPassword(); // 비밀번호 변경값 검증
         if (newPassword != null) validatePasswordPattern(newPassword);
+        String encodedPassword = newPassword != null ? encodePassword(newPassword) : user.getPassword();
 
         String profileUrl = request.getProfile();
         Image profile = null;
@@ -135,7 +136,7 @@ public class UserService {
                     .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         }
 
-        user.update(nickName, encodePassword(newPassword), profile);
+        user.update(nickName, encodedPassword, profile);
 
         return user;
     }
