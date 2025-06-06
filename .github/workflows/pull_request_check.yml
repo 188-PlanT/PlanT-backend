@@ -15,25 +15,26 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK with Gradle cache
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
+
+      - name: Cache Gradle wrapper and modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches/modules-2
+            ~/.gradle/configuration-cache
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Change Gradle Wrapper Permissions
         run: chmod +x ./gradlew
 
-      - name: Set up Gradle
-        id: gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
-          add-job-summary-as-pr-comment: always
-          build-scan-publish: true
-          build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
-          build-scan-terms-of-use-agree: "yes"
-
-      - name: Check with Gradle
-        run: ./gradlew check --configuration-cache
+      - name: Gradle Build and Test
+        run: ./gradlew check --no-daemon --configuration-cache --build-cache --scan
