@@ -2,7 +2,7 @@ name: Check Code Style and Test on Pull Request
 
 on:
   pull_request:
-    branches: ["develop"]
+    branches: ["dev"]
 
 permissions:
   pull-requests: write
