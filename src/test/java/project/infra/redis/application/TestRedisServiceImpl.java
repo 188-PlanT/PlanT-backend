@@ -1,12 +1,11 @@
-package project.common.config;
+package project.infra.redis.application;
 
-import java.util.HashMap;
 import java.util.Map;
-import project.infra.redis.application.RedisService;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TestRedisServiceImpl implements RedisService {
 
-    private final Map<String, String> customRegistry = new HashMap<>();
+    private final Map<String, String> customRegistry = new ConcurrentHashMap<>();
 
     @Override
     public String getValues(String key) {

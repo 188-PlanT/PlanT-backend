@@ -1,4 +1,4 @@
-package project.api;
+package project.domain.schedule.api;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import project.common.IntegrationTest;
+import project.common.helper.IntegrationTest;
 
 public class ScheduleApiTest extends IntegrationTest {
 
