@@ -23,15 +23,15 @@ jobs:
             const branch = pr.head.ref;
             const base = pr.base.ref;
 
-            // 브랜치 이름에서 issueType, issueNumber 추출, ex) issueType/issueNumber-branchName
+            // 브랜치 이름에서 issueType, issueNumber 추출, ex) feat/1234-issue-title
             const match = branch.match(/^([^/]+)\/(\d+)-/);
             if (!match) {
               console.log(`Branch name '${branch}' does not match expected pattern.`);
               return;
             }
 
-            const issueType = match[1];
-            const issueNumber = match[2];
+            const issueType = match[1].toUpperCase(); // 대문자로 변환 ex) feat -> FEAT
+            const issueNumber = match[2]; // 이슈 번호 추출 ex) 1234
 
             // 관련 이슈 가져오기
             const issue = await github.rest.issues.get({
