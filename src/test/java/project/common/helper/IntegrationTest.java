@@ -1,4 +1,4 @@
-package project.common;
+package project.common.helper;
 
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.*;

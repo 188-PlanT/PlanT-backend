@@ -1,4 +1,4 @@
-package project.api;
+package project.domain.auth.api;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.*;
 import org.springframework.http.MediaType;
-import project.common.IntegrationTest;
+import project.common.helper.IntegrationTest;
 
 public class LoginApiTest extends IntegrationTest {
 
