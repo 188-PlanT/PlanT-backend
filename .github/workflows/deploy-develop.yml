@@ -1,0 +1,37 @@
+name: Deploy to Develop Server
+
+on:
+  push:
+    branches: ["dev"]
+
+jobs:
+  save-gradle-cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK with Gradle Cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Cache Gradle wrapper and modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches/modules-2
+            ~/.gradle/configuration-cache
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Change Gradle Wrapper Permissions
+        run: chmod +x ./gradlew
+
+      - name: Warm up Gradle Cache
+        run: ./gradlew help --no-daemon --configuration-cache --build-cache
