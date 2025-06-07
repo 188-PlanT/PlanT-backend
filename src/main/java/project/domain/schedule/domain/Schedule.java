@@ -72,7 +72,7 @@ public class Schedule extends BaseEntity {
         }
 
         if (this.hasUser(user)) {
-            throw new IllegalStateException("이미 존재하는 user 입니다");
+            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
         }
 
         UserSchedule userSchedule = new UserSchedule(user, this);
