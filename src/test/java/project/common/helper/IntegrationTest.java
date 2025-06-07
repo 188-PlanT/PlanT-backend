@@ -12,6 +12,7 @@ import project.common.security.jwt.JwtProvider;
 import project.common.util.UserUtil;
 import project.domain.user.domain.User;
 
+@Tag("integration")
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

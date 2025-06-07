@@ -82,7 +82,16 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform{
+        excludeTags 'integration'
+    }
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform {
+        group = 'verification'
+        includeTags 'integration'
+    }
 }
 
 spotless {

@@ -1,0 +1,59 @@
+name: Auto PR Title from Issue
+
+on:
+  pull_request:
+    types: [opened]
+    branches:
+      - dev
+
+jobs:
+  set-pr-title:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write   # PR 제목 변경에 필요한 권한
+      contents: read
+
+    steps:
+      - name: Extract info and update PR title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const branch = pr.head.ref;
+            const base = pr.base.ref;
+
+            // 브랜치 이름에서 issueType, issueNumber 추출, ex) feat/1234-issue-title
+            const match = branch.match(/^([^/]+)\/(\d+)-/);
+            if (!match) {
+              console.log(`Branch name '${branch}' does not match expected pattern.`);
+              return;
+            }
+
+            const issueType = match[1].toUpperCase(); // 대문자로 변환 ex) feat -> FEAT
+            const issueNumber = match[2]; // 이슈 번호 추출 ex) 1234
+
+            // 관련 이슈 가져오기
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(issueNumber),
+            });
+
+            if (!issue || !issue.data || !issue.data.title) {
+              console.log(`Issue #${issueNumber} not found or has no title.`);
+              return;
+            }
+
+            // 이슈 제목에서 이모지 제거
+            const issueTitle = issue.data.title.replace(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u, '');
+
+            const newTitle = `[${issueType}]: ${issueTitle}`;
+            
+            // PR 제목 업데이트
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                title: newTitle
+              });
