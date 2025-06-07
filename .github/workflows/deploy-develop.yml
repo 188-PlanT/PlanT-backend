@@ -34,4 +34,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Warm up Gradle Cache
-        run: ./gradlew help --no-daemon --configuration-cache --build-cache
+        run: ./gradlew dependencies --no-daemon --configuration-cache --build-cache
