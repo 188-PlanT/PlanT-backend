@@ -31,6 +31,8 @@ public enum ErrorCode {
 
     // chat
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다"),
+    CHAT_USER_NOT_IN_SCHEDULE(HttpStatus.CONFLICT, "채팅 작성자가 스케줄에 속해있지 않습니다"),
+    CHAT_NOT_WRITER(HttpStatus.CONFLICT, "채팅 작성자가 아닙니다"),
 
     // image
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다"),
@@ -40,7 +42,8 @@ public enum ErrorCode {
 
     // email
     EMAIL_CODE_INVALID(HttpStatus.NOT_FOUND, "인증번호가 올바르지 않습니다"),
-    MAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "메일 전송에 실패했습니다. 다시 시도해주세요.");
+    MAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "메일 전송에 실패했습니다. 다시 시도해주세요."),
+    ;
 
     private final HttpStatus status;
     private final String message;

@@ -168,7 +168,7 @@ public class Schedule extends BaseEntity {
         private LocalDateTime startDate;
         private LocalDateTime endDate;
         private String content;
-        private List<User> users;
+        private List<User> users = new ArrayList<>();
         private Progress state = Progress.TODO;
 
         public Builder workspace(Workspace workspace) {
@@ -197,7 +197,7 @@ public class Schedule extends BaseEntity {
         }
 
         public Builder users(List<User> users) {
-            this.users = users;
+            this.users.addAll(users);
             return this;
         }
 
