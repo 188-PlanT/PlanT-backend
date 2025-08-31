@@ -2,7 +2,6 @@ name: Auto PR Title from Issue
 
 on:
   pull_request:
-    types: [opened]
     branches:
       - dev
 
