@@ -2,7 +2,6 @@ name: Auto PR Title from Issue
 
 on:
   pull_request:
-    types: [opened]
     branches:
       - dev
 
@@ -30,6 +29,12 @@ jobs:
               return;
             }
 
+            // 브랜치명의 issueType이 올바른지 검증
+            if (!match[1].match(/^(feat|fix|refactor|test|chore)$/)) {
+              console.log(`Issue type '${match[1]}' is not valid.`);
+              return;
+            }
+
             const issueType = match[1].toUpperCase(); // 대문자로 변환 ex) feat -> FEAT
             const issueNumber = match[2]; // 이슈 번호 추출 ex) 1234
 
@@ -47,13 +52,31 @@ jobs:
 
             // 이슈 제목에서 이모지 제거
             const issueTitle = issue.data.title.replace(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u, '');
-
             const newTitle = `[${issueType}]: ${issueTitle}`;
-            
-            // PR 제목 업데이트
-              await github.rest.pulls.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                title: newTitle
-              });
+
+            // PR 본문 가져오기
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            // PR 본문에서 #{issue_number} 플레이스홀더 치환
+            let prBody = pullRequest.body || '';
+
+            // 플레이스홀더가 있으면 실제 이슈 번호로 치환
+            if (prBody.includes('{issue_number}')) {
+              prBody = prBody.replace(/\{issue_number\}/g, issueNumber);
+              console.log('Updated PR body with issue number');
+            } else {
+              console.log('No issue number placeholder found in PR body');
+            }
+
+            // PR 제목, 본문 업데이트
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              title: newTitle,
+              body: prBody // PR 본문은 그대로 유지
+            });
