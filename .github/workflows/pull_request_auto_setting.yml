@@ -79,5 +79,5 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
               title: newTitle
-              body: prbody // PR 본문은 그대로 유지
+              body: prBody // PR 본문은 그대로 유지
             });
