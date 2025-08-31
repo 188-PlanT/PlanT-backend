@@ -1,5 +1,5 @@
 ## 관련 이슈
-- close # {issue_number}
+- close #{issue_number}
 
 ## 변경사항
 -
