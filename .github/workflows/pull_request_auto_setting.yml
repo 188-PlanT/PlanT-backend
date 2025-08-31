@@ -78,6 +78,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
-              title: newTitle
+              title: newTitle,
               body: prBody // PR 본문은 그대로 유지
             });
