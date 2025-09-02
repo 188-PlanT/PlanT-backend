@@ -1,12 +1,14 @@
 package project.domain.chat.domain;
 
 import java.util.List;
+import org.springframework.stereotype.Component;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.domain.User;
 
+@Component
 public class ChatDomainService {
 
     public void validateWhenCreate(Schedule schedule, User user) {
