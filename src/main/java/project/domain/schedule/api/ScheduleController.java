@@ -10,12 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import project.common.interceptor.auth.PermitUserRole;
 import project.domain.schedule.dto.*;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
-import project.domain.schedule.dto.request.ScheduleChatRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleStateRequest;
-import project.domain.schedule.dto.response.AddChatResponse;
 import project.domain.schedule.dto.response.DeleteScheduleResponse;
-import project.domain.schedule.dto.response.RemoveChatResponse;
 import project.domain.schedule.service.ScheduleService;
 import project.domain.user.domain.UserRole;
 
@@ -74,41 +71,6 @@ public class ScheduleController {
             @PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleStateRequest request) {
 
         ScheduleDto response = scheduleService.moveScheduleState(scheduleId, request.getState());
-
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "스케줄 댓글 추가", description = "스케줄에 댓글을 추가합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
-    @PostMapping("/v1/schedules/{scheduleId}/chat")
-    public ResponseEntity<AddChatResponse> addScheduleChat(
-            @PathVariable Long scheduleId, @RequestBody ScheduleChatRequest request) {
-
-        AddChatResponse response = scheduleService.addChat(scheduleId, request.getContent());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @Operation(summary = "스케줄 댓글 수정", description = "스케줄에 댓글을 수정합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
-    @PutMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
-    public ResponseEntity<AddChatResponse> updateScheduleChat(
-            @PathVariable Long scheduleId, @PathVariable Long chatId, @RequestBody ScheduleChatRequest request) {
-
-        AddChatResponse response = scheduleService.updateChat(scheduleId, chatId, request.getContent());
-
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "스케줄 댓글 삭제", description = "스케줄에 댓글을 삭제합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
-    @DeleteMapping("/v1/schedules/{scheduleId}/chat/{chatId}")
-    public ResponseEntity<RemoveChatResponse> deleteScheduleChat(
-            @PathVariable Long scheduleId, @PathVariable Long chatId) {
-
-        scheduleService.removeChat(scheduleId, chatId);
-
-        RemoveChatResponse response = new RemoveChatResponse();
 
         return ResponseEntity.ok(response);
     }
