@@ -15,7 +15,6 @@ import project.domain.schedule.domain.UserSchedule;
 import project.domain.schedule.dto.ScheduleDto;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
-import project.domain.schedule.dto.response.AddChatResponse;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
@@ -30,7 +29,6 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
-    private final DevLogRepository devLogRepository;
     private final UserUtil userUtil;
 
     // <== 스케줄 단일 조회 ==>
