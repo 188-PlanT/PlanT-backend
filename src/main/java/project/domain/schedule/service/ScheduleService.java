@@ -8,16 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.util.UserUtil;
-import project.domain.schedule.dao.DevLogRepository;
+import project.domain.chat.dao.ChatRepository;
+import project.domain.chat.domain.Chat;
 import project.domain.schedule.dao.ScheduleRepository;
-import project.domain.schedule.domain.DevLog;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.schedule.dto.ScheduleDto;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
-import project.domain.schedule.dto.response.AddChatResponse;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
@@ -32,24 +31,21 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
-    private final DevLogRepository devLogRepository;
+    private final ChatRepository chatRepository;
     private final UserUtil userUtil;
 
     // <== 스케줄 단일 조회 ==>
     @Transactional(readOnly = true)
     public ScheduleDto findOne(Long id) {
-
         Schedule schedule = findScheduleById(id);
+        List<Chat> chats = chatRepository.findByScheduleId(id);
 
-        ScheduleDto dto = ScheduleDto.from(schedule);
-
-        return dto;
+        return ScheduleDto.from(schedule, chats);
     }
 
     // <== 스케줄 생성 ==>
     @Transactional
     public ScheduleDto createSchedule(CreateScheduleRequest request) {
-
         Workspace workspace = workspaceRepository
                 .findById(request.getWorkspaceId())
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
@@ -71,9 +67,7 @@ public class ScheduleService {
 
         scheduleRepository.save(schedule);
 
-        ScheduleDto dto = ScheduleDto.from(schedule);
-
-        return dto;
+        return ScheduleDto.from(schedule, List.of());
     }
 
     private void validateLoginUserRole(Long workspaceId) {
@@ -87,11 +81,8 @@ public class ScheduleService {
     // <== 스케줄 수정 ==>
     @Transactional
     public ScheduleDto updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
-
         Schedule schedule = findScheduleById(scheduleId);
-
         List<User> users = userUtil.getUserByList(request.getUsers());
-
         schedule.update(
                 request.getName(),
                 request.getStartDate(),
@@ -100,16 +91,14 @@ public class ScheduleService {
                 users,
                 request.getState());
 
-        ScheduleDto dto = ScheduleDto.from(schedule);
-
-        return dto;
+        List<Chat> chats = chatRepository.findByScheduleId(scheduleId);
+        return ScheduleDto.from(schedule, chats);
     }
 
     // <== 스케줄 삭제 ==>
     @Transactional
     public void removeSchedule(Long id) {
         Schedule schedule = findScheduleById(id);
-
         scheduleRepository.delete(schedule);
     }
 
@@ -117,64 +106,10 @@ public class ScheduleService {
     @Transactional
     public ScheduleDto moveScheduleState(Long id, Progress state) {
         Schedule schedule = findScheduleById(id);
-
         schedule.moveProgress(state);
 
-        ScheduleDto dto = ScheduleDto.from(schedule);
-
-        return dto;
-    }
-
-    // <== 댓글 추가 ==>
-    @Transactional
-    public AddChatResponse addChat(Long scheduleId, String content) {
-        User loginUser = userUtil.getLoginUser();
-
-        Schedule schedule = findScheduleById(scheduleId);
-
-        DevLog chat = DevLog.builder()
-                .schedule(schedule)
-                .user(loginUser)
-                .content(content)
-                .build();
-
-        devLogRepository.save(chat);
-
-        AddChatResponse response = AddChatResponse.from(chat);
-
-        return response;
-    }
-
-    // <== 댓글 수정 ==>
-    @Transactional
-    public AddChatResponse updateChat(Long scheduleId, Long chatId, String content) {
-        User loginUser = userUtil.getLoginUser();
-
-        Schedule schedule = findScheduleById(scheduleId);
-
-        DevLog chat = devLogRepository.findById(chatId).orElseThrow(() -> new PlantException(ErrorCode.CHAT_NOT_FOUND));
-
-        if (chat.getSchedule().equals(schedule) && chat.getUser().equals(loginUser)) {
-            chat.updateContent(content);
-        } else {
-            throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-        }
-
-        devLogRepository.save(chat);
-
-        AddChatResponse response = AddChatResponse.from(chat);
-
-        return response;
-    }
-
-    // <== 댓글 삭제 ==>
-    @Transactional
-    public void removeChat(Long scheduleId, Long chatId) {
-        User loginUser = userUtil.getLoginUser();
-
-        Schedule schedule = findScheduleById(scheduleId);
-
-        schedule.removeChat(loginUser, chatId);
+        List<Chat> chats = chatRepository.findByScheduleId(id);
+        return ScheduleDto.from(schedule, chats);
     }
 
     // <== admin용 전체 조회 ==>
@@ -186,10 +121,11 @@ public class ScheduleService {
             us.getUser().getEmail();
         }
 
-        for (DevLog chat : schedule.getDevLogs()) {
-            chat.getContent();
-            chat.getUser().getEmail();
-        }
+        // TODO: Admin 로직 삭제 시 같이 삭제
+        //        for (DevLog chat : schedule.getDevLogs()) {
+        //            chat.getContent();
+        //            chat.getUser().getEmail();
+        //        }
 
         return schedule;
     }

@@ -9,7 +9,8 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.domain.schedule.domain.DevLog;
+import project.domain.chat.domain.Chat;
+import project.domain.chat.dto.ChatDto;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.User;
@@ -34,7 +35,7 @@ public class ScheduleDto {
     private Progress state;
     private List<ChatDto> chatList = new ArrayList<>();
 
-    public static ScheduleDto from(Schedule schedule) {
+    public static ScheduleDto from(Schedule schedule, List<Chat> chats) {
         ScheduleDto dto = new ScheduleDto();
 
         dto.setScheduleId(schedule.getId());
@@ -50,7 +51,7 @@ public class ScheduleDto {
                 .map(us -> new UserDto(us.getUser()))
                 .collect(toList()));
 
-        dto.setChatList(schedule.getDevLogs().stream().map(d -> new ChatDto(d)).collect(toList()));
+        dto.setChatList(chats.stream().map(ChatDto::from).toList());
 
         return dto;
     }
@@ -63,25 +64,6 @@ public class ScheduleDto {
         public UserDto(User user) {
             this.userId = user.getId();
             this.nickName = user.getNickName();
-        }
-    }
-
-    @Getter
-    public static class ChatDto {
-        private Long chatId;
-        private Long userId;
-        private String nickName;
-        private String content;
-
-        @JsonFormat(pattern = "yyyyMMdd:HH:mm:ss")
-        private LocalDateTime createDate;
-
-        public ChatDto(DevLog log) {
-            this.chatId = log.getId();
-            this.userId = log.getUser().getId();
-            this.nickName = log.getUser().getNickName();
-            this.content = log.getContent();
-            this.createDate = log.getCreateDate();
         }
     }
 }
