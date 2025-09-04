@@ -47,10 +47,6 @@ public class Schedule extends BaseEntity {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
 
-    // Schedule이 DevLog 영속성 관리
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DevLog> devLogs = new ArrayList<>();
-
     // < == 생성자 ==>
     protected Schedule() {} // JPA용 생성자
 
@@ -90,44 +86,6 @@ public class Schedule extends BaseEntity {
 
     public void moveProgress(Progress state) {
         this.state = state;
-    }
-
-    public void addChat(User user, String content) {
-        DevLog devLog =
-                DevLog.builder().schedule(this).user(user).content(content).build();
-
-        this.devLogs.add(devLog);
-    }
-
-    public void updateChat(User user, Long chatId, String content) {
-        for (DevLog devLog : this.devLogs) {
-            if (devLog.getId().equals(chatId)) {
-                if (!devLog.getUser().equals(user)) {
-                    throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-                }
-                devLog.setContent(content);
-                return;
-            }
-        }
-        throw new PlantException(ErrorCode.CHAT_NOT_FOUND);
-    }
-
-    public void removeChat(User user, Long chatId) {
-        boolean check = false;
-
-        for (DevLog devLog : this.devLogs) {
-            if (devLog.getId().equals(chatId)) {
-                if (!devLog.getUser().equals(user)) {
-                    throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-                }
-                check = true;
-            }
-        }
-
-        if (!check) {
-            throw new PlantException(ErrorCode.CHAT_NOT_FOUND);
-        }
-        this.devLogs.removeIf(d -> d.getId().equals(chatId));
     }
 
     // 수정 로직 -> 이거 DTO로 묶는 방법 생각해보자

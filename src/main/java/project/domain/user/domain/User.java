@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import project.domain.BaseEntity;
 import project.domain.image.domain.Image;
-import project.domain.schedule.domain.DevLog;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.workspace.domain.UserWorkspace;
 
@@ -44,9 +43,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<DevLog> devLogs = new ArrayList<>();
 
     // <== 생성자 ==>
 
