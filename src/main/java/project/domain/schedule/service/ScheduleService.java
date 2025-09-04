@@ -8,9 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.util.UserUtil;
-import project.domain.schedule.dao.DevLogRepository;
 import project.domain.schedule.dao.ScheduleRepository;
-import project.domain.schedule.domain.DevLog;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.domain.UserSchedule;
@@ -123,58 +121,6 @@ public class ScheduleService {
         ScheduleDto dto = ScheduleDto.from(schedule);
 
         return dto;
-    }
-
-    // <== 댓글 추가 ==>
-    @Transactional
-    public AddChatResponse addChat(Long scheduleId, String content) {
-        User loginUser = userUtil.getLoginUser();
-
-        Schedule schedule = findScheduleById(scheduleId);
-
-        DevLog chat = DevLog.builder()
-                .schedule(schedule)
-                .user(loginUser)
-                .content(content)
-                .build();
-
-        devLogRepository.save(chat);
-
-        AddChatResponse response = AddChatResponse.from(chat);
-
-        return response;
-    }
-
-    // <== 댓글 수정 ==>
-    @Transactional
-    public AddChatResponse updateChat(Long scheduleId, Long chatId, String content) {
-        User loginUser = userUtil.getLoginUser();
-
-        Schedule schedule = findScheduleById(scheduleId);
-
-        DevLog chat = devLogRepository.findById(chatId).orElseThrow(() -> new PlantException(ErrorCode.CHAT_NOT_FOUND));
-
-        if (chat.getSchedule().equals(schedule) && chat.getUser().equals(loginUser)) {
-            chat.updateContent(content);
-        } else {
-            throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-        }
-
-        devLogRepository.save(chat);
-
-        AddChatResponse response = AddChatResponse.from(chat);
-
-        return response;
-    }
-
-    // <== 댓글 삭제 ==>
-    @Transactional
-    public void removeChat(Long scheduleId, Long chatId) {
-        User loginUser = userUtil.getLoginUser();
-
-        Schedule schedule = findScheduleById(scheduleId);
-
-        schedule.removeChat(loginUser, chatId);
     }
 
     // <== admin용 전체 조회 ==>
