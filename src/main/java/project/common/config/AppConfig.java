@@ -1,14 +1,10 @@
 package project.common.config;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import project.common.admin.util.LoginUserArgumentResolver;
-import project.common.interceptor.auth.LoginCheckInterceptor;
 import project.common.interceptor.auth.UserRoleCheckInterceptor;
 import project.common.interceptor.log.LogInterceptor;
 
@@ -17,7 +13,6 @@ import project.common.interceptor.log.LogInterceptor;
 @EnableJpaAuditing // Auditing
 public class AppConfig implements WebMvcConfigurer {
 
-    private final LoginCheckInterceptor loginCheckInterceptor;
     private final UserRoleCheckInterceptor userRoleCheckInterceptor;
 
     // 인터셉터 등록
@@ -32,15 +27,5 @@ public class AppConfig implements WebMvcConfigurer {
                 .order(2)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/*.ico", "/error");
-
-        registry.addInterceptor(loginCheckInterceptor)
-                .order(2)
-                .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/login", "/css/**", "/*.ico", "/error");
-    }
-
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginUserArgumentResolver());
     }
 }
