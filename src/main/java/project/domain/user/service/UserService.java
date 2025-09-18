@@ -54,14 +54,14 @@ public class UserService {
     // <== 회원가입 ==>
     @Transactional
     public User registerEmailUser(SignUpRequest request) {
-        validateUserEmail(request.getEmail());
-        validatePasswordPattern(request.getPassword());
+        validateUserEmail(request.email());
+        validatePasswordPattern(request.password());
 
         Image defaultUserProfile = imageRepository
                 .findByUrl(DEFAULT_USER_PROFILE_URL)
                 .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
 
-        User user = User.ofEmailPassword(request.getEmail(), encodePassword(request.getPassword()), defaultUserProfile);
+        User user = User.ofEmailPassword(request.email(), encodePassword(request.password()), defaultUserProfile);
 
         userRepository.save(user);
 

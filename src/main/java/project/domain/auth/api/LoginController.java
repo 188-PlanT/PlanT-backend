@@ -26,7 +26,7 @@ public class LoginController {
     @Operation(summary = "이메일 로그인", description = "이메일과 비밀번호 기반으로 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login")
     public ResponseEntity<LoginResponse> loginUserByEmailAndPassword(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = loginService.loginByEmailAndPassword(request.getEmail(), request.getPassword());
+        LoginResponse response = loginService.loginByEmailAndPassword(request.email(), request.password());
 
         return ResponseEntity.ok(response);
     }
@@ -37,7 +37,7 @@ public class LoginController {
     @PostMapping("/v1/login/oauth2")
     public ResponseEntity<LoginResponse> oauth2Login(@Valid @RequestBody Oauth2LoginRequest request) {
         String loginUserEmail =
-                customOAuth2UserService.getOauth2UserEmailByAuthCode(request.getCode(), request.getProvider());
+                customOAuth2UserService.getOauth2UserEmailByAuthCode(request.code(), request.provider());
 
         LoginResponse response = loginService.loginByOauth2UserEmail(loginUserEmail);
 
@@ -58,7 +58,7 @@ public class LoginController {
     @Operation(summary = "더비 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/dumy")
     public ResponseEntity<LoginResponse> dumyLogin(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = loginService.loginInDumy(request.getEmail(), request.getPassword());
+        LoginResponse response = loginService.loginInDumy(request.email(), request.password());
 
         return ResponseEntity.ok(response);
     }

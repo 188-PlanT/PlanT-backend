@@ -1,10 +1,3 @@
 package project.domain.auth.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public class AccessTokenResponse {
-    private String accessToken;
-}
+public record AccessTokenResponse(String accessToken) {}
