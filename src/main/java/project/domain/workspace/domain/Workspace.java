@@ -93,7 +93,7 @@ public class Workspace extends BaseEntity {
 
     private boolean checkAdmin(Long userId) {
         for (UserWorkspace uw : this.userWorkspaces) {
-            if (uw.getUser().getId() == userId && uw.getUserRole().equals(UserRole.ADMIN)) {
+            if (uw.getUser().getId().equals(userId) && uw.getUserRole().equals(UserRole.ADMIN)) {
                 return true;
             }
         }
