@@ -1,4 +1,4 @@
-package project.domain;
+package project.domain.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -7,12 +7,13 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @MappedSuperclass
 @Getter
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public class BaseEntity extends AbstractAggregateRoot<BaseEntity> {
 
     @CreatedDate
     @Column(updatable = false)

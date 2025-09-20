@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.domain.BaseEntity;
+import project.domain.common.BaseEntity;
 import project.domain.image.domain.Image;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.User;
@@ -93,7 +93,7 @@ public class Workspace extends BaseEntity {
 
     private boolean checkAdmin(Long userId) {
         for (UserWorkspace uw : this.userWorkspaces) {
-            if (uw.getUser().getId() == userId && uw.getUserRole().equals(UserRole.ADMIN)) {
+            if (uw.getUser().getId().equals(userId) && uw.getUserRole().equals(UserRole.ADMIN)) {
                 return true;
             }
         }
