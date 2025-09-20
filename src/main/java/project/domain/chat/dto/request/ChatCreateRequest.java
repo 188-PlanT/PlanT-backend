@@ -1,3 +1,6 @@
 package project.domain.chat.dto.request;
 
-public record ChatCreateRequest(Long scheduleId, String content) {}
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+public record ChatCreateRequest(@NotNull @Positive Long scheduleId, String content) {}

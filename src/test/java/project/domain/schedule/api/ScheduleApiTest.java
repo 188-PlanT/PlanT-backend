@@ -93,12 +93,12 @@ public class ScheduleApiTest extends IntegrationTest {
                 .andExpect(jsonPath("$.chatList[0].userId").value("1"))
                 .andExpect(jsonPath("$.chatList[0].nickName").value("test11"))
                 .andExpect(jsonPath("$.chatList[0].content").value("test"))
-                .andExpect(jsonPath("$.chatList[0].createDate").value("20240401:00:00:00"))
+                .andExpect(jsonPath("$.chatList[0].createDate").value("2024-04-01T00:00:00"))
                 .andExpect(jsonPath("$.chatList[1].chatId").value("2"))
                 .andExpect(jsonPath("$.chatList[1].userId").value("2"))
                 .andExpect(jsonPath("$.chatList[1].nickName").value("test22"))
                 .andExpect(jsonPath("$.chatList[1].content").value("test"))
-                .andExpect(jsonPath("$.chatList[1].createDate").value("20240401:00:00:00"))
+                .andExpect(jsonPath("$.chatList[1].createDate").value("2024-04-01T00:00:00"))
                 .andExpect(jsonPath("$.chatList[2]").doesNotExist());
     }
 

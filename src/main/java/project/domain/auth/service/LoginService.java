@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.security.jwt.JwtProvider;
-import project.domain.auth.dto.response.LoginResponse;
+import project.domain.auth.dto.response.TokenPairResponse;
 import project.domain.image.domain.Image;
 import project.domain.image.service.ImageService;
 import project.domain.user.dao.UserRepository;
@@ -23,7 +23,7 @@ public class LoginService {
     private final JwtProvider jwtProvider;
 
     @Transactional(readOnly = true)
-    public LoginResponse loginByEmailAndPassword(String email, String password) {
+    public TokenPairResponse loginByEmailAndPassword(String email, String password) {
         User findUser =
                 userRepository.findByEmail(email).orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
 
@@ -35,7 +35,7 @@ public class LoginService {
     }
 
     @Transactional
-    public LoginResponse loginByOauth2UserEmail(String email) {
+    public TokenPairResponse loginByOauth2UserEmail(String email) {
         User loginUser = saveOrUpdate(email);
 
         return createJwtTokenResponseByUser(loginUser);
@@ -58,11 +58,11 @@ public class LoginService {
         }
     }
 
-    private LoginResponse createJwtTokenResponseByUser(User user) {
+    private TokenPairResponse createJwtTokenResponseByUser(User user) {
         String accessToken = jwtProvider.createAccessTokenByUser(user);
         String refreshToken = jwtProvider.createRefreshTokenByUser(user);
 
-        return new LoginResponse(accessToken, refreshToken);
+        return new TokenPairResponse(accessToken, refreshToken);
     }
 
     /**
@@ -70,7 +70,7 @@ public class LoginService {
      * 따라서, 더미 데이터 로그인 시에는 비밀번호를 암호화하지 않고 비교합니다.
      */
     @Transactional(readOnly = true)
-    public LoginResponse loginInDumy(String email, String password) {
+    public TokenPairResponse loginInDumy(String email, String password) {
         User findUser =
                 userRepository.findByEmail(email).orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
 
