@@ -1,32 +1,17 @@
 package project.domain.user.dto.response;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
 
-@Setter
-@Getter
-@NoArgsConstructor
-public class FinishUserRegisterResponse {
-    private Long userId;
-    private String nickName;
-    private String email;
-    private String profile;
-    private UserRole state;
-    private String accessToken;
-
+public record FinishUserRegisterResponse(
+        Long userId, String nickName, String email, String profile, UserRole state, String accessToken) {
     public static FinishUserRegisterResponse from(User user, String accessToken) {
-        FinishUserRegisterResponse dto = new FinishUserRegisterResponse();
-
-        dto.setUserId(user.getId());
-        dto.setNickName(user.getNickName());
-        dto.setEmail(user.getEmail());
-        dto.setProfile(user.getProfile().getUrl());
-        dto.setState(user.getUserRole());
-        dto.setAccessToken(accessToken);
-
-        return dto;
+        return new FinishUserRegisterResponse(
+                user.getId(),
+                user.getNickName(),
+                user.getEmail(),
+                user.getProfile().getUrl(),
+                user.getUserRole(),
+                accessToken);
     }
 }

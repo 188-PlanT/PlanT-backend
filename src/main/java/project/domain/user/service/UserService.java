@@ -116,18 +116,18 @@ public class UserService {
 
         User user = userUtil.getLoginUser();
 
-        validateCurrentPassword(user, request.getCurrentPassword());
+        validateCurrentPassword(user, request.currentPassword());
 
-        String nickName = request.getNickName(); // 닉네임 변경값 검증
+        String nickName = request.nickName(); // 닉네임 변경값 검증
         if (nickName != null && !user.getNickName().equals(nickName)) {
             validateUserNickName(nickName);
         }
 
-        String newPassword = request.getNewPassword(); // 비밀번호 변경값 검증
+        String newPassword = request.newPassword(); // 비밀번호 변경값 검증
         if (newPassword != null) validatePasswordPattern(newPassword);
         String encodedPassword = newPassword != null ? encodePassword(newPassword) : user.getPassword();
 
-        String profileUrl = request.getProfile();
+        String profileUrl = request.profile();
         Image profile = null;
 
         if (profileUrl != null) {
