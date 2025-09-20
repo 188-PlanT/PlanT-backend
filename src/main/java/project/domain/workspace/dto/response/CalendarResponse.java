@@ -4,65 +4,41 @@ import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.UserRole;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.workspace.domain.Workspace;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class CalendarResponse {
-    private Long workspaceId;
-    private String workspaceName;
-    private UserRole role;
-
-    List<ScheduleDto> schedules = new ArrayList<>();
+public record CalendarResponse(Long workspaceId, String workspaceName, UserRole role, List<ScheduleDto> schedules) {
 
     public static CalendarResponse of(Workspace workspace, List<Schedule> schedules, Long loginUserId) {
-        CalendarResponse dto = new CalendarResponse();
+        UserRole userRole = workspace.getUserWorkspaces().stream()
+                .filter(uw -> uw.getUser().getId().equals(loginUserId))
+                .findFirst()
+                .map(UserWorkspace::getUserRole)
+                .orElse(null); // Or handle appropriately
 
-        dto.setWorkspaceId(workspace.getId());
-        dto.setWorkspaceName(workspace.getName());
+        List<ScheduleDto> scheduleDtos =
+                schedules.stream().map(ScheduleDto::new).collect(toList());
 
-        dto.setSchedules(schedules.stream().map(ScheduleDto::new).collect(toList()));
-
-        for (UserWorkspace uw : workspace.getUserWorkspaces()) {
-            if (uw.getUser().getId() == loginUserId) {
-                dto.setRole(uw.getUserRole());
-                break;
-            }
-        }
-
-        return dto;
+        return new CalendarResponse(workspace.getId(), workspace.getName(), userRole, scheduleDtos);
     }
 
-    // test를 위해 public으로 선언
-    @Getter
-    public static class ScheduleDto {
-        private Long scheduleId;
-        private String scheduleName;
-
-        @JsonFormat(pattern = "yyyyMMdd")
-        private LocalDateTime startDate;
-
-        @JsonFormat(pattern = "yyyyMMdd")
-        private LocalDateTime endDate;
-
-        private Progress state;
-
+    public record ScheduleDto(
+            Long scheduleId,
+            String scheduleName,
+            @JsonFormat(pattern = "yyyyMMdd") LocalDateTime startDate,
+            @JsonFormat(pattern = "yyyyMMdd") LocalDateTime endDate,
+            Progress state) {
         public ScheduleDto(Schedule schedule) {
-            this.scheduleId = schedule.getId();
-            this.scheduleName = schedule.getName();
-            this.startDate = schedule.getStartDate();
-            this.endDate = schedule.getEndDate();
-            this.state = schedule.getState();
+            this(
+                    schedule.getId(),
+                    schedule.getName(),
+                    schedule.getStartDate(),
+                    schedule.getEndDate(),
+                    schedule.getState());
         }
     }
 }

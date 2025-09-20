@@ -1,14 +1,6 @@
 package project.domain.workspace.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.domain.user.domain.UserRole;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class UpdateUserRequest {
-    @NotNull private UserRole authority;
-}
+public record UpdateUserRequest(@NotNull UserRole authority) {}

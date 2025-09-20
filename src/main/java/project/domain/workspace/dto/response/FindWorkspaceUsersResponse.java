@@ -2,53 +2,28 @@ package project.domain.workspace.dto.response;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.workspace.domain.Workspace;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class FindWorkspaceUsersResponse {
-    private Long workspaceId;
-    private String workspaceName;
-    private String profile;
-
-    private List<SimpleUserDto> users = new ArrayList<>();
-
+public record FindWorkspaceUsersResponse(
+        Long workspaceId, String workspaceName, String profile, List<SimpleUserDto> users) {
     public static FindWorkspaceUsersResponse from(Workspace workspace) {
-        FindWorkspaceUsersResponse dto = new FindWorkspaceUsersResponse();
+        List<SimpleUserDto> userDtos =
+                workspace.getUserWorkspaces().stream().map(SimpleUserDto::new).collect(toList());
 
-        dto.setWorkspaceId(workspace.getId());
-        dto.setWorkspaceName(workspace.getName());
-        dto.setProfile(workspace.getProfile().getUrl());
-
-        dto.setUsers(
-                workspace.getUserWorkspaces().stream().map(SimpleUserDto::new).collect(toList()));
-
-        return dto;
+        return new FindWorkspaceUsersResponse(
+                workspace.getId(), workspace.getName(), workspace.getProfile().getUrl(), userDtos);
     }
 
-    @Getter
-    static class SimpleUserDto {
-        private Long userId;
-        private String nickName;
-        private String email;
-        private UserRole authority;
-
+    public record SimpleUserDto(Long userId, String nickName, String email, UserRole authority) {
         public SimpleUserDto(UserWorkspace userWorkspace) {
-            User user = userWorkspace.getUser();
-
-            this.userId = user.getId();
-            this.nickName = user.getNickName();
-            this.email = user.getEmail();
-            this.authority = userWorkspace.getUserRole();
+            this(
+                    userWorkspace.getUser().getId(),
+                    userWorkspace.getUser().getNickName(),
+                    userWorkspace.getUser().getEmail(),
+                    userWorkspace.getUserRole());
         }
     }
 }

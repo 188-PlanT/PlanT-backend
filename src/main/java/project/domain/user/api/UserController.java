@@ -48,7 +48,7 @@ public class UserController {
             @Valid @RequestBody EmailCheckRequest request) {
 
         try {
-            userService.validateUserEmail(request.getEmail());
+            userService.validateUserEmail(request.email());
         } catch (PlantException e) {
             return ResponseEntity.ok(new EmailOrNicknameCheckResponse(false));
         }
@@ -62,7 +62,7 @@ public class UserController {
             @Valid @RequestBody NickNameCheckRequest request) {
 
         try {
-            userService.validateUserNickName(request.getNickName());
+            userService.validateUserNickName(request.nickName());
             return ResponseEntity.ok(new EmailOrNicknameCheckResponse(true));
         } catch (PlantException e) {
             return ResponseEntity.ok(new EmailOrNicknameCheckResponse(false));
@@ -74,7 +74,7 @@ public class UserController {
     public ResponseEntity<FinishUserRegisterResponse> setNickNameUser(
             @Valid @RequestBody FinishUserRegisterRequest request) {
 
-        User user = userService.finishRegister(request.getNickName());
+        User user = userService.finishRegister(request.nickName());
 
         String accessToken = jwtProvider.createAccessTokenByUser(user);
 
@@ -143,7 +143,7 @@ public class UserController {
     @PostMapping("/v1/users/email/code")
     public ResponseEntity<String> validateCode(@RequestParam String email, @RequestBody CodeRequest request) {
 
-        userService.validateEmailCode(email, request.getCode());
+        userService.validateEmailCode(email, request.code());
 
         return ResponseEntity.ok("code success");
     }

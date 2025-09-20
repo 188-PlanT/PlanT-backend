@@ -12,7 +12,6 @@ import project.domain.schedule.dto.*;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleStateRequest;
-import project.domain.schedule.dto.response.DeleteScheduleResponse;
 import project.domain.schedule.service.ScheduleService;
 import project.domain.user.domain.UserRole;
 
@@ -25,10 +24,9 @@ public class ScheduleController {
 
     @Operation(summary = "스케줄 생성", description = "스케줄을 생성합니다.")
     @PostMapping("/v1/schedules")
-    public ResponseEntity<ScheduleDto> createSchedule(
+    public ResponseEntity<Long> createSchedule(
             @Valid @RequestBody CreateScheduleRequest request) { // 파라미터가 많아 DTO로 직접 전달
-
-        ScheduleDto response = scheduleService.createSchedule(request);
+        var response = scheduleService.createSchedule(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -37,7 +35,6 @@ public class ScheduleController {
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/schedules/{scheduleId}")
     public ResponseEntity<ScheduleDto> findSingleSchedule(@PathVariable Long scheduleId) {
-
         ScheduleDto response = scheduleService.findOne(scheduleId);
 
         return ResponseEntity.ok(response);
@@ -46,32 +43,29 @@ public class ScheduleController {
     @Operation(summary = "스케줄 정보 수정", description = "스케줄 정보를 수정합니다.")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @PutMapping("/v1/schedules/{scheduleId}")
-    public ResponseEntity<ScheduleDto> updateSchedule(
+    public ResponseEntity<Void> updateSchedule(
             @PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleRequest request) {
+        scheduleService.updateSchedule(scheduleId, request);
 
-        ScheduleDto response = scheduleService.updateSchedule(scheduleId, request);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "스케줄 삭제", description = "스케줄을 삭제합니다.")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @DeleteMapping("/v1/schedules/{scheduleId}")
-    public ResponseEntity<DeleteScheduleResponse> deleteSchedule(@PathVariable Long scheduleId) {
-
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long scheduleId) {
         scheduleService.removeSchedule(scheduleId);
 
-        return ResponseEntity.ok(new DeleteScheduleResponse());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "스케줄 상태 변경", description = "스케줄 진행 상태를 변경합니다.")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @PutMapping("/v1/schedules/{scheduleId}/state")
-    public ResponseEntity<ScheduleDto> updateSchedule(
+    public ResponseEntity<Void> updateSchedule(
             @PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleStateRequest request) {
+        scheduleService.moveScheduleState(scheduleId, request.state());
 
-        ScheduleDto response = scheduleService.moveScheduleState(scheduleId, request.getState());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 }

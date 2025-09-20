@@ -1,15 +1,3 @@
 package project.domain.workspace.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-public class UpdateWorkspaceRequest {
-
-    private String name;
-
-    private String profile;
-}
+public record UpdateWorkspaceRequest(String name, String profile) {}

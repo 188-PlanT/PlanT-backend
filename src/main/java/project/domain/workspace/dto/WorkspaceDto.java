@@ -2,35 +2,16 @@ package project.domain.workspace.dto;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.domain.workspace.domain.Workspace;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class WorkspaceDto {
-    private Long workspaceId;
-    private String name;
-    private String profile;
-    private List<Long> users = new ArrayList<>();
-
+public record WorkspaceDto(Long workspaceId, String name, String profile, List<Long> users) {
     public static WorkspaceDto from(Workspace workspace) {
-        WorkspaceDto dto = new WorkspaceDto();
-
-        dto.setWorkspaceId(workspace.getId());
-        dto.setName(workspace.getName());
-        dto.setProfile(workspace.getProfile().getUrl());
-
         List<Long> userIds = workspace.getUserWorkspaces().stream()
                 .map(uw -> uw.getUser().getId())
                 .collect(toList());
 
-        dto.setUsers(userIds);
-
-        return dto;
+        return new WorkspaceDto(
+                workspace.getId(), workspace.getName(), workspace.getProfile().getUrl(), userIds);
     }
 }
