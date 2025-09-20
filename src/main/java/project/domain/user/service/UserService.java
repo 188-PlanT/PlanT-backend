@@ -16,7 +16,7 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.property.EmailVerificationProperty;
 import project.common.util.UserUtil;
-import project.domain.auth.dto.request.SignUpRequest;
+import project.domain.auth.dto.request.EmailSignUpRequest;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
 import project.domain.schedule.dao.UserScheduleRepository;
@@ -53,7 +53,7 @@ public class UserService {
 
     // <== 회원가입 ==>
     @Transactional
-    public User registerEmailUser(SignUpRequest request) {
+    public Long registerEmailUser(EmailSignUpRequest request) {
         validateUserEmail(request.email());
         validatePasswordPattern(request.password());
 
@@ -65,7 +65,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return user;
+        return user.getId();
     }
 
     private String encodePassword(String password) {
@@ -91,19 +91,16 @@ public class UserService {
     // <== 워크스페이스 조회 ==>
     @Transactional(readOnly = true)
     public UserWorkspacesResponse findWorkspaces(Long userId) {
-
         User user = userUtil.getUserById(userId);
-
         List<UserWorkspace> userWorkspaces = userWorkspaceRepository.searchByUser(user);
 
-        return UserWorkspacesResponse.of(user, userWorkspaces);
+        return UserWorkspacesResponse.from(user, userWorkspaces);
     }
 
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
     public UserSchedulesResponse findSchedules(Long userId, LocalDateTime date) {
         User loginUser = userUtil.getUserById(userId);
-
         List<UserSchedule> userSchedules = userScheduleRepository.searchByUser(
                 loginUser.getEmail(), date, date.plusMonths(1).minusSeconds(1));
 
@@ -112,8 +109,7 @@ public class UserService {
 
     // <== 유저 정보 수정 ==>
     @Transactional
-    public User updateUser(UpdateUserRequest request) {
-
+    public void updateUser(UpdateUserRequest request) {
         User user = userUtil.getLoginUser();
 
         validateCurrentPassword(user, request.currentPassword());
@@ -137,8 +133,6 @@ public class UserService {
         }
 
         user.update(nickName, encodedPassword, profile);
-
-        return user;
     }
 
     // // 유저 삭제
@@ -183,14 +177,14 @@ public class UserService {
     }
 
     // <== 이메일 검증 코드 검증 ==>
-    public void validateEmailCode(String email, int code) {
+    public void validateEmailCode(String email, String code) {
         String redisCode = redisService.getValues(email);
 
         if (redisCode == null) {
             throw new PlantException(ErrorCode.USER_NOT_FOUND, "잘못된 이메일입니다");
         }
 
-        if (!redisCode.equals(code + "")) {
+        if (!redisCode.equals(code)) {
             throw new PlantException(ErrorCode.EMAIL_CODE_INVALID);
         }
 

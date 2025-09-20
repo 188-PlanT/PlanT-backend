@@ -6,14 +6,15 @@ import java.util.List;
 import project.domain.user.domain.User;
 
 public record SearchUserResponse(List<SearchUserDto> users) {
-    public static SearchUserResponse from(List<User> users) {
-        List<SearchUserDto> userDtos = users.stream().map(SearchUserDto::new).collect(toList());
+
+    public static SearchUserResponse of(List<User> users) {
+        List<SearchUserDto> userDtos = users.stream().map(SearchUserDto::of).collect(toList());
         return new SearchUserResponse(userDtos);
     }
 
     public record SearchUserDto(Long userId, String nickName, String email) {
-        public SearchUserDto(User user) {
-            this(user.getId(), user.getNickName(), user.getEmail());
+        public static SearchUserDto of(User user) {
+            return new SearchUserDto(user.getId(), user.getNickName(), user.getEmail());
         }
     }
 }

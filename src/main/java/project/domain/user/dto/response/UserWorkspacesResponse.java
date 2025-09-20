@@ -9,15 +9,16 @@ import project.domain.workspace.domain.UserWorkspace;
 
 public record UserWorkspacesResponse(Long userId, List<WorkspaceDto> workspaces) {
 
-    public static UserWorkspacesResponse of(User user, List<UserWorkspace> userWorkspaces) {
+    public static UserWorkspacesResponse from(User user, List<UserWorkspace> userWorkspaces) {
         List<WorkspaceDto> workspaceDtos =
-                userWorkspaces.stream().map(WorkspaceDto::new).collect(toList());
+                userWorkspaces.stream().map(WorkspaceDto::of).collect(toList());
         return new UserWorkspacesResponse(user.getId(), workspaceDtos);
     }
 
     public record WorkspaceDto(Long workspaceId, String workspaceName, String profile, UserRole role) {
-        public WorkspaceDto(UserWorkspace userWorkspace) {
-            this(
+
+        public static WorkspaceDto of(UserWorkspace userWorkspace) {
+            return new WorkspaceDto(
                     userWorkspace.getWorkspace().getId(),
                     userWorkspace.getWorkspace().getName(),
                     userWorkspace.getWorkspace().getProfile().getUrl(),

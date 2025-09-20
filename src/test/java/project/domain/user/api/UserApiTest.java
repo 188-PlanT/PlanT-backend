@@ -62,10 +62,6 @@ public class UserApiTest extends IntegrationTest {
                         .content(request))
                 // then
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value("4"))
-                .andExpect(jsonPath("$.nickName").value("test44"))
-                .andExpect(jsonPath("$.email").value("test4@gmail.com"))
-                .andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/user.png"))
                 .andExpect(jsonPath("$.accessToken").exists());
     }
 
@@ -96,12 +92,7 @@ public class UserApiTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value("1"))
-                .andExpect(jsonPath("$.nickName").value("test111"))
-                .andExpect(jsonPath("$.email").value("test1@gmail.com"))
-                .andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
-                .andExpect(jsonPath("$.state").value("ADMIN"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -117,12 +108,7 @@ public class UserApiTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value("1"))
-                .andExpect(jsonPath("$.nickName").value("test11"))
-                .andExpect(jsonPath("$.email").value("test1@gmail.com"))
-                .andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
-                .andExpect(jsonPath("$.state").value("ADMIN"));
+                .andExpect(status().isOk());
     }
 
     @Test
