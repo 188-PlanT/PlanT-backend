@@ -50,3 +50,6 @@ goorm.manifest
 
 # secret
 .env
+
+# GEMINI.md
+GEMINI.md
