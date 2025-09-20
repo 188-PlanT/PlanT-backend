@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import project.domain.BaseEntity;
+import project.domain.common.BaseEntity;
 import project.domain.user.domain.User;
 
 @Entity

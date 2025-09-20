@@ -5,7 +5,7 @@ import java.util.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import project.domain.BaseEntity;
+import project.domain.common.BaseEntity;
 import project.domain.image.domain.Image;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.workspace.domain.UserWorkspace;

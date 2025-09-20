@@ -3,7 +3,7 @@ package project.domain.chat.domain;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import project.domain.BaseEntity;
+import project.domain.common.BaseEntity;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.User;
 

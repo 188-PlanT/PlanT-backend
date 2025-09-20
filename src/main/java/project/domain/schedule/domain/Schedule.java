@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
-import project.domain.*;
+import project.domain.common.BaseEntity;
 import project.domain.user.domain.User;
 import project.domain.workspace.domain.Workspace;
 
