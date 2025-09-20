@@ -27,7 +27,6 @@ public class ScheduleController {
     public ResponseEntity<Long> createSchedule(
             @Valid @RequestBody CreateScheduleRequest request) { // 파라미터가 많아 DTO로 직접 전달
         var response = scheduleService.createSchedule(request);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -36,7 +35,6 @@ public class ScheduleController {
     @GetMapping("/v1/schedules/{scheduleId}")
     public ResponseEntity<ScheduleDto> findSingleSchedule(@PathVariable Long scheduleId) {
         ScheduleDto response = scheduleService.findOne(scheduleId);
-
         return ResponseEntity.ok(response);
     }
 
@@ -46,7 +44,6 @@ public class ScheduleController {
     public ResponseEntity<Void> updateSchedule(
             @PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleRequest request) {
         scheduleService.updateSchedule(scheduleId, request);
-
         return ResponseEntity.ok().build();
     }
 
@@ -55,7 +52,6 @@ public class ScheduleController {
     @DeleteMapping("/v1/schedules/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(@PathVariable Long scheduleId) {
         scheduleService.removeSchedule(scheduleId);
-
         return ResponseEntity.ok().build();
     }
 
@@ -65,7 +61,6 @@ public class ScheduleController {
     public ResponseEntity<Void> updateSchedule(
             @PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleStateRequest request) {
         scheduleService.moveScheduleState(scheduleId, request.state());
-
         return ResponseEntity.ok().build();
     }
 }
