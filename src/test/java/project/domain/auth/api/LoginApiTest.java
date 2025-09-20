@@ -42,7 +42,6 @@ public class LoginApiTest extends IntegrationTest {
         mvc.perform(post("/v1/sign-up").contentType(MediaType.APPLICATION_JSON).content(request))
                 // then
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId").exists())
-                .andExpect(jsonPath("$.email").value("test5@gmail.com"));
+                .andExpect(jsonPath("$").isNumber());
     }
 }

@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.common.security.jwt.JwtProvider;
-import project.domain.auth.dto.request.LoginRequest;
+import project.domain.auth.dto.request.EmailLoginRequest;
 import project.domain.auth.dto.request.Oauth2LoginRequest;
 import project.domain.auth.dto.response.AccessTokenResponse;
-import project.domain.auth.dto.response.LoginResponse;
+import project.domain.auth.dto.response.TokenPairResponse;
 import project.domain.auth.service.CustomOAuth2UserService;
 import project.domain.auth.service.LoginService;
 
@@ -25,9 +25,9 @@ public class LoginController {
 
     @Operation(summary = "이메일 로그인", description = "이메일과 비밀번호 기반으로 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login")
-    public ResponseEntity<LoginResponse> loginUserByEmailAndPassword(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = loginService.loginByEmailAndPassword(request.email(), request.password());
-
+    public ResponseEntity<TokenPairResponse> loginUserByEmailAndPassword(
+            @Valid @RequestBody EmailLoginRequest request) {
+        TokenPairResponse response = loginService.loginByEmailAndPassword(request.email(), request.password());
         return ResponseEntity.ok(response);
     }
 
@@ -35,12 +35,10 @@ public class LoginController {
             summary = "Oauth2 로그인",
             description = "Oauth2 기반으로 로그인합니다. Authentication code와 provider 정보를 입력하면, 사용자 정보 확인 후 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/oauth2")
-    public ResponseEntity<LoginResponse> oauth2Login(@Valid @RequestBody Oauth2LoginRequest request) {
+    public ResponseEntity<TokenPairResponse> oauth2Login(@Valid @RequestBody Oauth2LoginRequest request) {
         String loginUserEmail =
                 customOAuth2UserService.getOauth2UserEmailByAuthCode(request.code(), request.provider());
-
-        LoginResponse response = loginService.loginByOauth2UserEmail(loginUserEmail);
-
+        TokenPairResponse response = loginService.loginByOauth2UserEmail(loginUserEmail);
         return ResponseEntity.ok(response);
     }
 
@@ -49,17 +47,14 @@ public class LoginController {
     public ResponseEntity<AccessTokenResponse> loginByRefreshToken(
             @RequestHeader("Refresh-Token") String refreshToken) {
         String accessToken = jwtProvider.createAccessTokenByRefreshToken(refreshToken);
-
-        AccessTokenResponse response = new AccessTokenResponse(accessToken);
-
+        AccessTokenResponse response = AccessTokenResponse.of(accessToken);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "더비 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/dumy")
-    public ResponseEntity<LoginResponse> dumyLogin(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = loginService.loginInDumy(request.email(), request.password());
-
+    public ResponseEntity<TokenPairResponse> dumyLogin(@Valid @RequestBody EmailLoginRequest request) {
+        TokenPairResponse response = loginService.loginInDumy(request.email(), request.password());
         return ResponseEntity.ok(response);
     }
 }
