@@ -2,6 +2,7 @@ package project.domain.chat.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class ChatController {
     @Deprecated
     @Operation(summary = "댓글 추가", description = "스케줄에 댓글을 추가합니다.")
     @PostMapping("/v1/chats")
-    public ResponseEntity<Void> createChat(@RequestBody ChatCreateRequest request) {
+    public ResponseEntity<Void> createChat(@RequestBody @Valid ChatCreateRequest request) {
         chatService.createChat(request);
         return ResponseEntity.ok().build();
     }
@@ -27,7 +28,7 @@ public class ChatController {
     @Deprecated
     @Operation(summary = "댓글 수정", description = "댓글을 수정합니다.")
     @PutMapping("/v1/chats/{chatId}")
-    public ResponseEntity<Void> updateChat(@PathVariable Long chatId, @RequestBody ChatUpdateRequest request) {
+    public ResponseEntity<Void> updateChat(@PathVariable Long chatId, @Valid @RequestBody ChatUpdateRequest request) {
         chatService.updateChat(chatId, request);
         return ResponseEntity.ok().build();
     }
