@@ -42,14 +42,14 @@ public class WorkspaceService {
 
         User createUser = userUtil.getLoginUser();
 
-        List<User> userList = userUtil.getUserByList(request.getUsers());
+        List<User> userList = userUtil.getUserByList(request.users());
 
         Image defaultWorkspaceProfile = imageRepository
                 .findByUrl(DEFAULT_WORKSPACE_PROFILE_URL)
                 .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
 
         Workspace workspace = Workspace.builder()
-                .name(request.getName())
+                .name(request.name())
                 .profile(defaultWorkspaceProfile)
                 .user(createUser)
                 .build();
@@ -95,14 +95,14 @@ public class WorkspaceService {
         // Optional 하도록 수정
         Image profile = workspace.getProfile();
 
-        if (request.getProfile() != null) {
+        if (request.profile() != null) {
             profile = imageRepository
-                    .findByUrl(request.getProfile())
+                    .findByUrl(request.profile())
                     .orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
         }
 
-        if (request.getName() != null) {
-            name = request.getName();
+        if (request.name() != null) {
+            name = request.name();
         }
 
         workspace.updateWorkspace(name, profile);

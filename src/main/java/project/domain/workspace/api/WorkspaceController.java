@@ -79,7 +79,7 @@ public class WorkspaceController {
     public ResponseEntity<FindWorkspaceUsersResponse> addUser(
             @PathVariable Long workspaceId, @Valid @RequestBody AddUserRequest request) {
 
-        Workspace workspace = workspaceService.addUser(workspaceId, request.getUserId());
+        Workspace workspace = workspaceService.addUser(workspaceId, request.userId());
 
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
 
@@ -92,7 +92,7 @@ public class WorkspaceController {
     public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(
             @PathVariable Long workspaceId, @PathVariable Long userId, @Valid @RequestBody UpdateUserRequest request) {
 
-        Workspace workspace = workspaceService.changeUserAuthority(workspaceId, userId, request.getAuthority());
+        Workspace workspace = workspaceService.changeUserAuthority(workspaceId, userId, request.authority());
 
         FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
 

@@ -1,12 +1,7 @@
 package project.domain.workspace.dto.response;
 
-import lombok.Getter;
-
-@Getter
-public class DeleteWorkspaceResponse {
-    private String message;
-
+public record DeleteWorkspaceResponse(String message) {
     public DeleteWorkspaceResponse() {
-        this.message = "successfully delete workspace";
+        this("successfully delete workspace");
     }
 }
