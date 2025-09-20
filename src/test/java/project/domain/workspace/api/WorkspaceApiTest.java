@@ -65,10 +65,7 @@ public class WorkspaceApiTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.workspaceId").value("1"))
-                .andExpect(jsonPath("$.name").value("testWorkspace11"))
-                .andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/user.png"));
+                .andExpect(status().isOk());
     }
 
     @Test // admin 권한이 없는 유저가 워크스페이스 수정 시도시 forbidden 에러 응답 반환
@@ -184,19 +181,7 @@ public class WorkspaceApiTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.workspaceId").value("1"))
-                .andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-                .andExpect(jsonPath("$.profile").value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
-                .andExpect(jsonPath("$.users[0].userId").value("1"))
-                .andExpect(jsonPath("$.users[0].nickName").value("test11"))
-                .andExpect(jsonPath("$.users[0].email").value("test1@gmail.com"))
-                .andExpect(jsonPath("$.users[0].authority").value("ADMIN"))
-                .andExpect(jsonPath("$.users[1].userId").value("2"))
-                .andExpect(jsonPath("$.users[1].nickName").value("test22"))
-                .andExpect(jsonPath("$.users[1].email").value("test2@gmail.com"))
-                .andExpect(jsonPath("$.users[1].authority").value("ADMIN"))
-                .andExpect(jsonPath("$.users[2]").doesNotExist());
+                .andExpect(status().isOk());
     }
 
     @Test

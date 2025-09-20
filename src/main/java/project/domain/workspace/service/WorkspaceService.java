@@ -38,8 +38,7 @@ public class WorkspaceService {
 
     // <== 워크스페이스 제작 ==>
     @Transactional
-    public Workspace makeWorkspace(CreateWorkspaceRequest request) {
-
+    public Long makeWorkspace(CreateWorkspaceRequest request) {
         User createUser = userUtil.getLoginUser();
 
         List<User> userList = userUtil.getUserByList(request.users());
@@ -57,7 +56,7 @@ public class WorkspaceService {
         workspace.addUserByList(userList);
         workspaceRepository.save(workspace);
 
-        return workspace;
+        return workspace.getId();
     }
 
     // <== 워크스페이스 삭제 ==>

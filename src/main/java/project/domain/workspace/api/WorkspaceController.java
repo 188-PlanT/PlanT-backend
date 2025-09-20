@@ -29,86 +29,60 @@ public class WorkspaceController {
 
     @Operation(summary = "워크스페이스 생성", description = "새 워크스페이스를 생성합니다.")
     @PostMapping("/v1/workspaces")
-    public ResponseEntity<WorkspaceDto> createWorkspace(@Valid @RequestBody CreateWorkspaceRequest request) {
-
-        Workspace workspace = workspaceService.makeWorkspace(request);
-
-        WorkspaceDto response = WorkspaceDto.from(workspace);
-
+    public ResponseEntity<Long> createWorkspace(@Valid @RequestBody CreateWorkspaceRequest request) {
+        var response = workspaceService.makeWorkspace(request);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "워크스페이스 수정", description = "워크스페이스 정보를 수정합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PermitUserRole(value = {UserRole.ADMIN})
     @PutMapping("/v1/workspaces/{workspaceId}")
-    public ResponseEntity<UpdateWorkspaceResponse> findAllWorkspaces(
+    public ResponseEntity<Void> findAllWorkspaces(
             @PathVariable Long workspaceId, @Valid @RequestBody UpdateWorkspaceRequest request) {
-
-        Workspace workspace = workspaceService.updateWorkspace(workspaceId, request);
-
-        UpdateWorkspaceResponse response = UpdateWorkspaceResponse.from(workspace);
-
-        return ResponseEntity.ok(response);
+        workspaceService.updateWorkspace(workspaceId, request);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "워크스페이스 삭제", description = "워크스페이스를 삭제합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PermitUserRole(value = {UserRole.ADMIN})
     @DeleteMapping("/v1/workspaces/{workspaceId}")
-    public ResponseEntity<DeleteWorkspaceResponse> deleteWorkspaces(@PathVariable Long workspaceId) {
-
+    public ResponseEntity<Void> deleteWorkspaces(@PathVariable Long workspaceId) {
         workspaceService.removeWorkspace(workspaceId);
-
-        return ResponseEntity.ok(new DeleteWorkspaceResponse());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "워크스페이스 유저 조회", description = "워크스페이스 유저 목록을 조회합니다.")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/workspaces/{workspaceId}/users")
     public ResponseEntity<FindWorkspaceUsersResponse> findUsers(@PathVariable Long workspaceId) {
-
         Workspace workspace = workspaceService.findOne(workspaceId);
-
-        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
-
+        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.of(workspace);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "워크스페이스 유저 추가", description = "워크스페이스에 유저를 추가합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PermitUserRole(value = {UserRole.ADMIN})
     @PostMapping("/v1/workspaces/{workspaceId}/users")
-    public ResponseEntity<FindWorkspaceUsersResponse> addUser(
-            @PathVariable Long workspaceId, @Valid @RequestBody AddUserRequest request) {
-
-        Workspace workspace = workspaceService.addUser(workspaceId, request.userId());
-
-        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> addUser(@PathVariable Long workspaceId, @Valid @RequestBody AddUserRequest request) {
+        workspaceService.addUser(workspaceId, request.userId());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "워크스페이스 유저 권한 변경", description = "워크스페이스 유저의 권한을 변경합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PermitUserRole(value = {UserRole.ADMIN})
     @PutMapping("/v1/workspaces/{workspaceId}/users/{userId}")
-    public ResponseEntity<FindWorkspaceUsersResponse> changeUserAuthority(
+    public ResponseEntity<Void> changeUserAuthority(
             @PathVariable Long workspaceId, @PathVariable Long userId, @Valid @RequestBody UpdateUserRequest request) {
-
-        Workspace workspace = workspaceService.changeUserAuthority(workspaceId, userId, request.authority());
-
-        FindWorkspaceUsersResponse response = FindWorkspaceUsersResponse.from(workspace);
-
-        return ResponseEntity.ok(response);
+        workspaceService.changeUserAuthority(workspaceId, userId, request.authority());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "워크스페이스 유저 삭제", description = "워크스페이스 유저를 삭제합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PermitUserRole(value = {UserRole.ADMIN})
     @DeleteMapping("/v1/workspaces/{workspaceId}/users/{userId}")
-    public ResponseEntity<RemoveUserResponse> removeUser(@PathVariable Long workspaceId, @PathVariable Long userId) {
-
+    public ResponseEntity<Void> removeUser(@PathVariable Long workspaceId, @PathVariable Long userId) {
         workspaceService.removeUser(workspaceId, userId);
-
-        RemoveUserResponse response = new RemoveUserResponse();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
     // TODO: 패키지 이동 검토
@@ -117,11 +91,9 @@ public class WorkspaceController {
     @GetMapping("/v1/workspaces/{workspaceId}/calendar")
     public ResponseEntity<CalendarResponse> readCalendar(
             @PathVariable Long workspaceId, @Parameter(required = true, description = "yyyyMM") String date) {
-
+        // TODO: ObjectMapper 사용해서 변환하는 방법 검토
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
-
         CalendarResponse response = workspaceService.getCalendar(workspaceId, dateTime);
-
         return ResponseEntity.ok(response);
     }
 
@@ -130,11 +102,8 @@ public class WorkspaceController {
     @GetMapping("/v1/workspaces/{workspaceId}/schedules")
     public ResponseEntity<CalendarResponse> readDailySchedule(
             @PathVariable Long workspaceId, @Parameter(required = true, description = "yyyyMMdd") String date) {
-
         LocalDateTime dateTime = DateFormatUtil.parseStartOfDay(date);
-
         CalendarResponse response = workspaceService.getDailySchedules(workspaceId, dateTime);
-
         return ResponseEntity.ok(response);
     }
 }

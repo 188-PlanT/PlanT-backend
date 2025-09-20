@@ -9,17 +9,17 @@ import project.domain.workspace.domain.Workspace;
 
 public record FindWorkspaceUsersResponse(
         Long workspaceId, String workspaceName, String profile, List<SimpleUserDto> users) {
-    public static FindWorkspaceUsersResponse from(Workspace workspace) {
-        List<SimpleUserDto> userDtos =
-                workspace.getUserWorkspaces().stream().map(SimpleUserDto::new).collect(toList());
 
+    public static FindWorkspaceUsersResponse of(Workspace workspace) {
+        List<SimpleUserDto> userDtos =
+                workspace.getUserWorkspaces().stream().map(SimpleUserDto::of).collect(toList());
         return new FindWorkspaceUsersResponse(
                 workspace.getId(), workspace.getName(), workspace.getProfile().getUrl(), userDtos);
     }
 
     public record SimpleUserDto(Long userId, String nickName, String email, UserRole authority) {
-        public SimpleUserDto(UserWorkspace userWorkspace) {
-            this(
+        public static SimpleUserDto of(UserWorkspace userWorkspace) {
+            return new SimpleUserDto(
                     userWorkspace.getUser().getId(),
                     userWorkspace.getUser().getNickName(),
                     userWorkspace.getUser().getEmail(),
