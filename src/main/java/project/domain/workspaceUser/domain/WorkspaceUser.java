@@ -8,6 +8,13 @@ import project.domain.workspace.domain.Workspace;
 
 @Getter
 @Entity
+@Table(
+        name = "workspace_user",
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "workspace_user_unique",
+                    columnNames = {"workspace_id", "user_id"})
+        })
 public class WorkspaceUser extends BaseEntity {
 
     @Id
