@@ -1,3 +1,5 @@
 package project.domain.workspace.dto.request;
 
-public record WorkspaceUpdateRequest(String name, String profile) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record WorkspaceUpdateRequest(@NotBlank String name, String profileUrl) {}

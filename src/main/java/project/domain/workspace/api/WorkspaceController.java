@@ -31,7 +31,6 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 수정", description = "워크스페이스 정보를 수정합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN})
     @PutMapping("/v1/workspaces/{workspaceId}")
     public ResponseEntity<Void> updateWorkspace(
             @PathVariable Long workspaceId, @Valid @RequestBody WorkspaceUpdateRequest request) {
@@ -40,7 +39,6 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 삭제", description = "워크스페이스를 삭제합니다. 워크스페이스 관리자 권한이 필요합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN})
     @DeleteMapping("/v1/workspaces/{workspaceId}")
     public ResponseEntity<Void> deleteWorkspace(@PathVariable Long workspaceId) {
         workspaceService.removeWorkspace(workspaceId);
