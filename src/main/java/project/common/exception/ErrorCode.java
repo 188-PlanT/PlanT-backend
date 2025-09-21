@@ -24,10 +24,12 @@ public enum ErrorCode {
 
     // worksapce
     WORKSPACE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 워크스페이스입니다"),
-    WORKSPACE_ADMIN_NOT_EXIST(HttpStatus.NOT_FOUND, "워크스페이스 방장은 1명 이상이어야 합니다"),
 
     // workspaceUser
     WORKSPACE_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 워크스페이스 유저입니다"),
+    WORKSPACE_USER_AUTHORITY_INVALID(HttpStatus.FORBIDDEN, "워크스페이스 유저 접근 권한이 없습니다"),
+    WORKSPACE_USER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 워크스페이스에 속한 유저입니다"),
+    WORKSPACE_ADMIN_NOT_EXIST(HttpStatus.NOT_FOUND, "워크스페이스 방장은 1명 이상이어야 합니다"),
 
     // schedule
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스케줄입니다"),
