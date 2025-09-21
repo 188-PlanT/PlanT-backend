@@ -22,11 +22,8 @@ public class ImageController {
     @Operation(summary = "이미지 업로드", description = "이미지를 업로드합니다. 이미지 URL을 반환합니다.")
     @PostMapping("/v1/image")
     public ResponseEntity<ImageUploadResponse> upload(@RequestParam("image") MultipartFile image) throws IOException {
-        // TODO: 서비스로 이동
         String url = s3Service.uploadFile(image);
-
-        imageService.save(url);
-        ImageUploadResponse response = ImageUploadResponse.of(url);
+        var response = imageService.saveImage(url);
         return ResponseEntity.ok(response);
     }
 }

@@ -17,7 +17,6 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @Deprecated
     @Operation(summary = "댓글 추가", description = "스케줄에 댓글을 추가합니다.")
     @PostMapping("/v1/chats")
     public ResponseEntity<Void> createChat(@RequestBody @Valid ChatCreateRequest request) {
@@ -25,7 +24,6 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
-    @Deprecated
     @Operation(summary = "댓글 수정", description = "댓글을 수정합니다.")
     @PutMapping("/v1/chats/{chatId}")
     public ResponseEntity<Void> updateChat(@PathVariable Long chatId, @Valid @RequestBody ChatUpdateRequest request) {
@@ -33,7 +31,6 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
-    @Deprecated
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
     @DeleteMapping("/v1/chats/{chatId}")
     public ResponseEntity<Void> deleteChat(@PathVariable Long chatId) {

@@ -20,16 +20,14 @@ import project.domain.auth.dto.request.EmailSignUpRequest;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
 import project.domain.schedule.dao.UserScheduleRepository;
-import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.domain.UserSchedule;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
+import project.domain.user.dto.UserDto;
 import project.domain.user.dto.request.UpdateUserRequest;
-import project.domain.user.dto.response.UserSchedulesResponse;
-import project.domain.user.dto.response.UserWorkspacesResponse;
+import project.domain.user.dto.response.*;
 import project.domain.workspace.dao.UserWorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
-import project.domain.workspace.domain.Workspace;
 import project.infra.mail.application.MailService;
 import project.infra.mail.dto.MailDto;
 import project.infra.redis.application.RedisService;
@@ -66,10 +64,6 @@ public class UserService {
         userRepository.save(user);
 
         return user.getId();
-    }
-
-    private String encodePassword(String password) {
-        return passwordEncoder.encode(password);
     }
 
     // <== 회원가입 마무리 ==>
@@ -135,22 +129,13 @@ public class UserService {
         user.update(nickName, encodedPassword, profile);
     }
 
-    // // 유저 삭제
-    @Transactional
-    public void deleteUser(Long id) {
-        User user = userUtil.getUserById(id);
-
-        userRepository.delete(user);
-    }
-
     // <== 유저 검색 ==>
     @Transactional(readOnly = true)
-    public List<User> searchUser(String keyword) {
+    public SearchUserResponse searchUser(String keyword) {
         User loginUser = userUtil.getLoginUser();
-
         List<User> users = userRepository.searchByKeyword(loginUser.getId(), keyword);
 
-        return users;
+        return SearchUserResponse.of(users);
     }
 
     // <== 이메일 검증 메일 발송 ==>
@@ -176,7 +161,7 @@ public class UserService {
         return MailDto.from(email, subject, content);
     }
 
-    // <== 이메일 검증 코드 검증 ==>
+    // 검증 로직
     public void validateEmailCode(String email, String code) {
         String redisCode = redisService.getValues(email);
 
@@ -191,32 +176,31 @@ public class UserService {
         redisService.deleteByKey(email);
     }
 
-    // admin 페이지용 조회
     @Transactional(readOnly = true)
-    public User findOneDetail(Long userId) {
-        User user = userUtil.getUserById(userId);
-        // lazy Loding
-        for (UserWorkspace uw : user.getUserWorkspaces()) {
-            Workspace w = uw.getWorkspace();
-            w.getName();
-        }
-
-        for (UserSchedule us : user.getUserSchedules()) {
-            Schedule s = us.getSchedule();
-            s.getName();
-        }
-
-        return user;
+    public UserDto getLoginUser() {
+        Long userId = userUtil.getLoginUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        return UserDto.from(user);
     }
 
-    // < == validate logic ==> //
-    // <== 이메일 중복 검증 ==>
-    public void validateUserEmail(String email) {
+    @Transactional(readOnly = true)
+    public EmailCheckResponse checkEmailAvailable(String email) {
+        boolean existsUserByEmail = userRepository.existsByEmail(email);
+        return EmailCheckResponse.of(!existsUserByEmail);
+    }
+
+    @Transactional(readOnly = true)
+    public NicknameCheckResponse checkNickNameAvailable(String nickName) {
+        boolean existsUserByNickName = userRepository.existsByNickName(nickName);
+        return NicknameCheckResponse.of(!existsUserByNickName);
+    }
+
+    private void validateUserEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
         }
     }
-    // <== 닉네임 중복 검증 ==>
+
     public void validateUserNickName(String nickName) {
         if (userRepository.existsByNickName(nickName)) {
             throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
@@ -233,5 +217,10 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PlantException(ErrorCode.USER_NOT_FOUND, "비밀번호가 올바르지 않습니다");
         }
+    }
+
+    // 비밀번호 암호화
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 }

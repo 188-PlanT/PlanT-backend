@@ -69,7 +69,7 @@ public class UserApiTest extends IntegrationTest {
     public void 유저_정보_조회() throws Exception {
         // given
         // when
-        mvc.perform(get("/v1/users").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -87,7 +87,7 @@ public class UserApiTest extends IntegrationTest {
                 + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
         // when
-        mvc.perform(put("/v1/users")
+        mvc.perform(put("/v1/users/me")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
@@ -103,7 +103,7 @@ public class UserApiTest extends IntegrationTest {
                 + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
         // when
-        mvc.perform(put("/v1/users")
+        mvc.perform(put("/v1/users/me")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
@@ -112,14 +112,14 @@ public class UserApiTest extends IntegrationTest {
     }
 
     @Test
-    public void 유저_정보_수정_비밀번호오류() throws Exception {
+    public void 유저_정보_수정_비밀번호_오류() throws Exception {
         // given
         String request = " { \"currentPassword\" : \"test5555\" , "
                 + "\"newPassword\" : \"test4321\" , "
                 + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
 
         // when
-        mvc.perform(put("/v1/users")
+        mvc.perform(put("/v1/users/me")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
@@ -133,7 +133,7 @@ public class UserApiTest extends IntegrationTest {
     public void 워크스페이스_조회() throws Exception {
         // given
         // when
-        mvc.perform(get("/v1/users/workspaces").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me/workspaces").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -154,7 +154,7 @@ public class UserApiTest extends IntegrationTest {
         // given
         String date = "202404";
         // when
-        mvc.perform(get("/v1/users/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -178,7 +178,7 @@ public class UserApiTest extends IntegrationTest {
         // given
         String date = "202405";
         // when
-        mvc.perform(get("/v1/users/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))

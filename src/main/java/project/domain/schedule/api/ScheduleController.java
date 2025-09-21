@@ -34,7 +34,7 @@ public class ScheduleController {
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/schedules/{scheduleId}")
     public ResponseEntity<ScheduleDto> findSingleSchedule(@PathVariable Long scheduleId) {
-        ScheduleDto response = scheduleService.findOne(scheduleId);
+        var response = scheduleService.findOne(scheduleId);
         return ResponseEntity.ok(response);
     }
 

@@ -5,12 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.common.exception.PlantException;
 import project.common.security.jwt.JwtProvider;
 import project.common.util.DateFormatUtil;
 import project.common.util.UserUtil;
@@ -40,29 +38,17 @@ public class UserController {
 
     @Operation(summary = "이메일 사용 여부 검증", description = "사용중인 이메일인지 확인합니다.")
     @PostMapping("/v1/users/email")
-    public ResponseEntity<EmailOrNicknameCheckResponse> checkEmailAvailable(
-            @Valid @RequestBody EmailCheckRequest request) {
-        // TODO: 서비스로 이동
-        try {
-            userService.validateUserEmail(request.email());
-        } catch (PlantException e) {
-            return ResponseEntity.ok(new EmailOrNicknameCheckResponse(false));
-        }
-
-        return ResponseEntity.ok(new EmailOrNicknameCheckResponse(true));
+    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@Valid @RequestBody EmailCheckRequest request) {
+        var response = userService.checkEmailAvailable(request.email());
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "닉네임 사용 여부 검증", description = "사용중인 닉네임인지 확인합니다.")
     @PostMapping("/v1/users/nickname")
-    public ResponseEntity<EmailOrNicknameCheckResponse> checkNickNameAvailable(
+    public ResponseEntity<NicknameCheckResponse> checkNickNameAvailable(
             @Valid @RequestBody NickNameCheckRequest request) {
-        // TODO: 서비스로 이동
-        try {
-            userService.validateUserNickName(request.nickName());
-            return ResponseEntity.ok(new EmailOrNicknameCheckResponse(true));
-        } catch (PlantException e) {
-            return ResponseEntity.ok(new EmailOrNicknameCheckResponse(false));
-        }
+        var response = userService.checkNickNameAvailable(request.nickName());
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "유저 닉네임 변경", description = "유저 닉네임을 변경합니다. 회원가입이 끝나지 않은 유저는 회원가입 완료도 같이 진행합니다.")
@@ -76,43 +62,40 @@ public class UserController {
     }
 
     @Operation(summary = "유저 정보 조회", description = "로그인 유저의 정보를 조회합니다.")
-    @GetMapping("/v1/users")
+    @GetMapping("/v1/users/me")
     public ResponseEntity<UserDto> findUserDetails() {
-        // TODO: 서비스 사용하도록 변경
-        User loginUser = userUtil.getLoginUser();
-        return ResponseEntity.ok(UserDto.from(loginUser));
+        var response = userService.getLoginUser();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "유저 정보 수정", description = "로그인 유저의 정보를 수정합니다.")
-    @PutMapping("/v1/users")
+    @PutMapping("/v1/users/me")
     public ResponseEntity<Void> updateUser(@Valid @RequestBody UpdateUserRequest request) {
         userService.updateUser(request);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "유저 워크스페이스 정보 조회", description = "로그인 유저의 워크스페이스 정보를 조회합니다.")
-    @GetMapping("/v1/users/workspaces")
+    @GetMapping("/v1/users/me/workspaces")
     public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces() {
         var response = userService.findWorkspaces(userUtil.getLoginUserId());
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "유저 스케줄 정보 달력 조회", description = "해당 달에 로그인 유저가 속한 스케줄 정보를 조회합니다.")
-    @GetMapping("/v1/users/schedules")
+    @GetMapping("/v1/users/me/schedules")
     public ResponseEntity<UserSchedulesResponse> readUserSchedules(
             @Parameter(required = true, description = "yyyyMM") String date) {
-        // TODO: 서비스로 이동
         LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
-        UserSchedulesResponse response = userService.findSchedules(userUtil.getLoginUserId(), dateTime);
-
+        var response = userService.findSchedules(userUtil.getLoginUserId(), dateTime);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "유저 검색", description = "이메일 또는 닉네임 기반으로 유저를 검색합니다.")
     @GetMapping("/v1/users/search")
     public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String keyword) {
-        List<User> users = userService.searchUser(keyword);
-        return ResponseEntity.ok(SearchUserResponse.of(users));
+        var response = userService.searchUser(keyword);
+        return ResponseEntity.ok(response);
     }
 
     // TODO: 이벤트 기반 처리 시에 도메인 분리 검토
