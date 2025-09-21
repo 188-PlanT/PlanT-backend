@@ -19,7 +19,8 @@ public class WorkspaceUserUtil {
 
     public boolean isAdminUser(Long workspaceId, Long userId) {
         // unique key 인덱스를 활용하기 위해 조회 후 권한 검증
-        WorkspaceUser workspaceUser = workspaceUserRepository.findByWorkspaceIdAndUserId(workspaceId, userId)
+        WorkspaceUser workspaceUser = workspaceUserRepository
+                .findByWorkspaceIdAndUserId(workspaceId, userId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));
 
         return workspaceUser.getRole().isAdmin();

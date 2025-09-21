@@ -41,8 +41,12 @@ public class WorkspaceUser extends BaseEntity {
         this.role = role;
     }
 
-    public static WorkspaceUser create(Workspace workspace, User user) {
+    public static WorkspaceUser createUser(Workspace workspace, User user) {
         return new WorkspaceUser(workspace, user, WorkspaceUserRole.USER);
+    }
+
+    public static WorkspaceUser createAdmin(Workspace workspace, User user) {
+        return new WorkspaceUser(workspace, user, WorkspaceUserRole.ADMIN);
     }
 
     public void updateRole(WorkspaceUserRole role) {

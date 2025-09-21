@@ -14,7 +14,6 @@ import project.domain.workspace.domain.Workspace;
 import project.domain.workspaceUser.dao.WorkspaceUserRepository;
 import project.domain.workspaceUser.domain.WorkspaceUser;
 import project.domain.workspaceUser.domain.WorkspaceUserDomainService;
-import project.domain.workspaceUser.domain.WorkspaceUserRole;
 import project.domain.workspaceUser.dto.request.WorkspaceUserCreateRequest;
 import project.domain.workspaceUser.dto.request.WorkspaceUserUpdateRequest;
 import project.domain.workspaceUser.dto.response.WorkspaceUsersResponse;
@@ -29,7 +28,6 @@ public class WorkspaceUserService {
     private final UserUtil userUtil;
     private final WorkspaceUserUtil workspaceUserUtil;
     private final WorkspaceUserDomainService workspaceUserDomainService;
-
 
     @Transactional(readOnly = true)
     public WorkspaceUsersResponse findWorkspaceUsersByWorkspace(Long workspaceId) {
@@ -55,7 +53,7 @@ public class WorkspaceUserService {
             throw new PlantException(ErrorCode.WORKSPACE_USER_ALREADY_EXIST);
         }
 
-        var workspaceUser = WorkspaceUser.create(workspace, user);
+        var workspaceUser = WorkspaceUser.createUser(workspace, user);
         workspaceUserRepository.save(workspaceUser);
         return workspaceUser.getId();
     }
@@ -66,8 +64,8 @@ public class WorkspaceUserService {
         WorkspaceUser workspaceUser = workspaceUserRepository
                 .findById(workspaceUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));
-        List<WorkspaceUser> workspaceUsers = workspaceUserRepository
-                .findAllByWorkspaceId(workspaceUser.getWorkspace().getId());
+        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByWorkspaceId(
+                workspaceUser.getWorkspace().getId());
 
         workspaceUserDomainService.validateWhenChangeRole(workspaceUser, request.role(), workspaceUsers);
         workspaceUser.updateRole(request.role());
@@ -80,8 +78,8 @@ public class WorkspaceUserService {
         WorkspaceUser workspaceUser = workspaceUserRepository
                 .findById(workspaceUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));
-        List<WorkspaceUser> workspaceUsers = workspaceUserRepository
-                .findAllByWorkspaceId(workspaceUser.getWorkspace().getId());
+        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByWorkspaceId(
+                workspaceUser.getWorkspace().getId());
 
         workspaceUserDomainService.validateWhenRemoveUser(workspaceUser, workspaceUsers);
         workspaceUserRepository.delete(workspaceUser);

@@ -2,7 +2,6 @@ package project.domain.workspaceUser.dao;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import project.domain.workspace.domain.Workspace;
 import project.domain.workspaceUser.domain.WorkspaceUser;
