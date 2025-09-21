@@ -15,7 +15,7 @@ import project.domain.schedule.dto.request.UpdateScheduleStateRequest;
 import project.domain.schedule.service.ScheduleService;
 import project.domain.user.domain.UserRole;
 
-@Tag(name = "4. [Schedule]", description = "스케줄 관리 API")
+@Tag(name = "[Schedule]", description = "스케줄 관리 API")
 @RestController
 @RequiredArgsConstructor
 public class ScheduleController {

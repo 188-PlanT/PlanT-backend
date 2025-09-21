@@ -14,7 +14,8 @@ import project.domain.auth.dto.response.TokenPairResponse;
 import project.domain.auth.service.CustomOAuth2UserService;
 import project.domain.auth.service.LoginService;
 
-@Tag(name = "1. [Login]", description = "로그인, 로그아웃 API")
+// TODO: AuthController, AuthService로 리팩토링
+@Tag(name = "[Login]", description = "로그인, 로그아웃 API")
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
@@ -51,7 +52,7 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "더비 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
+    @Operation(summary = "더미 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/dumy")
     public ResponseEntity<TokenPairResponse> dumyLogin(@Valid @RequestBody EmailLoginRequest request) {
         var response = loginService.loginInDumy(request.email(), request.password());

@@ -20,7 +20,7 @@ import project.domain.workspace.dto.request.UpdateWorkspaceRequest;
 import project.domain.workspace.dto.response.*;
 import project.domain.workspace.service.WorkspaceService;
 
-@Tag(name = "3. [Workspace]", description = "워크스페이스 관리 API")
+@Tag(name = "[Workspace]", description = "워크스페이스 관리 API")
 @RequiredArgsConstructor
 @RestController
 public class WorkspaceController {

@@ -20,7 +20,7 @@ import project.domain.user.dto.request.*;
 import project.domain.user.dto.response.*;
 import project.domain.user.service.UserService;
 
-@Tag(name = "2. [User]", description = "유저 정보 관리 API")
+@Tag(name = "[User]", description = "유저 정보 관리 API")
 @RestController
 @RequiredArgsConstructor
 public class UserController {

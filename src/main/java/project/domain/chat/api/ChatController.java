@@ -10,7 +10,7 @@ import project.domain.chat.dto.request.ChatCreateRequest;
 import project.domain.chat.dto.request.ChatUpdateRequest;
 import project.domain.chat.service.ChatService;
 
-@Tag(name = "6. [Chat]", description = "댓글 API")
+@Tag(name = "[Chat]", description = "댓글 API")
 @RestController
 @RequiredArgsConstructor
 public class ChatController {
