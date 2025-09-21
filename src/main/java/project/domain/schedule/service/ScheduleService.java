@@ -13,7 +13,7 @@ import project.domain.chat.domain.Chat;
 import project.domain.schedule.dao.ScheduleRepository;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
-import project.domain.schedule.dto.ScheduleDto;
+import project.domain.schedule.dto.ScheduleFullDto;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
 import project.domain.user.domain.User;
@@ -33,11 +33,11 @@ public class ScheduleService {
 
     // <== 스케줄 단일 조회 ==>
     @Transactional(readOnly = true)
-    public ScheduleDto findOne(Long id) {
+    public ScheduleFullDto findOne(Long id) {
         Schedule schedule = findScheduleById(id);
         List<Chat> chats = chatRepository.findByScheduleId(id);
 
-        return ScheduleDto.from(schedule, chats);
+        return ScheduleFullDto.from(schedule, chats);
     }
 
     // <== 스케줄 생성 ==>
@@ -77,14 +77,14 @@ public class ScheduleService {
 
     // <== 스케줄 수정 ==>
     @Transactional
-    public ScheduleDto updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
+    public ScheduleFullDto updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
         Schedule schedule = findScheduleById(scheduleId);
         List<User> users = userUtil.getUserByList(request.users());
         schedule.update(
                 request.name(), request.startDate(), request.endDate(), request.content(), users, request.state());
 
         List<Chat> chats = chatRepository.findByScheduleId(scheduleId);
-        return ScheduleDto.from(schedule, chats);
+        return ScheduleFullDto.from(schedule, chats);
     }
 
     // <== 스케줄 삭제 ==>
@@ -96,12 +96,12 @@ public class ScheduleService {
 
     // <== 스케줄 상태 수정 ==>
     @Transactional
-    public ScheduleDto moveScheduleState(Long id, Progress state) {
+    public ScheduleFullDto moveScheduleState(Long id, Progress state) {
         Schedule schedule = findScheduleById(id);
         schedule.moveProgress(state);
 
         List<Chat> chats = chatRepository.findByScheduleId(id);
-        return ScheduleDto.from(schedule, chats);
+        return ScheduleFullDto.from(schedule, chats);
     }
 
     private Schedule findScheduleById(Long id) {

@@ -8,8 +8,6 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import project.domain.user.domain.User;
-import project.domain.user.domain.UserRole;
 
 @Getter
 public class UserInfo implements UserDetails {
@@ -35,24 +33,6 @@ public class UserInfo implements UserDetails {
         this.password = password;
         this.workspaceAdminIds = workspaceAdminIds;
         this.workspaceUserIds = workspaceUserIds;
-    }
-
-    public static UserInfo from(User user) {
-        return UserInfo.builder()
-                .userId(user.getId())
-                .password(user.getPassword())
-                .username(user.getEmail())
-                .authority(user.getRoleKey())
-                .workspaceAdminIds(getWorkspaceIds(user, UserRole.ADMIN))
-                .workspaceUserIds(getWorkspaceIds(user, UserRole.USER))
-                .build();
-    }
-
-    private static List<Long> getWorkspaceIds(User user, UserRole userRole) {
-        return user.getUserWorkspaces().stream()
-                .filter(uw -> uw.getUserRole().equals(userRole))
-                .map(uw -> uw.getWorkspace().getId())
-                .collect(Collectors.toList());
     }
 
     public static UserInfo from(Claims claims) {

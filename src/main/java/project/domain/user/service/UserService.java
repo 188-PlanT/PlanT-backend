@@ -26,8 +26,8 @@ import project.domain.user.domain.User;
 import project.domain.user.dto.UserDto;
 import project.domain.user.dto.request.UpdateUserRequest;
 import project.domain.user.dto.response.*;
-import project.domain.workspace.dao.UserWorkspaceRepository;
-import project.domain.workspace.domain.UserWorkspace;
+import project.domain.workspaceUser.dao.WorkspaceUserRepository;
+import project.domain.workspaceUser.domain.WorkspaceUser;
 import project.infra.mail.application.MailService;
 import project.infra.mail.dto.MailDto;
 import project.infra.redis.application.RedisService;
@@ -40,7 +40,7 @@ public class UserService {
     private static final String PASSWORD_PATTERN = "^[0-9a-zA-Z@#$%^&+=!]{8,16}$"; // 영문, 숫자, 특수문자
 
     private final UserRepository userRepository;
-    private final UserWorkspaceRepository userWorkspaceRepository;
+    private final WorkspaceUserRepository workspaceUserRepository;
     private final UserScheduleRepository userScheduleRepository;
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
@@ -69,16 +69,13 @@ public class UserService {
     // <== 회원가입 마무리 ==>
     @Transactional
     public User finishRegister(String nickName) {
-
         User user = userUtil.getLoginUser();
-
         validateUserNickName(nickName);
 
-        user.setNickName(nickName);
+        user.finishRegister(nickName);
 
         // lazy loding
         user.getProfile().getUrl();
-
         return user;
     }
 
@@ -86,9 +83,9 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserWorkspacesResponse findWorkspaces(Long userId) {
         User user = userUtil.getUserById(userId);
-        List<UserWorkspace> userWorkspaces = userWorkspaceRepository.searchByUser(user);
+        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByUser(user);
 
-        return UserWorkspacesResponse.from(user, userWorkspaces);
+        return UserWorkspacesResponse.from(user, workspaceUsers);
     }
 
     // <== 스케줄 조회 ==>
