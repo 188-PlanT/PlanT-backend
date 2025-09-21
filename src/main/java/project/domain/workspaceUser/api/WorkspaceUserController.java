@@ -21,30 +21,30 @@ public class WorkspaceUserController {
 
     @Operation(summary = "워크스페이스 유저 조회", description = "워크스페이스 유저 목록을 조회합니다.")
     @GetMapping("/v1/workspace-users")
-    public ResponseEntity<WorkspaceUsersResponse> findWorkspaceUsers(@RequestParam Long workspaceId) {
-        var response = workspaceUserService.findAllWorkspaceUsers(workspaceId);
+    public ResponseEntity<WorkspaceUsersResponse> getWorkspaceUsers(@RequestParam Long workspaceId) {
+        var response = workspaceUserService.findWorkspaceUsersByWorkspace(workspaceId);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "워크스페이스 유저 추가", description = "워크스페이스에 유저를 추가합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PostMapping("/v1/workspace-users")
-    public ResponseEntity<Long> addWorkspaceUser(@Valid @RequestBody WorkspaceUserCreateRequest request) {
+    public ResponseEntity<Long> createWorkspaceUser(@Valid @RequestBody WorkspaceUserCreateRequest request) {
         var response = workspaceUserService.addUserToWorkspace(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "워크스페이스 유저 권한 변경", description = "워크스페이스 유저의 권한을 변경합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PutMapping("/v1/workspace-users/{workspaceUserId}")
-    public ResponseEntity<Void> changeUserRole(
+    public ResponseEntity<Void> updateWorkspaceUser(
             @PathVariable Long workspaceUserId, @Valid @RequestBody WorkspaceUserUpdateRequest request) {
-        workspaceUserService.changeWorkspaceUserRole(workspaceUserId, request);
+        workspaceUserService.changeWorkspaceUser(workspaceUserId, request);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "워크스페이스 유저 삭제", description = "워크스페이스 유저를 삭제합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @DeleteMapping("/v1/workspace-users/{workspaceUserId}")
-    public ResponseEntity<Void> removeWorkspaceUser(@PathVariable Long workspaceUserId) {
-        workspaceUserService.removeWorkspaceUser(workspaceUserId);
+    public ResponseEntity<Void> deleteWorkspaceUser(@PathVariable Long workspaceUserId) {
+        workspaceUserService.removeUserFromWorkspace(workspaceUserId);
         return ResponseEntity.ok().build();
     }
 }

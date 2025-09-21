@@ -25,7 +25,7 @@ public class WorkspaceUserService {
     private final WorkspaceUserRepository workspaceUserRepository;
 
     @Transactional(readOnly = true)
-    public WorkspaceUsersResponse findAllWorkspaceUsers(Long workspaceId) {
+    public WorkspaceUsersResponse findWorkspaceUsersByWorkspace(Long workspaceId) {
         Workspace workspace = workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
@@ -48,7 +48,7 @@ public class WorkspaceUserService {
     }
 
     @Transactional
-    public void changeWorkspaceUserRole(Long workspaceUserId, WorkspaceUserUpdateRequest request) {
+    public void changeWorkspaceUser(Long workspaceUserId, WorkspaceUserUpdateRequest request) {
         WorkspaceUser workspaceUser = workspaceUserRepository
                 .findById(workspaceUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));
@@ -57,7 +57,7 @@ public class WorkspaceUserService {
     }
 
     @Transactional
-    public void removeWorkspaceUser(Long workspaceUserId) {
+    public void removeUserFromWorkspace(Long workspaceUserId) {
         WorkspaceUser workspaceUser = workspaceUserRepository
                 .findById(workspaceUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));

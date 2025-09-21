@@ -37,7 +37,7 @@ public class ScheduleUserService {
     }
 
     @Transactional
-    public void removeUserToSchedule(Long scheduleUserId) {
+    public void removeUserFromSchedule(Long scheduleUserId) {
         ScheduleUser scheduleUser = scheduleUserRepository
                 .findById(scheduleUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_USER_NOT_FOUND));
