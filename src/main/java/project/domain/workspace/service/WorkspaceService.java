@@ -66,7 +66,7 @@ public class WorkspaceService {
 
         Workspace workspace = findWorkspaceById(workspaceId);
         Image profile = request.profileUrl() != null ? getProfileByUrl(request.profileUrl()) : null;
-        workspace.updateWorkspace(request.name(), profile);
+        workspace.update(request.name(), profile);
     }
 
     private Image getProfileByUrl(String profileUrl) {
@@ -85,7 +85,7 @@ public class WorkspaceService {
         LocalDateTime endDate = getEndDate(date);
 
         List<Schedule> schedules = scheduleRepository.searchByMonth(workspace, startDate, endDate);
-        return CalendarResponse.of(workspace, schedules, loginUserId);
+        return CalendarResponse.of(workspace, schedules);
     }
 
     // <== 오늘의 일정 반환 ==>
@@ -98,7 +98,7 @@ public class WorkspaceService {
 
         List<Schedule> schedules = scheduleRepository.searchByDate(
                 workspace, date, date.plusDays(1).minusSeconds(1));
-        return CalendarResponse.of(workspace, schedules, loginUserId);
+        return CalendarResponse.of(workspace, schedules);
     }
 
     private LocalDateTime getStartDate(LocalDateTime dateTime) {
