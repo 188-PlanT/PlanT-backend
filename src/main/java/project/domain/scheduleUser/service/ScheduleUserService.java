@@ -22,7 +22,7 @@ public class ScheduleUserService {
     private final UserRepository userRepository;
     private final ScheduleUserRepository scheduleUserRepository;
 
-    // TODO: 권한 검증 로직 추가
+    // TODO: 워크스페이스 분리 후 권한 검증 로직 추가
     @Transactional
     public Long addUserToSchedule(Long scheduleId, Long userId) {
         Schedule schedule = scheduleRepository
