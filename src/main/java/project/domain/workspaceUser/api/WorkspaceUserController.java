@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.domain.workspaceUser.dto.request.WorkspaceUserCreateRequest;
@@ -29,7 +30,7 @@ public class WorkspaceUserController {
     @PostMapping("/v1/workspace-users")
     public ResponseEntity<Long> addWorkspaceUser(@Valid @RequestBody WorkspaceUserCreateRequest request) {
         var response = workspaceUserService.addUserToWorkspace(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "워크스페이스 유저 권한 변경", description = "워크스페이스 유저의 권한을 변경합니다. 워크스페이스 관리자 권한이 필요합니다.")
