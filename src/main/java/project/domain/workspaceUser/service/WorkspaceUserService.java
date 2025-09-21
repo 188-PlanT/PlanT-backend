@@ -8,6 +8,7 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.domain.user.dao.UserRepository;
 import project.domain.workspace.dao.WorkspaceRepository;
+import project.domain.workspace.domain.Workspace;
 import project.domain.workspaceUser.dao.WorkspaceUserRepository;
 import project.domain.workspaceUser.domain.WorkspaceUser;
 import project.domain.workspaceUser.dto.request.WorkspaceUserCreateRequest;
@@ -25,7 +26,10 @@ public class WorkspaceUserService {
 
     @Transactional(readOnly = true)
     public WorkspaceUsersResponse findAllWorkspaceUsers(Long workspaceId) {
-        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByWorkspaceId(workspaceId);
+        Workspace workspace = workspaceRepository
+                .findById(workspaceId)
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByWorkspace(workspace);
         return WorkspaceUsersResponse.of(workspaceUsers);
     }
 
