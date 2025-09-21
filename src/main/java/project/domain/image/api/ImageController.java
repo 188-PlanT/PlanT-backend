@@ -11,7 +11,7 @@ import project.domain.image.dto.response.ImageUploadResponse;
 import project.domain.image.service.ImageService;
 import project.infra.s3.application.S3Service;
 
-@Tag(name = "5. [Image]", description = "이미지 업로드 API")
+@Tag(name = "[Image]", description = "이미지 업로드 API")
 @RestController
 @RequiredArgsConstructor
 public class ImageController {

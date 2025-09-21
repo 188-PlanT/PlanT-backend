@@ -9,9 +9,10 @@ import project.domain.user.domain.User;
 @Getter
 @Entity
 @Table(
+        name = "schedule_user",
         uniqueConstraints = {
             @UniqueConstraint(
-                    name = "SCHEDULE_USER_UNIQUE",
+                    name = "schedule_user_unique",
                     columnNames = {"schedule_id", "user_id"})
         })
 public class ScheduleUser extends BaseEntity {
