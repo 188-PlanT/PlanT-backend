@@ -2,6 +2,7 @@ package project.domain.scheduleUser.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.domain.scheduleUser.dto.request.ScheduleUserCreateRequest;
@@ -16,7 +17,7 @@ public class ScheduleUserController {
     @PostMapping("/v1/schedules/users")
     public ResponseEntity<Long> addUserToSchedule(@RequestBody @Valid ScheduleUserCreateRequest request) {
         var response = scheduleUserService.addUserToSchedule(request.scheduleId(), request.userId());
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/v1/schedules/users/{scheduleUserId}")
