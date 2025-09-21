@@ -7,6 +7,7 @@ import lombok.Setter;
 import project.domain.common.BaseEntity;
 import project.domain.user.domain.User;
 
+@Deprecated
 @Entity
 @Table(name = "user_schedule")
 @Getter

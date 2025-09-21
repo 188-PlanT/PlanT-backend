@@ -32,7 +32,7 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    @Column(columnDefinition = "TEXT", nullable = true)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,6 +44,7 @@ public class Schedule extends BaseEntity {
     private Progress state;
 
     // Schedule이 UserSchedule 영속성 관리
+    @Deprecated
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
 
@@ -61,6 +62,7 @@ public class Schedule extends BaseEntity {
     }
 
     // < == 비즈니스 로직 == >
+    @Deprecated
     public void addUser(User user) {
 
         if (!this.workspace.hasUser(user)) {
@@ -74,14 +76,6 @@ public class Schedule extends BaseEntity {
         UserSchedule userSchedule = new UserSchedule(user, this);
 
         this.userSchedules.add(userSchedule);
-    }
-
-    public void removeUser(User user) {
-        if (!this.hasUser(user)) {
-            throw new IllegalStateException("존재하지 않는 user 입니다");
-        }
-
-        this.userSchedules.removeIf(us -> us.getUser().equals(user));
     }
 
     public void moveProgress(Progress state) {
