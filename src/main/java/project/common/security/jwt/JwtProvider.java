@@ -15,6 +15,7 @@ import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.property.JwtProperty;
 import project.domain.auth.domain.UserInfo;
+import project.domain.auth.dto.response.AccessTokenResponse;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.domain.user.domain.UserRole;
@@ -43,15 +44,14 @@ public class JwtProvider {
     }
 
     // RefreshToken으로 AccesToken 생성
-    public String createAccessTokenByRefreshToken(String refreshToken) {
-
+    public AccessTokenResponse createAccessTokenByRefreshToken(String refreshToken) {
         Claims claims = validateRefreshToken(refreshToken);
-
         String email = (String) claims.get("email");
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new PlantException(ErrorCode.USER_NOT_FOUND));
+        String accessToken = createAccessTokenByUser(user);
 
-        return createAccessTokenByUser(user);
+        return AccessTokenResponse.of(accessToken);
     }
 
     /**

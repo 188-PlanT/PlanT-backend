@@ -27,7 +27,7 @@ public class LoginController {
     @PostMapping("/v1/login")
     public ResponseEntity<TokenPairResponse> loginUserByEmailAndPassword(
             @Valid @RequestBody EmailLoginRequest request) {
-        TokenPairResponse response = loginService.loginByEmailAndPassword(request.email(), request.password());
+        var response = loginService.loginByEmailAndPassword(request.email(), request.password());
         return ResponseEntity.ok(response);
     }
 
@@ -36,9 +36,10 @@ public class LoginController {
             description = "Oauth2 기반으로 로그인합니다. Authentication code와 provider 정보를 입력하면, 사용자 정보 확인 후 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/oauth2")
     public ResponseEntity<TokenPairResponse> oauth2Login(@Valid @RequestBody Oauth2LoginRequest request) {
+        // TODO: OAuth2 리팩토링 시 서비스로 이동
         String loginUserEmail =
                 customOAuth2UserService.getOauth2UserEmailByAuthCode(request.code(), request.provider());
-        TokenPairResponse response = loginService.loginByOauth2UserEmail(loginUserEmail);
+        var response = loginService.loginByOauth2UserEmail(loginUserEmail);
         return ResponseEntity.ok(response);
     }
 
@@ -46,15 +47,14 @@ public class LoginController {
     @PostMapping("/v1/refresh")
     public ResponseEntity<AccessTokenResponse> loginByRefreshToken(
             @RequestHeader("Refresh-Token") String refreshToken) {
-        String accessToken = jwtProvider.createAccessTokenByRefreshToken(refreshToken);
-        AccessTokenResponse response = AccessTokenResponse.of(accessToken);
+        var response = jwtProvider.createAccessTokenByRefreshToken(refreshToken);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "더비 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
     @PostMapping("/v1/login/dumy")
     public ResponseEntity<TokenPairResponse> dumyLogin(@Valid @RequestBody EmailLoginRequest request) {
-        TokenPairResponse response = loginService.loginInDumy(request.email(), request.password());
+        var response = loginService.loginInDumy(request.email(), request.password());
         return ResponseEntity.ok(response);
     }
 }

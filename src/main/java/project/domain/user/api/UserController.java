@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +38,7 @@ public class UserController {
 
     @Operation(summary = "이메일 사용 여부 검증", description = "사용중인 이메일인지 확인합니다.")
     @PostMapping("/v1/users/email")
-    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(
-            @Valid @RequestBody EmailCheckRequest request) {
+    public ResponseEntity<EmailCheckResponse> checkEmailAvailable(@Valid @RequestBody EmailCheckRequest request) {
         var response = userService.checkEmailAvailable(request.email());
         return ResponseEntity.ok(response);
     }
