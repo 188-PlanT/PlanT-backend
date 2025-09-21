@@ -7,9 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import project.common.helper.IntegrationTest;
+import project.common.helper.ApiIntegrationTest;
 
-public class ScheduleApiTest extends IntegrationTest {
+public class ScheduleApiTest extends ApiIntegrationTest {
 
     @Test
     public void 스케줄_생성() throws Exception {

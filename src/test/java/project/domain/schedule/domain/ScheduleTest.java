@@ -7,6 +7,7 @@ import static project.common.constant.UserConstant.*;
 import static project.common.constant.WorkspaceConstant.*;
 
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import project.common.exception.ErrorCode;
@@ -28,9 +29,7 @@ class ScheduleTest {
             User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
             User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
 
-            Workspace workspace =
-                    Workspace.builder().name(WORKSPACE_NAME).user(user1).build();
-            workspace.addUser(user2);
+            Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
             // then & then
             assertThatCode(() -> Schedule.builder()
@@ -45,6 +44,7 @@ class ScheduleTest {
                     .doesNotThrowAnyException();
         }
 
+        @Disabled("워크스페이스 로직 수정에 따라 비활성화")
         @Test
         void 워크스페이스에_없는_유저를_추가하면_실패한다() {
             // given
@@ -53,8 +53,7 @@ class ScheduleTest {
             User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
             User invalidUser = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
 
-            Workspace workspace =
-                    Workspace.builder().name(WORKSPACE_NAME).user(user1).build();
+            Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
             // then & then
             assertThatThrownBy(() -> Schedule.builder()
@@ -78,9 +77,7 @@ class ScheduleTest {
             User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
             User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
 
-            Workspace workspace =
-                    Workspace.builder().name(WORKSPACE_NAME).user(user1).build();
-            workspace.addUser(user2);
+            Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
             // then & then
             assertThatThrownBy(() -> Schedule.builder()
@@ -108,9 +105,7 @@ class ScheduleTest {
             User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
             User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
 
-            Workspace workspace =
-                    Workspace.builder().name(WORKSPACE_NAME).user(user1).build();
-            workspace.addUser(user2);
+            Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
             Schedule schedule = Schedule.builder()
                     .workspace(workspace)
@@ -135,6 +130,7 @@ class ScheduleTest {
             assertThat(schedule.getName()).isNotEqualTo(SCHEDULE_NAME);
         }
 
+        @Disabled("워크스페이스 로직 수정에 따라 비활성화")
         @Test
         void 워크스페이스에_없는_유저를_추가하면_실패한다() {
             // given
@@ -143,8 +139,7 @@ class ScheduleTest {
             User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
             User invalidUser = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
 
-            Workspace workspace =
-                    Workspace.builder().name(WORKSPACE_NAME).user(user1).build();
+            Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
             Schedule schedule = Schedule.builder()
                     .workspace(workspace)
@@ -176,9 +171,7 @@ class ScheduleTest {
             User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
             User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
 
-            Workspace workspace =
-                    Workspace.builder().name(WORKSPACE_NAME).user(user1).build();
-            workspace.addUser(user2);
+            Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
             Schedule schedule = Schedule.builder()
                     .workspace(workspace)

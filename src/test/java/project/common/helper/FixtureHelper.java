@@ -15,16 +15,11 @@ public class FixtureHelper {
 
     public static User createEmailUser(String email) {
         Image profile = createDefaultUserProfile();
-        return User.ofEmailPassword(EMAIL, PASSWORD, profile);
+        return User.ofEmailPassword(email, PASSWORD, profile);
     }
 
-    public static Workspace createWorkspace(User creator) {
-        Image profile = createDefaultWorkspaceProfile();
-        return Workspace.builder()
-                .name(WORKSPACE_NAME)
-                .user(creator)
-                .profile(profile)
-                .build();
+    public static Workspace createWorkspace() {
+        return Workspace.create(WORKSPACE_NAME);
     }
 
     public static Schedule createSchedule(Workspace workspace) {
@@ -33,6 +28,10 @@ public class FixtureHelper {
 
     public static Chat createChat(Schedule schedule, User user, String content) {
         return Chat.builder().schedule(schedule).user(user).content(content).build();
+    }
+
+    public static Image createImage() {
+        return new Image(PROFILE_URL);
     }
 
     private static Image createDefaultUserProfile() {

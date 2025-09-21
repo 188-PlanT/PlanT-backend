@@ -31,8 +31,8 @@ class UserTest {
         User oauthUser = User.fromOAuth2Attributes(EMAIL, profileImage);
 
         // when
-        emailPasswordUser.setNickName(NICKNAME);
-        oauthUser.setNickName(NICKNAME);
+        emailPasswordUser.finishRegister(NICKNAME);
+        oauthUser.finishRegister(NICKNAME);
 
         // then
         assertThat(emailPasswordUser.getUserRole()).isEqualTo(UserRole.USER);

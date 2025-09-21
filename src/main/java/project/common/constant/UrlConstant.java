@@ -14,4 +14,5 @@ public class UrlConstant {
 
     public static final String DEFAULT_USER_PROFILE_URL = "https://d12v02yfguudwt.cloudfront.net/user.png";
     public static final String DEFAULT_WORKSPACE_PROFILE_URL = "https://d12v02yfguudwt.cloudfront.net/workspace.png";
+    public static final String PROFILE_URL = "https://testProfile.com/profile.png";
 }

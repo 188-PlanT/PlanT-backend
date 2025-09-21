@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.*;
 import org.springframework.http.MediaType;
-import project.common.helper.IntegrationTest;
+import project.common.helper.ApiIntegrationTest;
 
-public class LoginApiTest extends IntegrationTest {
+public class LoginApiTest extends ApiIntegrationTest {
 
     @Test // localTestDB에는 암호화 안된 비밀번호 입력됨 -> dumyLogin 사용해야함
     public void 이메일_로그인() throws Exception {
