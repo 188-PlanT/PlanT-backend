@@ -29,6 +29,9 @@ public enum ErrorCode {
     // schedule
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스케줄입니다"),
 
+    // scheduleUser
+    SCHEDULE_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스케줄 유저입니다"),
+
     // chat
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다"),
     CHAT_USER_NOT_IN_SCHEDULE(HttpStatus.CONFLICT, "채팅 작성자가 스케줄에 속해있지 않습니다"),
