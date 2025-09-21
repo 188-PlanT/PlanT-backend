@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-public record CreateWorkspaceRequest(@NotBlank String name, String profile, List<Long> users) {
+public record WorkspaceCreateRequest(@NotBlank String name, String profile, List<Long> users) {
 
-    public CreateWorkspaceRequest {
+    public WorkspaceCreateRequest {
         if (users == null) {
             users = new ArrayList<>();
         }

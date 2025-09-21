@@ -22,8 +22,8 @@ import project.domain.user.domain.UserRole;
 import project.domain.workspace.dao.WorkspaceRepository;
 import project.domain.workspace.domain.UserWorkspace;
 import project.domain.workspace.domain.Workspace;
-import project.domain.workspace.dto.request.CreateWorkspaceRequest;
-import project.domain.workspace.dto.request.UpdateWorkspaceRequest;
+import project.domain.workspace.dto.request.WorkspaceCreateRequest;
+import project.domain.workspace.dto.request.WorkspaceUpdateRequest;
 import project.domain.workspace.dto.response.CalendarResponse;
 
 @Slf4j
@@ -38,7 +38,7 @@ public class WorkspaceService {
 
     // <== 워크스페이스 제작 ==>
     @Transactional
-    public Long makeWorkspace(CreateWorkspaceRequest request) {
+    public Long makeWorkspace(WorkspaceCreateRequest request) {
         User createUser = userUtil.getLoginUser();
 
         List<User> userList = userUtil.getUserByList(request.users());
@@ -86,7 +86,7 @@ public class WorkspaceService {
 
     // <== 워크스페이스 수정 ==>
     @Transactional
-    public Workspace updateWorkspace(Long workspaceId, UpdateWorkspaceRequest request) {
+    public Workspace updateWorkspace(Long workspaceId, WorkspaceUpdateRequest request) {
 
         Workspace workspace = findWorkspaceById(workspaceId);
 
