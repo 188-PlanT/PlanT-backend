@@ -69,7 +69,7 @@ public class UserApiTest extends ApiIntegrationTest {
     public void 유저_정보_조회() throws Exception {
         // given
         // when
-        mvc.perform(get("/v1/users/me").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -88,7 +88,7 @@ public class UserApiTest extends ApiIntegrationTest {
 
         // when
         mvc.perform(put("/v1/users/me")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
@@ -104,7 +104,7 @@ public class UserApiTest extends ApiIntegrationTest {
 
         // when
         mvc.perform(put("/v1/users/me")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
@@ -120,7 +120,7 @@ public class UserApiTest extends ApiIntegrationTest {
 
         // when
         mvc.perform(put("/v1/users/me")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
@@ -133,7 +133,7 @@ public class UserApiTest extends ApiIntegrationTest {
     public void 워크스페이스_조회() throws Exception {
         // given
         // when
-        mvc.perform(get("/v1/users/me/workspaces").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me/workspaces").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -154,7 +154,7 @@ public class UserApiTest extends ApiIntegrationTest {
         // given
         String date = "202404";
         // when
-        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -178,7 +178,7 @@ public class UserApiTest extends ApiIntegrationTest {
         // given
         String date = "202405";
         // when
-        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -197,7 +197,7 @@ public class UserApiTest extends ApiIntegrationTest {
         // given
         String keyword = "test";
         // when
-        mvc.perform(get("/v1/users/search?keyword=" + keyword).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(get("/v1/users/search?keyword=" + keyword).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.users[0].userId").value("2"))

@@ -43,7 +43,7 @@ public class ChatControllerTest extends ApiIntegrationTest {
         String request = "{ \"content\" : \"hello\" }";
         // when
         mvc.perform(put("/v1/chats/1")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 // then
@@ -67,7 +67,7 @@ public class ChatControllerTest extends ApiIntegrationTest {
     public void 댓글_삭제() throws Exception {
         // given
         // when
-        mvc.perform(delete("/v1/chats/1").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(delete("/v1/chats/1").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk());
     }
