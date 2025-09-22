@@ -18,8 +18,8 @@ import project.domain.auth.domain.UserInfo;
 import project.domain.auth.dto.response.AccessTokenResponse;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
-import project.domain.user.domain.UserRole;
-import project.domain.workspace.dao.UserWorkspaceRepository;
+import project.domain.workspaceUser.dao.WorkspaceUserRepository;
+import project.domain.workspaceUser.domain.WorkspaceUserRole;
 import project.infra.redis.application.RedisServiceImpl;
 
 @Slf4j
@@ -33,7 +33,7 @@ public class JwtProvider {
     private final Long REFRESH_EXP_TIME = 1000L * 60 * 60 * 24;
 
     private final UserRepository userRepository;
-    private final UserWorkspaceRepository userWorkspaceRepository;
+    private final WorkspaceUserRepository workspaceUserRepository;
     private final RedisServiceImpl redisService;
     private final JwtProperty jwtProperty;
     private Key secretKey;
@@ -69,10 +69,10 @@ public class JwtProvider {
 
         List<Long> workspaceUserIds = new ArrayList<>();
 
-        userWorkspaceRepository.searchByUser(user).forEach(uw -> {
-            if (uw.getUserRole().equals(UserRole.ADMIN)) {
+        workspaceUserRepository.findAllByUser(user).forEach(uw -> {
+            if (uw.getRole() == WorkspaceUserRole.ADMIN) {
                 workspaceAdminIds.add(uw.getWorkspace().getId());
-            } else if (uw.getUserRole().equals(UserRole.USER)) {
+            } else if (uw.getRole() == WorkspaceUserRole.USER) {
                 workspaceUserIds.add(uw.getWorkspace().getId());
             }
         });

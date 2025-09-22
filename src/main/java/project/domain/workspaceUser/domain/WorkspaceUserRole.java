@@ -12,4 +12,12 @@ public enum WorkspaceUserRole {
 
     private final String key;
     private final String title;
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
+
+    public boolean isUser() {
+        return this == USER;
+    }
 }

@@ -17,7 +17,7 @@ import project.domain.user.domain.User;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class IntegrationTest {
+public class ApiIntegrationTest {
     @Autowired
     private UserUtil userUtil;
 

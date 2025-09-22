@@ -7,9 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import project.common.helper.IntegrationTest;
+import project.common.helper.ApiIntegrationTest;
 
-public class ChatControllerTest extends IntegrationTest {
+public class ChatControllerTest extends ApiIntegrationTest {
 
     @Test
     public void 댓글_추가() throws Exception {

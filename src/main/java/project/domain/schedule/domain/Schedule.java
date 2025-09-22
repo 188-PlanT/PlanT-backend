@@ -65,9 +65,9 @@ public class Schedule extends BaseEntity {
     @Deprecated
     public void addUser(User user) {
 
-        if (!this.workspace.hasUser(user)) {
-            throw new PlantException(ErrorCode.USER_NOT_FOUND);
-        }
+        //        if (!this.workspace.hasUser(user)) {
+        //            throw new PlantException(ErrorCode.USER_NOT_FOUND);
+        //        }
 
         if (this.hasUser(user)) {
             throw new PlantException(ErrorCode.USER_ALREADY_EXIST);

@@ -9,9 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import project.common.helper.IntegrationTest;
+import project.common.helper.ApiIntegrationTest;
 
-public class UserApiTest extends IntegrationTest {
+public class UserApiTest extends ApiIntegrationTest {
 
     @Test
     public void 이메일_검증() throws Exception {

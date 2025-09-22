@@ -1,5 +1,5 @@
 package project.domain.scheduleUser.service;
 
-import project.common.helper.IntegrationTest;
+import project.common.helper.ApiIntegrationTest;
 
-public class ScheduleUserServiceTest extends IntegrationTest {}
+public class ScheduleUserServiceTest extends ApiIntegrationTest {}

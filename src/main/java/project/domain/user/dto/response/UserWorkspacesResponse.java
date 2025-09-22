@@ -4,25 +4,14 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import project.domain.user.domain.User;
-import project.domain.user.domain.UserRole;
-import project.domain.workspace.domain.UserWorkspace;
+import project.domain.workspaceUser.domain.WorkspaceUser;
+import project.domain.workspaceUser.dto.WorkspaceUserDto;
 
-public record UserWorkspacesResponse(Long userId, List<WorkspaceDto> workspaces) {
+public record UserWorkspacesResponse(Long userId, List<WorkspaceUserDto> workspaceUsers) {
 
-    public static UserWorkspacesResponse from(User user, List<UserWorkspace> userWorkspaces) {
-        List<WorkspaceDto> workspaceDtos =
-                userWorkspaces.stream().map(WorkspaceDto::of).collect(toList());
+    public static UserWorkspacesResponse from(User user, List<WorkspaceUser> workspaceUsers) {
+        List<WorkspaceUserDto> workspaceDtos =
+                workspaceUsers.stream().map(WorkspaceUserDto::of).collect(toList());
         return new UserWorkspacesResponse(user.getId(), workspaceDtos);
-    }
-
-    public record WorkspaceDto(Long workspaceId, String workspaceName, String profile, UserRole role) {
-
-        public static WorkspaceDto of(UserWorkspace userWorkspace) {
-            return new WorkspaceDto(
-                    userWorkspace.getWorkspace().getId(),
-                    userWorkspace.getWorkspace().getName(),
-                    userWorkspace.getWorkspace().getProfile().getUrl(),
-                    userWorkspace.getUserRole());
-        }
     }
 }

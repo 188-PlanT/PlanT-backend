@@ -8,7 +8,6 @@ import lombok.Getter;
 import project.domain.common.BaseEntity;
 import project.domain.image.domain.Image;
 import project.domain.schedule.domain.UserSchedule;
-import project.domain.workspace.domain.UserWorkspace;
 
 @Entity
 @Table(name = "users")
@@ -36,10 +35,6 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole userRole;
-
-    // <== 유저 객체 삭제용 ==>
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<UserWorkspace> userWorkspaces = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
@@ -76,7 +71,7 @@ public class User extends BaseEntity {
         return !this.userRole.equals(UserRole.PENDING);
     }
 
-    public void setNickName(String nickName) {
+    public void finishRegister(String nickName) {
         this.nickName = nickName;
         this.userRole = UserRole.USER;
     }

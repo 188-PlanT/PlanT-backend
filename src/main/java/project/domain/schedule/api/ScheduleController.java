@@ -33,7 +33,7 @@ public class ScheduleController {
     @Operation(summary = "스케줄 상세 조회", description = "스케줄 상세 정보를 조회합니다.")
     @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/schedules/{scheduleId}")
-    public ResponseEntity<ScheduleDto> findSingleSchedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<ScheduleFullDto> findSingleSchedule(@PathVariable Long scheduleId) {
         var response = scheduleService.findOne(scheduleId);
         return ResponseEntity.ok(response);
     }

@@ -22,7 +22,7 @@ public class ChatDomainServiceTest {
         void 스케줄에_소속되지_않은_유저인_경우_실패한다() {
             // given
             User user = FixtureHelper.createEmailUser("test1@gmail.com");
-            Workspace workspace = FixtureHelper.createWorkspace(user);
+            Workspace workspace = FixtureHelper.createWorkspace();
             Schedule schedule = FixtureHelper.createSchedule(workspace);
 
             User unAssignedUser = FixtureHelper.createEmailUser("unAssigned@gmail.com");
@@ -41,7 +41,7 @@ public class ChatDomainServiceTest {
         void 채팅_생성자가_아니면_실패한다() {
             // given
             User user = FixtureHelper.createEmailUser("test1@gmail.com");
-            Workspace workspace = FixtureHelper.createWorkspace(user);
+            Workspace workspace = FixtureHelper.createWorkspace();
             Schedule schedule = FixtureHelper.createSchedule(workspace);
             Chat chat = FixtureHelper.createChat(schedule, user, "Hello");
 
