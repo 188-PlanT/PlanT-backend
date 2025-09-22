@@ -1,5 +1,6 @@
 package project.common.helper;
 
+import static project.common.constant.ImageConstant.PROFILE_URL;
 import static project.common.constant.ScheduleConstant.SCHEDULE_NAME;
 import static project.common.constant.UrlConstant.*;
 import static project.common.constant.UserConstant.*;
