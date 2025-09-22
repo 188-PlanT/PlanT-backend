@@ -31,7 +31,7 @@ public class WorkspaceUserService {
 
     @Transactional(readOnly = true)
     public WorkspaceUsersResponse findWorkspaceUsersByWorkspace(Long workspaceId) {
-        validateLoginUserInWorkspace();
+        validateLoginUserInWorkspace(workspaceId);
         Workspace workspace = workspaceRepository
                 .findById(workspaceId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
@@ -41,7 +41,7 @@ public class WorkspaceUserService {
 
     @Transactional
     public Long addUserToWorkspace(WorkspaceUserCreateRequest request) {
-        validateLoginUserInWorkspace();
+        validateLoginUserInWorkspace(request.workspaceId());
         var workspace = workspaceRepository
                 .findById(request.workspaceId())
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
@@ -60,43 +60,44 @@ public class WorkspaceUserService {
 
     @Transactional
     public void changeWorkspaceUser(Long workspaceUserId, WorkspaceUserUpdateRequest request) {
-        validateLoginUserIsAdmin();
         WorkspaceUser workspaceUser = workspaceUserRepository
                 .findById(workspaceUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));
+        validateLoginUserIsAdmin(workspaceUser.getWorkspace().getId());
+
         List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByWorkspaceId(
                 workspaceUser.getWorkspace().getId());
-
         workspaceUserDomainService.validateWhenChangeRole(workspaceUser, request.role(), workspaceUsers);
         workspaceUser.updateRole(request.role());
+
         workspaceUserRepository.save(workspaceUser);
     }
 
     @Transactional
     public void removeUserFromWorkspace(Long workspaceUserId) {
-        validateLoginUserIsAdmin();
         WorkspaceUser workspaceUser = workspaceUserRepository
                 .findById(workspaceUserId)
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_USER_NOT_FOUND));
         List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByWorkspaceId(
                 workspaceUser.getWorkspace().getId());
 
+        validateLoginUserIsAdmin(workspaceUser.getWorkspace().getId());
         workspaceUserDomainService.validateWhenRemoveUser(workspaceUser, workspaceUsers);
         workspaceUserRepository.delete(workspaceUser);
     }
 
-    private void validateLoginUserIsAdmin() {
+    private void validateLoginUserIsAdmin(Long workspaceId) {
         Long loginUserId = userUtil.getLoginUserId();
-        boolean isAdmin = workspaceUserUtil.isAdminUser(1L, loginUserId);
+        boolean isAdmin = workspaceUserUtil.isAdminUser(workspaceId, loginUserId);
 
         if (!isAdmin) {
             throw new PlantException(ErrorCode.WORKSPACE_USER_AUTHORITY_INVALID);
         }
     }
 
-    private void validateLoginUserInWorkspace() {
+    private void validateLoginUserInWorkspace(Long workspaceId) {
         Long loginUserId = userUtil.getLoginUserId();
-        boolean exists = workspaceUserUtil.existsUser(1L, loginUserId);
+        boolean exists = workspaceUserUtil.existsUser(workspaceId, loginUserId);
 
         if (!exists) {
             throw new PlantException(ErrorCode.WORKSPACE_USER_AUTHORITY_INVALID);

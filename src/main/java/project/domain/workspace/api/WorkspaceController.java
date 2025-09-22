@@ -25,7 +25,7 @@ public class WorkspaceController {
 
     @Operation(summary = "워크스페이스 생성", description = "새 워크스페이스를 생성합니다.")
     @PostMapping("/v1/workspaces")
-    public ResponseEntity<Long> createWorkspace(@Valid @RequestBody WorkspaceCreateRequest request) {
+    public ResponseEntity<Long> createWorkspace(@RequestBody @Valid WorkspaceCreateRequest request) {
         var response = workspaceService.makeWorkspace(request);
         return ResponseEntity.ok(response);
     }
@@ -33,7 +33,7 @@ public class WorkspaceController {
     @Operation(summary = "워크스페이스 수정", description = "워크스페이스 정보를 수정합니다. 워크스페이스 관리자 권한이 필요합니다.")
     @PutMapping("/v1/workspaces/{workspaceId}")
     public ResponseEntity<Void> updateWorkspace(
-            @PathVariable Long workspaceId, @Valid @RequestBody WorkspaceUpdateRequest request) {
+            @PathVariable Long workspaceId, @RequestBody @Valid WorkspaceUpdateRequest request) {
         workspaceService.updateWorkspace(workspaceId, request);
         return ResponseEntity.ok().build();
     }
