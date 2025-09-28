@@ -2,7 +2,6 @@ package project.domain.schedule.dto;
 
 import static java.util.stream.Collectors.toList;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import project.domain.chat.domain.Chat;
@@ -17,16 +16,13 @@ public record ScheduleFullDto(
         String workspaceName,
         String name,
         List<UserDto> users,
-        @JsonFormat(pattern = "yyyyMMdd:HH:mm") LocalDateTime startDate,
-        @JsonFormat(pattern = "yyyyMMdd:HH:mm") LocalDateTime endDate,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
         String content,
         Progress state,
         List<ChatDto> chatList) {
-    public static ScheduleFullDto from(Schedule schedule, List<Chat> chats) {
-        List<UserDto> userDtos = schedule.getUserSchedules().stream()
-                .map(us -> new UserDto(us.getUser()))
-                .collect(toList());
-
+    public static ScheduleFullDto from(Schedule schedule, List<User> usersInSchedule, List<Chat> chats) {
+        List<UserDto> userDtos = usersInSchedule.stream().map(UserDto::of).collect(toList());
         List<ChatDto> chatDtos = chats.stream().map(ChatDto::from).toList();
 
         return new ScheduleFullDto(
@@ -43,8 +39,8 @@ public record ScheduleFullDto(
     }
 
     public record UserDto(Long userId, String nickName) {
-        public UserDto(User user) {
-            this(user.getId(), user.getNickName());
+        public static UserDto of(User user) {
+            return new UserDto(user.getId(), user.getNickName());
         }
     }
 }

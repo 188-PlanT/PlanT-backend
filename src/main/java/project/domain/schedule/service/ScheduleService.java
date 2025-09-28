@@ -17,6 +17,9 @@ import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.dto.ScheduleFullDto;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
+import project.domain.scheduleUser.dao.ScheduleUserRepository;
+import project.domain.scheduleUser.domain.ScheduleUser;
+import project.domain.user.domain.User;
 import project.domain.workspace.dao.WorkspaceRepository;
 import project.domain.workspace.domain.Workspace;
 
@@ -26,18 +29,22 @@ import project.domain.workspace.domain.Workspace;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleUserRepository scheduleUserRepository;
     private final WorkspaceRepository workspaceRepository;
     private final ChatRepository chatRepository;
     private final UserUtil userUtil;
     private final WorkspaceUserUtil workspaceUserUtil;
 
-    // <== 스케줄 단일 조회 ==>
+    // <== 스케줄 상세 조회 ==>
     @Transactional(readOnly = true)
-    public ScheduleFullDto findOne(Long id) {
-        Schedule schedule = findScheduleById(id);
-        List<Chat> chats = chatRepository.findByScheduleId(id);
+    public ScheduleFullDto findOne(Long scheduleId) {
+        Schedule schedule = findScheduleById(scheduleId);
+        List<User> usersInSchedule = scheduleUserRepository.findFetchByScheduleId(scheduleId).stream()
+                .map(ScheduleUser::getUser)
+                .toList();
+        List<Chat> chats = chatRepository.findByScheduleId(scheduleId);
 
-        return ScheduleFullDto.from(schedule, chats);
+        return ScheduleFullDto.from(schedule, usersInSchedule, chats);
     }
 
     // <== 스케줄 생성 ==>
