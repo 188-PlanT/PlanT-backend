@@ -2,6 +2,8 @@ package project.domain.scheduleUser.dao;
 
 import static project.domain.schedule.domain.QSchedule.schedule;
 import static project.domain.scheduleUser.domain.QScheduleUser.scheduleUser;
+import static project.domain.user.domain.QUser.user;
+import static project.domain.workspace.domain.QWorkspace.workspace;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,7 +23,7 @@ public class ScheduleUserCustomRepositoryImpl implements ScheduleUserCustomRepos
     public List<ScheduleUser> findFetchByScheduleId(Long scheduleId) {
         return queryFactory
                 .selectFrom(scheduleUser)
-                .join(scheduleUser.user)
+                .join(scheduleUser.user, user)
                 .fetchJoin()
                 .where(scheduleUser.schedule.id.eq(scheduleId))
                 .fetch();
@@ -31,9 +33,9 @@ public class ScheduleUserCustomRepositoryImpl implements ScheduleUserCustomRepos
     public List<ScheduleUser> searchByUserAndDate(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         return queryFactory
                 .selectFrom(scheduleUser)
-                .join(scheduleUser.schedule)
+                .join(scheduleUser.schedule, schedule)
                 .fetchJoin()
-                .join(schedule.workspace)
+                .join(schedule.workspace, workspace)
                 .fetchJoin()
                 .where(scheduleUser.user.id.eq(userId), dateCondition(startDate, endDate))
                 .fetch();
