@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import project.common.exception.ErrorCode;
+import project.common.exception.PlantException;
 import project.domain.common.BaseEntity;
 import project.domain.workspace.domain.Workspace;
 
@@ -51,6 +53,7 @@ public class Schedule extends BaseEntity {
             LocalDateTime endDate,
             String content,
             Progress state) {
+        validateDate(startDate, endDate);
         this.workspace = workspace;
         this.name = name;
         this.startDate = startDate;
@@ -71,6 +74,12 @@ public class Schedule extends BaseEntity {
                 .build();
     }
 
+    private void validateDate(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new PlantException(ErrorCode.DATE_INVALID);
+        }
+    }
+
     // < == 비즈니스 로직 == >
 
     public void moveProgress(Progress state) {
@@ -78,10 +87,11 @@ public class Schedule extends BaseEntity {
     } // TODO: 네이밍 변경 검토
 
     public void update(String name, LocalDateTime startDate, LocalDateTime endDate, String content, Progress state) {
-        moveProgress(state);
+        validateDate(startDate, endDate);
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.content = content;
+        moveProgress(state);
     }
 }
