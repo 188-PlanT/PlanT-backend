@@ -39,6 +39,9 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public ScheduleFullDto findOne(Long scheduleId) {
         Schedule schedule = findScheduleById(scheduleId);
+        Long workspaceId = schedule.getWorkspace().getId();
+        validateLoginUserInWorkspace(workspaceId);
+
         List<User> usersInSchedule = scheduleUserRepository.findFetchByScheduleId(scheduleId).stream()
                 .map(ScheduleUser::getUser)
                 .toList();

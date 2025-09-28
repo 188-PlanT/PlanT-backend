@@ -51,7 +51,7 @@ public class ScheduleController {
     }
 
     @Operation(summary = "스케줄 상태 변경", description = "스케줄 진행 상태를 변경합니다.")
-    @PutMapping
+    @PutMapping("/v1/schedules/{scheduleId}/state")
     public ResponseEntity<Void> updateSchedule(
             @PathVariable Long scheduleId, @Valid @RequestBody ScheduleUpdateStateRequest request) {
         scheduleService.moveScheduleState(scheduleId, request.state());
