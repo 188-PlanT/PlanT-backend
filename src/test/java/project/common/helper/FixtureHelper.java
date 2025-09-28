@@ -1,7 +1,7 @@
 package project.common.helper;
 
 import static project.common.constant.ImageConstant.PROFILE_URL;
-import static project.common.constant.ScheduleConstant.SCHEDULE_NAME;
+import static project.common.constant.ScheduleConstant.*;
 import static project.common.constant.UrlConstant.*;
 import static project.common.constant.UserConstant.*;
 import static project.common.constant.WorkspaceConstant.WORKSPACE_NAME;
@@ -24,7 +24,7 @@ public class FixtureHelper {
     }
 
     public static Schedule createSchedule(Workspace workspace) {
-        return Schedule.builder().workspace(workspace).name(SCHEDULE_NAME).build();
+        return Schedule.create(workspace, SCHEDULE_NAME, SCHEDULE_START_DATE, SCHEDULE_END_DATE, SCHEDULE_CONTENT);
     }
 
     public static Chat createChat(Schedule schedule, User user, String content) {

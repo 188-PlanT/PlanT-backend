@@ -67,7 +67,7 @@ public class Schedule extends BaseEntity {
                 .startDate(startDate)
                 .endDate(endDate)
                 .content(content)
-                .state(Progress.TODO) // 기본값은 TODO
+                .state(Progress.TODO) // 기본값은 TO_DO
                 .build();
     }
 
@@ -75,7 +75,7 @@ public class Schedule extends BaseEntity {
 
     public void moveProgress(Progress state) {
         this.state = state;
-    }
+    } // TODO: 네이밍 변경 검토
 
     public void update(String name, LocalDateTime startDate, LocalDateTime endDate, String content, Progress state) {
         moveProgress(state);
