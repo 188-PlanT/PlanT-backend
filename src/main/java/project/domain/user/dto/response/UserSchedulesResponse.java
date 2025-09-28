@@ -1,23 +1,21 @@
 package project.domain.user.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import project.domain.schedule.domain.Progress;
-import project.domain.schedule.domain.UserSchedule;
-import project.domain.user.domain.User;
+import project.domain.scheduleUser.domain.ScheduleUser;
 
 public record UserSchedulesResponse(Long userId, ScheduleListDto schedules) {
 
-    public static UserSchedulesResponse of(User user, List<UserSchedule> userSchedules) {
-        return new UserSchedulesResponse(user.getId(), new ScheduleListDto(userSchedules));
+    public static UserSchedulesResponse of(Long userId, List<ScheduleUser> scheduleUsers) {
+        return new UserSchedulesResponse(userId, new ScheduleListDto(scheduleUsers));
     }
 
     public record ScheduleListDto(List<ScheduleDto> toDo, List<ScheduleDto> inProgress, List<ScheduleDto> done) {
-        public ScheduleListDto(List<UserSchedule> userSchedules) {
+        public ScheduleListDto(List<ScheduleUser> userSchedules) {
             this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-            for (UserSchedule us : userSchedules) {
+            for (ScheduleUser us : userSchedules) {
                 switch (us.getSchedule().getState().getKey()) {
                     case "TO_DO" -> toDo.add(new ScheduleDto(us));
                     case "IN_PROGRESS" -> inProgress.add(new ScheduleDto(us));
@@ -32,10 +30,10 @@ public record UserSchedulesResponse(Long userId, ScheduleListDto schedules) {
             Long workspaceId,
             String workspaceName,
             String scheduleName,
-            @JsonFormat(pattern = "yyyyMMdd") LocalDateTime endDate,
+            LocalDateTime endDate,
             Progress state) {
 
-        public ScheduleDto(UserSchedule userSchedule) {
+        public ScheduleDto(ScheduleUser userSchedule) {
             this(
                     userSchedule.getSchedule().getId(),
                     userSchedule.getSchedule().getWorkspace().getId(),
