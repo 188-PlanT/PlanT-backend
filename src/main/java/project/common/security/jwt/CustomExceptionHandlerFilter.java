@@ -9,7 +9,6 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import project.common.exception.ErrorCode;
 import project.common.exception.ErrorResponse;
@@ -19,7 +18,6 @@ import project.common.exception.PlantException;
  * 토큰 검증 중 토큰 올바르지 않을 때 발생하는 에러를 처리하는 필터 (401 Unauthorized)
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class CustomExceptionHandlerFilter extends OncePerRequestFilter {
 
