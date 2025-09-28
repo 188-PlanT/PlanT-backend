@@ -2,14 +2,11 @@ package project.domain.schedule.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import project.common.exception.ErrorCode;
-import project.common.exception.PlantException;
 import project.domain.common.BaseEntity;
-import project.domain.user.domain.User;
 import project.domain.workspace.domain.Workspace;
 
 @Entity
@@ -41,131 +38,50 @@ public class Schedule extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Progress state;
-
-    // Schedule이 UserSchedule 영속성 관리
-    @Deprecated
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserSchedule> userSchedules = new ArrayList<>();
+    private Progress state; // TODO: 네이밍 변경 검토
 
     // < == 생성자 ==>
     protected Schedule() {} // JPA용 생성자
 
-    // @Builder //빌더 패턴 사용
-    private Schedule(Builder builder) {
-        this.workspace = builder.workspace;
-        this.name = builder.name;
-        this.startDate = builder.startDate;
-        this.endDate = builder.endDate;
-        this.content = builder.content;
-        this.state = builder.state;
+    @Builder(access = AccessLevel.PRIVATE)
+    private Schedule(
+            Workspace workspace,
+            String name,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            String content,
+            Progress state) {
+        this.workspace = workspace;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.content = content;
+        this.state = state;
+    }
+
+    public static Schedule create(
+            Workspace workspace, String name, LocalDateTime startDate, LocalDateTime endDate, String content) {
+        return Schedule.builder()
+                .workspace(workspace)
+                .name(name)
+                .startDate(startDate)
+                .endDate(endDate)
+                .content(content)
+                .state(Progress.TODO) // 기본값은 TODO
+                .build();
     }
 
     // < == 비즈니스 로직 == >
-    @Deprecated
-    public void addUser(User user) {
-
-        //        if (!this.workspace.hasUser(user)) {
-        //            throw new PlantException(ErrorCode.USER_NOT_FOUND);
-        //        }
-
-        if (this.hasUser(user)) {
-            throw new PlantException(ErrorCode.USER_ALREADY_EXIST);
-        }
-
-        UserSchedule userSchedule = new UserSchedule(user, this);
-
-        this.userSchedules.add(userSchedule);
-    }
 
     public void moveProgress(Progress state) {
         this.state = state;
     }
 
-    // 수정 로직 -> 이거 DTO로 묶는 방법 생각해보자
-    public void update(
-            String name,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            String content,
-            List<User> userList,
-            Progress state) {
+    public void update(String name, LocalDateTime startDate, LocalDateTime endDate, String content, Progress state) {
+        moveProgress(state);
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.content = content;
-        this.userSchedules.clear();
-        this.moveProgress(state);
-
-        for (User user : userList) {
-            this.addUser(user);
-        }
-    }
-
-    public boolean hasUser(User user) {
-        return (this.userSchedules.stream()
-                        .filter(uw -> uw.getUser().equals(user))
-                        .count()
-                == 1);
-    }
-
-    // <=== Builder ===>
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private Workspace workspace;
-        private String name;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private String content;
-        private List<User> users = new ArrayList<>();
-        private Progress state = Progress.TODO;
-
-        public Builder workspace(Workspace workspace) {
-            this.workspace = workspace;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder startDate(LocalDateTime startDate) {
-            this.startDate = startDate;
-            return this;
-        }
-
-        public Builder endDate(LocalDateTime endDate) {
-            this.endDate = endDate;
-            return this;
-        }
-
-        public Builder content(String content) {
-            this.content = content;
-            return this;
-        }
-
-        public Builder users(List<User> users) {
-            this.users.addAll(users);
-            return this;
-        }
-
-        public Builder state(Progress state) {
-            this.state = state;
-            return this;
-        }
-
-        public Schedule build() {
-            Schedule schedule = new Schedule(this);
-
-            for (User user : users) {
-                schedule.addUser(user);
-            }
-
-            return schedule;
-        }
     }
 }
