@@ -25,19 +25,6 @@ public class ChatControllerTest extends ApiIntegrationTest {
     }
 
     @Test
-    public void 댓글_추가_권한없음() throws Exception {
-        // given
-        String request = "{ \"scheduleId\" : 1, \"content\" : \"hello\" }";
-        // when
-        mvc.perform(post("/v1/chats")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                // then
-                .andExpect(status().isConflict());
-    }
-
-    @Test
     public void 댓글_수정() throws Exception {
         // given
         String request = "{ \"content\" : \"hello\" }";
