@@ -10,14 +10,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
 import project.common.exception.ErrorResponse;
 
 /**
  * 인증되지 않은 사용자가 보호된 리소스에 액세스하려고 할 때 발생하는 예외를 처리하는 클래스 (401 Unauthorized)
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

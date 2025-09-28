@@ -1,5 +1,6 @@
 package project.common.helper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,10 @@ public class ApiIntegrationTest {
     @Autowired
     protected MockMvc mvc;
 
-    protected String ACCESS_TOKEN;
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    protected String ACCESS_TOKEN_ADMIN;
     protected String ACCESS_TOKEN_USER;
     protected String ACCESS_TOKEN_OUTSIDER;
     protected String REFRESH_TOKEN;
@@ -37,7 +41,7 @@ public class ApiIntegrationTest {
     private void setAccessToken() {
         User user = userUtil.getUserById(1L);
 
-        ACCESS_TOKEN = "Bearer " + jwtProvider.createAccessTokenByUser(user);
+        ACCESS_TOKEN_ADMIN = "Bearer " + jwtProvider.createAccessTokenByUser(user);
         ACCESS_TOKEN_USER = "Bearer " + jwtProvider.createAccessTokenByUser(userUtil.getUserById(2L));
         ACCESS_TOKEN_OUTSIDER = "Bearer " + jwtProvider.createAccessTokenByUser(userUtil.getUserById(3L));
         ACCESS_TOKEN_NO_NICKNAME = "Bearer " + jwtProvider.createAccessTokenByUser(userUtil.getUserById(4L));

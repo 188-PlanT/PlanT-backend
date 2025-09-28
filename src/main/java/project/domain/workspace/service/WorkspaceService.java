@@ -43,6 +43,7 @@ public class WorkspaceService {
         Workspace workspace = Workspace.create(request.name());
         workspaceRepository.save(workspace);
 
+        // TODO: 도메인 이벤트로 분리 고려
         User creator = userUtil.getLoginUser();
         WorkspaceUser workspaceUser = WorkspaceUser.createAdmin(workspace, creator);
         workspaceUserRepository.save(workspaceUser);
@@ -77,8 +78,6 @@ public class WorkspaceService {
     @Transactional(readOnly = true)
     public CalendarResponse getCalendar(Long workspaceId, LocalDateTime date) {
         validateLoginUserInWorkspace(workspaceId);
-
-        Long loginUserId = userUtil.getLoginUserId();
         Workspace workspace = findWorkspaceById(workspaceId);
 
         LocalDateTime startDate = getStartDate(date);
@@ -92,8 +91,6 @@ public class WorkspaceService {
     @Transactional(readOnly = true)
     public CalendarResponse getDailySchedules(Long workspaceId, LocalDateTime date) {
         validateLoginUserInWorkspace(workspaceId);
-
-        Long loginUserId = userUtil.getLoginUserId();
         Workspace workspace = findWorkspaceById(workspaceId);
 
         List<Schedule> schedules = scheduleRepository.searchByDate(
@@ -121,7 +118,7 @@ public class WorkspaceService {
         Long loginUserId = userUtil.getLoginUserId();
         boolean isAdmin = workspaceUserUtil.isAdminUser(workspaceId, loginUserId);
 
-        if (isAdmin) {
+        if (!isAdmin) {
             throw new PlantException(ErrorCode.WORKSPACE_USER_AUTHORITY_INVALID);
         }
     }

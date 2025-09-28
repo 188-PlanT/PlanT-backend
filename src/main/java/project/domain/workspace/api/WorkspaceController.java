@@ -6,11 +6,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.common.interceptor.auth.PermitUserRole;
 import project.common.util.DateFormatUtil;
-import project.domain.user.domain.UserRole;
 import project.domain.workspace.dto.request.WorkspaceCreateRequest;
 import project.domain.workspace.dto.request.WorkspaceUpdateRequest;
 import project.domain.workspace.dto.response.*;
@@ -27,7 +26,7 @@ public class WorkspaceController {
     @PostMapping("/v1/workspaces")
     public ResponseEntity<Long> createWorkspace(@RequestBody @Valid WorkspaceCreateRequest request) {
         var response = workspaceService.makeWorkspace(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "워크스페이스 수정", description = "워크스페이스 정보를 수정합니다. 워크스페이스 관리자 권한이 필요합니다.")
@@ -47,7 +46,6 @@ public class WorkspaceController {
 
     // TODO: 패키지 이동 검토
     @Operation(summary = "워크스페이스 별 스케줄 달력 조회", description = "워크스페이스 별 입력한 달의 스케줄 달력을 조회합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/workspaces/{workspaceId}/calendar")
     public ResponseEntity<CalendarResponse> readCalendar(
             @PathVariable Long workspaceId, @Parameter(required = true, description = "yyyyMM") String date) {
@@ -58,7 +56,6 @@ public class WorkspaceController {
     }
 
     @Operation(summary = "워크스페이스 별 일일 스케줄 조회", description = "워크스페이스 별 입력한 날짜의 일일 스케줄을 조회합니다.")
-    @PermitUserRole(value = {UserRole.ADMIN, UserRole.USER})
     @GetMapping("/v1/workspaces/{workspaceId}/schedules")
     public ResponseEntity<CalendarResponse> readDailySchedule(
             @PathVariable Long workspaceId, @Parameter(required = true, description = "yyyyMMdd") String date) {

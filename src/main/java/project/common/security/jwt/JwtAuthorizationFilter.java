@@ -9,23 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getServletPath();
-        return path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs")
-                || path.startsWith("/swagger-resources");
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

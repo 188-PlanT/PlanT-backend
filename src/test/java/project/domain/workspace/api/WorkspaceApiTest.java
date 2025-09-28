@@ -3,68 +3,45 @@ package project.domain.workspace.api;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static project.common.constant.ImageConstant.PROFILE_URL;
+import static project.common.constant.WorkspaceConstant.WORKSPACE_NAME;
 
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import project.common.helper.ApiIntegrationTest;
+import project.domain.workspace.dto.request.WorkspaceCreateRequest;
+import project.domain.workspace.dto.request.WorkspaceUpdateRequest;
 
-@Disabled("로직 변경에 따른 비활성화")
 public class WorkspaceApiTest extends ApiIntegrationTest {
 
     @Test
     public void 워크스페이스_생성() throws Exception {
         // given
-        String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [2, 3] }";
+        var request = new WorkspaceCreateRequest(WORKSPACE_NAME);
+        var json = objectMapper.writeValueAsString(request);
 
         // when
         mvc.perform(post("/v1/workspaces")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(json))
                 // then
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void 워크스페이스_생성_잘못된_유저아이디() throws Exception {
-        // given
-        String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [2,3,99] }";
-
-        // when
-        mvc.perform(post("/v1/workspaces")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                // then
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void 워크스페이스_생성_생성유저_포함() throws Exception {
-        // given
-        String request = "{ \"name\" : \"testWorkspace3\" , \"users\" : [1,2,3] }";
-
-        // when
-        mvc.perform(post("/v1/workspaces")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                // then
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").isNumber());
     }
 
     @Test
     public void 워크스페이스_수정() throws Exception {
         // given
-        String request =
-                "{ \"name\" : \"testWorkspace11\" , \"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
+        var request = new WorkspaceUpdateRequest(WORKSPACE_NAME, PROFILE_URL);
+        var json = objectMapper.writeValueAsString(request);
 
         // when
         mvc.perform(put("/v1/workspaces/1")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(json))
                 // then
                 .andExpect(status().isOk());
     }
@@ -72,14 +49,14 @@ public class WorkspaceApiTest extends ApiIntegrationTest {
     @Test // admin 권한이 없는 유저가 워크스페이스 수정 시도시 forbidden 에러 응답 반환
     public void 워크스페이스_수정_일반_유저_권한() throws Exception {
         // given
-        String request =
-                "{ \"name\" : \"testWorkspace11\" , \"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
+        var request = new WorkspaceUpdateRequest(WORKSPACE_NAME, PROFILE_URL);
+        var json = objectMapper.writeValueAsString(request);
 
         // when
         mvc.perform(put("/v1/workspaces/1")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER) // 일반 유저 토큰
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(json))
                 // then
                 .andExpect(status().isForbidden());
     }
@@ -88,12 +65,9 @@ public class WorkspaceApiTest extends ApiIntegrationTest {
     public void 워크스페이스_삭제() throws Exception {
         // given
         // when
-        mvc.perform(delete("/v1/workspaces/1").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+        mvc.perform(delete("/v1/workspaces/1").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
                 .andExpect(status().isOk());
-
-        mvc.perform(get("/v1/workspaces/1/users").header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
-                .andExpect(status().isNotFound());
     }
 
     @Test // admin 권한이 없는 유저가 워크스페이스 삭제 시도시 forbidden 에러 응답 반환
@@ -115,17 +89,10 @@ public class WorkspaceApiTest extends ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workspaceId").value("1"))
                 .andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-                .andExpect(jsonPath("$.role").value("USER"))
                 .andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
-                .andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
-                .andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
-                .andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
-                .andExpect(jsonPath("$.schedules[0].state").value("TODO"))
+                .andExpect(jsonPath("$.schedules[0].name").value("testSchedule1"))
                 .andExpect(jsonPath("$.schedules[1].scheduleId").value("2"))
-                .andExpect(jsonPath("$.schedules[1].scheduleName").value("testSchedule2"))
-                .andExpect(jsonPath("$.schedules[1].startDate").value("20240430"))
-                .andExpect(jsonPath("$.schedules[1].endDate").value("20240501"))
-                .andExpect(jsonPath("$.schedules[1].state").value("TODO"))
+                .andExpect(jsonPath("$.schedules[1].name").value("testSchedule2"))
                 .andExpect(jsonPath("$.schedules[2]").doesNotExist());
     }
 
@@ -150,12 +117,8 @@ public class WorkspaceApiTest extends ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workspaceId").value("1"))
                 .andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-                .andExpect(jsonPath("$.role").value("USER"))
                 .andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
-                .andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
-                .andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
-                .andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
-                .andExpect(jsonPath("$.schedules[0].state").value("TODO"))
+                .andExpect(jsonPath("$.schedules[0].name").value("testSchedule1"))
                 .andExpect(jsonPath("$.schedules[1]").doesNotExist());
     }
 
@@ -169,17 +132,10 @@ public class WorkspaceApiTest extends ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workspaceId").value("1"))
                 .andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-                .andExpect(jsonPath("$.role").value("USER"))
                 .andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
-                .andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
-                .andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
-                .andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
-                .andExpect(jsonPath("$.schedules[0].state").value("TODO"))
+                .andExpect(jsonPath("$.schedules[0].name").value("testSchedule1"))
                 .andExpect(jsonPath("$.schedules[1].scheduleId").value("2"))
-                .andExpect(jsonPath("$.schedules[1].scheduleName").value("testSchedule2"))
-                .andExpect(jsonPath("$.schedules[1].startDate").value("20240430"))
-                .andExpect(jsonPath("$.schedules[1].endDate").value("20240501"))
-                .andExpect(jsonPath("$.schedules[1].state").value("TODO"))
+                .andExpect(jsonPath("$.schedules[1].name").value("testSchedule2"))
                 .andExpect(jsonPath("$.schedules[2]").doesNotExist());
     }
 
@@ -193,12 +149,8 @@ public class WorkspaceApiTest extends ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workspaceId").value("1"))
                 .andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
-                .andExpect(jsonPath("$.role").value("USER"))
                 .andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
-                .andExpect(jsonPath("$.schedules[0].scheduleName").value("testSchedule1"))
-                .andExpect(jsonPath("$.schedules[0].startDate").value("20240401"))
-                .andExpect(jsonPath("$.schedules[0].endDate").value("20240430"))
-                .andExpect(jsonPath("$.schedules[0].state").value("TODO"))
+                .andExpect(jsonPath("$.schedules[0].name").value("testSchedule1"))
                 .andExpect(jsonPath("$.schedules[1]").doesNotExist());
     }
 
