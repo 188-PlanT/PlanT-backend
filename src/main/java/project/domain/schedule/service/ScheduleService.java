@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.common.exception.ErrorCode;
 import project.common.exception.PlantException;
 import project.common.util.UserUtil;
+import project.common.util.WorkspaceUserUtil;
 import project.domain.chat.dao.ChatRepository;
 import project.domain.chat.domain.Chat;
 import project.domain.schedule.dao.ScheduleRepository;
@@ -16,8 +17,6 @@ import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.dto.ScheduleFullDto;
 import project.domain.schedule.dto.request.CreateScheduleRequest;
 import project.domain.schedule.dto.request.UpdateScheduleRequest;
-import project.domain.user.domain.User;
-import project.domain.user.domain.UserRole;
 import project.domain.workspace.dao.WorkspaceRepository;
 import project.domain.workspace.domain.Workspace;
 
@@ -30,6 +29,7 @@ public class ScheduleService {
     private final WorkspaceRepository workspaceRepository;
     private final ChatRepository chatRepository;
     private final UserUtil userUtil;
+    private final WorkspaceUserUtil workspaceUserUtil;
 
     // <== 스케줄 단일 조회 ==>
     @Transactional(readOnly = true)
@@ -46,65 +46,57 @@ public class ScheduleService {
         Workspace workspace = workspaceRepository
                 .findById(request.workspaceId())
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        validateLoginUserInWorkspace(workspace.getId());
 
-        // api url에 workspaceId 가 들어가지 않으므로 Interceptor에서 검증 불가능 -> 서비스에서 검증
-        validateLoginUserRole(workspace.getId());
-
-        List<User> users = userUtil.getUserByList(request.users());
-
-        Schedule schedule = Schedule.builder()
-                .workspace(workspace)
-                .name(request.name())
-                .startDate(request.startDate())
-                .endDate(request.endDate())
-                .content(request.content())
-                .users(users)
-                .state(request.state())
-                .build();
-
+        Schedule schedule =
+                Schedule.create(workspace, request.name(), request.startDate(), request.endDate(), request.content());
         scheduleRepository.save(schedule);
 
         return schedule.getId();
     }
 
-    private void validateLoginUserRole(Long workspaceId) {
-        UserRole userRole = userUtil.getLoginUserRole(workspaceId);
-
-        if (userRole == null) {
-            throw new PlantException(ErrorCode.USER_AUTHORITY_INVALID);
-        }
-    }
-
     // <== 스케줄 수정 ==>
     @Transactional
-    public ScheduleFullDto updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
+    public void updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
         Schedule schedule = findScheduleById(scheduleId);
-        List<User> users = userUtil.getUserByList(request.users());
-        schedule.update(
-                request.name(), request.startDate(), request.endDate(), request.content(), users, request.state());
+        Long workspaceId = schedule.getWorkspace().getId();
+        validateLoginUserInWorkspace(workspaceId);
 
-        List<Chat> chats = chatRepository.findByScheduleId(scheduleId);
-        return ScheduleFullDto.from(schedule, chats);
+        schedule.update(request.name(), request.startDate(), request.endDate(), request.content(), request.state());
+        scheduleRepository.save(schedule);
     }
 
     // <== 스케줄 삭제 ==>
     @Transactional
     public void removeSchedule(Long id) {
         Schedule schedule = findScheduleById(id);
+        Long workspaceId = schedule.getWorkspace().getId();
+        validateLoginUserInWorkspace(workspaceId);
+
         scheduleRepository.delete(schedule);
     }
 
     // <== 스케줄 상태 수정 ==>
     @Transactional
-    public ScheduleFullDto moveScheduleState(Long id, Progress state) {
+    public void moveScheduleState(Long id, Progress state) {
         Schedule schedule = findScheduleById(id);
-        schedule.moveProgress(state);
+        Long workspaceId = schedule.getWorkspace().getId();
+        validateLoginUserInWorkspace(workspaceId);
 
-        List<Chat> chats = chatRepository.findByScheduleId(id);
-        return ScheduleFullDto.from(schedule, chats);
+        schedule.moveProgress(state);
+        scheduleRepository.save(schedule);
     }
 
     private Schedule findScheduleById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
+    }
+
+    private void validateLoginUserInWorkspace(Long workspaceId) {
+        Long loginUserId = userUtil.getLoginUserId();
+        boolean exists = workspaceUserUtil.existsUser(workspaceId, loginUserId);
+
+        if (!exists) {
+            throw new PlantException(ErrorCode.WORKSPACE_USER_AUTHORITY_INVALID);
+        }
     }
 }
