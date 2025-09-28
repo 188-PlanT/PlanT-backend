@@ -118,7 +118,7 @@ public class WorkspaceService {
         Long loginUserId = userUtil.getLoginUserId();
         boolean isAdmin = workspaceUserUtil.isAdminUser(workspaceId, loginUserId);
 
-        if (isAdmin) {
+        if (!isAdmin) {
             throw new PlantException(ErrorCode.WORKSPACE_USER_AUTHORITY_INVALID);
         }
     }
