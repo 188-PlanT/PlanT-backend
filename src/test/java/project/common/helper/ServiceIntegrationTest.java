@@ -4,13 +4,17 @@ import static project.common.constant.UserConstant.PASSWORD;
 
 import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.domain.workspace.dao.WorkspaceRepository;
 
 @Tag("integration")
+@ActiveProfiles("test")
 @SpringBootTest
+@Transactional // TODO: 직접 초기화 로직 작성하고 제거
 public class ServiceIntegrationTest {
 
     protected UserRepository userRepository;

@@ -84,7 +84,7 @@ public class UserApiTest extends ApiIntegrationTest {
         // given
         String request = "{ \"nickName\" : \"test111\" ," + "\"currentPassword\" : \"test1234\" , "
                 + "\"newPassword\" : \"test4321\" , "
-                + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
+                + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
 
         // when
         mvc.perform(put("/v1/users/me")
@@ -100,7 +100,7 @@ public class UserApiTest extends ApiIntegrationTest {
         // given
         String request = " { \"currentPassword\" : \"test1234\" , "
                 + "\"newPassword\" : \"test4321\" , "
-                + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
+                + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
 
         // when
         mvc.perform(put("/v1/users/me")
@@ -116,7 +116,7 @@ public class UserApiTest extends ApiIntegrationTest {
         // given
         String request = " { \"currentPassword\" : \"test5555\" , "
                 + "\"newPassword\" : \"test4321\" , "
-                + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/workspace.png\" }";
+                + "\"profile\" : \"https://d12v02yfguudwt.cloudfront.net/user.png\" }";
 
         // when
         mvc.perform(put("/v1/users/me")
@@ -137,16 +137,10 @@ public class UserApiTest extends ApiIntegrationTest {
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
-                .andExpect(jsonPath("$.workspaces[0].workspaceId").value("1"))
-                .andExpect(jsonPath("$.workspaces[0].workspaceName").value("testWorkspace1"))
-                .andExpect(jsonPath("$.workspaces[0].profile")
-                        .value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
-                .andExpect(jsonPath("$.workspaces[0].role").value("ADMIN"))
-                .andExpect(jsonPath("$.workspaces[1].workspaceId").value("2"))
-                .andExpect(jsonPath("$.workspaces[1].workspaceName").value("testWorkspace2"))
-                .andExpect(jsonPath("$.workspaces[1].profile")
-                        .value("https://d12v02yfguudwt.cloudfront.net/workspace.png"))
-                .andExpect(jsonPath("$.workspaces[1].role").value("ADMIN"));
+                .andExpect(jsonPath("$.workspaceUsers[0].workspaceId").value("1"))
+                .andExpect(jsonPath("$.workspaceUsers[0].role").value("ADMIN"))
+                .andExpect(jsonPath("$.workspaceUsers[1].workspaceId").value("2"))
+                .andExpect(jsonPath("$.workspaceUsers[1].role").value("ADMIN"));
     }
 
     @Test
