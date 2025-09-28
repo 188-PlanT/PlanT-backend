@@ -51,11 +51,4 @@ public class LoginController {
         var response = jwtProvider.createAccessTokenByRefreshToken(refreshToken);
         return ResponseEntity.ok(response);
     }
-
-    @Operation(summary = "더미 데이터 로그인", description = "더미 데이터 DB에 로그인합니다. 토큰을 응답 본문에 반환합니다.")
-    @PostMapping("/v1/login/dumy")
-    public ResponseEntity<TokenPairResponse> dumyLogin(@Valid @RequestBody EmailLoginRequest request) {
-        var response = loginService.loginInDumy(request.email(), request.password());
-        return ResponseEntity.ok(response);
-    }
 }

@@ -92,7 +92,7 @@ public class SecurityConfig {
         http.cors().configurationSource(corsConfigurationSource());
 
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/v1/login", "/v1/refresh", "/v1/login/oauth2", "/v1/login/dumy")
+                .requestMatchers("/v1/login", "/v1/refresh", "/v1/login/oauth2")
                 .permitAll()
                 .requestMatchers(
                         "/v1/sign-up", "/v1/users/email", "/v1/users/email/code", "/v1/users/nickname", "/v1/image")
