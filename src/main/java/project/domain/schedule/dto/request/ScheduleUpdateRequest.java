@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import project.domain.schedule.domain.Progress;
 
-public record CreateScheduleRequest(
-        @NotNull Long workspaceId,
+public record ScheduleUpdateRequest(
         @NotBlank String name,
         @NotNull LocalDateTime startDate,
         @NotNull LocalDateTime endDate,

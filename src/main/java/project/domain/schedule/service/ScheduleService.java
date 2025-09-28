@@ -15,8 +15,8 @@ import project.domain.schedule.dao.ScheduleRepository;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.dto.ScheduleFullDto;
-import project.domain.schedule.dto.request.CreateScheduleRequest;
-import project.domain.schedule.dto.request.UpdateScheduleRequest;
+import project.domain.schedule.dto.request.ScheduleCreateRequest;
+import project.domain.schedule.dto.request.ScheduleUpdateRequest;
 import project.domain.scheduleUser.dao.ScheduleUserRepository;
 import project.domain.scheduleUser.domain.ScheduleUser;
 import project.domain.user.domain.User;
@@ -49,7 +49,7 @@ public class ScheduleService {
 
     // <== 스케줄 생성 ==>
     @Transactional
-    public Long createSchedule(CreateScheduleRequest request) {
+    public Long createSchedule(ScheduleCreateRequest request) {
         Workspace workspace = workspaceRepository
                 .findById(request.workspaceId())
                 .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
@@ -64,7 +64,7 @@ public class ScheduleService {
 
     // <== 스케줄 수정 ==>
     @Transactional
-    public void updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
+    public void updateSchedule(Long scheduleId, ScheduleUpdateRequest request) {
         Schedule schedule = findScheduleById(scheduleId);
         Long workspaceId = schedule.getWorkspace().getId();
         validateLoginUserInWorkspace(workspaceId);
