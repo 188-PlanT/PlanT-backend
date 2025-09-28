@@ -1,13 +1,11 @@
 package project.domain.user.domain;
 
 import jakarta.persistence.*;
-import java.util.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import project.domain.common.BaseEntity;
 import project.domain.image.domain.Image;
-import project.domain.schedule.domain.UserSchedule;
 
 @Entity
 @Table(name = "users")
@@ -35,9 +33,6 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole userRole;
-
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<UserSchedule> userSchedules = new ArrayList<>();
 
     // <== 생성자 ==>
 
