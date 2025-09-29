@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -146,7 +147,7 @@ public class UserApiTest extends ApiIntegrationTest {
     @Test
     public void 스케줄_조회_시작_겹치게() throws Exception {
         // given
-        String date = "202404";
+        LocalDate date = LocalDate.of(2024, 4, 30);
         // when
         mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
@@ -156,12 +157,12 @@ public class UserApiTest extends ApiIntegrationTest {
                 .andExpect(jsonPath("$.schedules.toDo[0].workspaceId").value("1"))
                 .andExpect(jsonPath("$.schedules.toDo[0].workspaceName").value("testWorkspace1"))
                 .andExpect(jsonPath("$.schedules.toDo[0].scheduleName").value("testSchedule1"))
-                .andExpect(jsonPath("$.schedules.toDo[0].endDate").value("20240430"))
+                .andExpect(jsonPath("$.schedules.toDo[0].endDate").value("2024-04-30T23:59:59"))
                 .andExpect(jsonPath("$.schedules.toDo[1].scheduleId").value("2"))
                 .andExpect(jsonPath("$.schedules.toDo[1].workspaceId").value("1"))
                 .andExpect(jsonPath("$.schedules.toDo[1].workspaceName").value("testWorkspace1"))
                 .andExpect(jsonPath("$.schedules.toDo[1].scheduleName").value("testSchedule2"))
-                .andExpect(jsonPath("$.schedules.toDo[1].endDate").value("20240501"))
+                .andExpect(jsonPath("$.schedules.toDo[1].endDate").value("2024-05-01T00:00:00"))
                 .andExpect(jsonPath("$.schedules.toDo[2]").doesNotExist())
                 .andExpect(jsonPath("$.schedules.inProgress[0]").doesNotExist())
                 .andExpect(jsonPath("$.schedules.done[0]").doesNotExist());
@@ -170,7 +171,7 @@ public class UserApiTest extends ApiIntegrationTest {
     @Test
     public void 스케줄_조회_끝_겹치게() throws Exception {
         // given
-        String date = "202405";
+        LocalDate date = LocalDate.of(2024, 5, 1);
         // when
         mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
                 // then
@@ -180,7 +181,7 @@ public class UserApiTest extends ApiIntegrationTest {
                 .andExpect(jsonPath("$.schedules.toDo[0].workspaceId").value("1"))
                 .andExpect(jsonPath("$.schedules.toDo[0].workspaceName").value("testWorkspace1"))
                 .andExpect(jsonPath("$.schedules.toDo[0].scheduleName").value("testSchedule2"))
-                .andExpect(jsonPath("$.schedules.toDo[0].endDate").value("20240501"))
+                .andExpect(jsonPath("$.schedules.toDo[0].endDate").value("2024-05-01T00:00:00"))
                 .andExpect(jsonPath("$.schedules.toDo[1]").doesNotExist())
                 .andExpect(jsonPath("$.schedules.inProgress[0]").doesNotExist())
                 .andExpect(jsonPath("$.schedules.done[0]").doesNotExist());

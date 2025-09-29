@@ -3,4 +3,4 @@ package project.domain.schedule.dto.request;
 import jakarta.validation.constraints.NotNull;
 import project.domain.schedule.domain.Progress;
 
-public record UpdateScheduleStateRequest(@NotNull Progress state) {}
+public record ScheduleUpdateStateRequest(@NotNull Progress state) {}

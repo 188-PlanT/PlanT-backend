@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import project.domain.schedule.domain.Schedule;
 import project.domain.workspace.domain.Workspace;
 
-public interface ScheduleRepository extends JpaRepository<Schedule, Long>, ScheduleRepositoryCustom {
+public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query(value = "select s from Schedule s join fetch s.workspace w", countQuery = "select count(s) from Schedule s")
     public Page<Schedule> findAll(Pageable pageable);

@@ -16,25 +16,6 @@ public class ChatDomainServiceTest {
     ChatDomainService chatDomainService = new ChatDomainService();
 
     @Nested
-    class 생성_전_검증시 {
-
-        @Test
-        void 스케줄에_소속되지_않은_유저인_경우_실패한다() {
-            // given
-            User user = FixtureHelper.createEmailUser("test1@gmail.com");
-            Workspace workspace = FixtureHelper.createWorkspace();
-            Schedule schedule = FixtureHelper.createSchedule(workspace);
-
-            User unAssignedUser = FixtureHelper.createEmailUser("unAssigned@gmail.com");
-
-            // when & then
-            assertThatThrownBy(() -> chatDomainService.validateWhenCreate(schedule, unAssignedUser))
-                    .isInstanceOf(PlantException.class)
-                    .hasMessage(ErrorCode.CHAT_USER_NOT_IN_SCHEDULE.getMessage());
-        }
-    }
-
-    @Nested
     class 수정_혹은_삭제_전_검증시 {
 
         @Test

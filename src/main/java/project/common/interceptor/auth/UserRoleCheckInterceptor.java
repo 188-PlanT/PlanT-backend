@@ -16,10 +16,10 @@ import project.domain.schedule.dao.ScheduleRepository;
 import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.UserRole;
 
-// @Slf4j
+@Deprecated
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class UserRoleCheckInterceptor implements HandlerInterceptor {
 
     private final ScheduleRepository scheduleRepository;

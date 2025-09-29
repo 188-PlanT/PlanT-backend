@@ -30,7 +30,6 @@ public class ChatService {
         Schedule schedule = scheduleRepository
                 .findById(request.scheduleId())
                 .orElseThrow(() -> new PlantException(ErrorCode.SCHEDULE_NOT_FOUND));
-        chatDomainService.validateWhenCreate(schedule, currentUser);
 
         Chat chat = Chat.builder()
                 .content(request.content())

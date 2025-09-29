@@ -6,14 +6,8 @@ import static project.common.constant.UrlConstant.*;
 import static project.common.constant.UserConstant.*;
 import static project.common.constant.WorkspaceConstant.*;
 
-import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import project.common.exception.ErrorCode;
-import project.common.exception.PlantException;
-import project.domain.image.domain.Image;
-import project.domain.user.domain.User;
 import project.domain.workspace.domain.Workspace;
 
 class ScheduleTest {
@@ -22,75 +16,16 @@ class ScheduleTest {
     class 스케줄_생성시 {
 
         @Test
-        void 성공한다() {
+        void 초기값은_TODO이다() {
             // given
-            Image defaultUserImage = new Image(DEFAULT_USER_PROFILE_URL);
-
-            User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
-            User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
-
             Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
-            // then & then
-            assertThatCode(() -> Schedule.builder()
-                            .workspace(workspace)
-                            .name(SCHEDULE_NAME)
-                            .startDate(SCHEDULE_START_DATE)
-                            .endDate(SCHEDULE_END_DATE)
-                            .content(SCHEDULE_CONTENT)
-                            .users(List.of(user1, user2))
-                            .state(Progress.TODO)
-                            .build())
-                    .doesNotThrowAnyException();
-        }
+            // when
+            Schedule schedule =
+                    Schedule.create(workspace, SCHEDULE_NAME, SCHEDULE_START_DATE, SCHEDULE_END_DATE, SCHEDULE_CONTENT);
 
-        @Disabled("워크스페이스 로직 수정에 따라 비활성화")
-        @Test
-        void 워크스페이스에_없는_유저를_추가하면_실패한다() {
-            // given
-            Image defaultUserImage = new Image(DEFAULT_USER_PROFILE_URL);
-
-            User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
-            User invalidUser = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
-
-            Workspace workspace = Workspace.create(WORKSPACE_NAME);
-
-            // then & then
-            assertThatThrownBy(() -> Schedule.builder()
-                            .workspace(workspace)
-                            .name(SCHEDULE_NAME)
-                            .startDate(SCHEDULE_START_DATE)
-                            .endDate(SCHEDULE_END_DATE)
-                            .content(SCHEDULE_CONTENT)
-                            .users(List.of(user1, invalidUser))
-                            .state(Progress.TODO)
-                            .build())
-                    .isInstanceOf(PlantException.class)
-                    .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage());
-        }
-
-        @Test
-        void 유저를_중복으로_추가하면_실패한다() {
-            // given
-            Image defaultUserImage = new Image(DEFAULT_USER_PROFILE_URL);
-
-            User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
-            User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
-
-            Workspace workspace = Workspace.create(WORKSPACE_NAME);
-
-            // then & then
-            assertThatThrownBy(() -> Schedule.builder()
-                            .workspace(workspace)
-                            .name(SCHEDULE_NAME)
-                            .startDate(SCHEDULE_START_DATE)
-                            .endDate(SCHEDULE_END_DATE)
-                            .content(SCHEDULE_CONTENT)
-                            .users(List.of(user1, user2, user2))
-                            .state(Progress.TODO)
-                            .build())
-                    .isInstanceOf(PlantException.class)
-                    .hasMessageContaining(ErrorCode.USER_ALREADY_EXIST.getMessage());
+            // then
+            assertThat(schedule.getState()).isEqualTo(Progress.TODO);
         }
     }
 
@@ -100,99 +35,39 @@ class ScheduleTest {
         @Test
         void 성공한다() {
             // given
-            Image defaultUserImage = new Image(DEFAULT_USER_PROFILE_URL);
-
-            User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
-            User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
-
             Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
-            Schedule schedule = Schedule.builder()
-                    .workspace(workspace)
-                    .name(SCHEDULE_NAME)
-                    .startDate(SCHEDULE_START_DATE)
-                    .endDate(SCHEDULE_END_DATE)
-                    .content(SCHEDULE_CONTENT)
-                    .users(List.of(user1, user2))
-                    .state(Progress.TODO)
-                    .build();
+            Schedule schedule =
+                    Schedule.create(workspace, SCHEDULE_NAME, SCHEDULE_START_DATE, SCHEDULE_END_DATE, SCHEDULE_CONTENT);
+            String updatedName = "Updated Schedule";
+            Progress updatedState = Progress.INPROGRESS;
 
             // when & then
             assertThatCode(() -> schedule.update(
-                            "Updated Schedule",
-                            SCHEDULE_START_DATE.plusHours(1),
-                            SCHEDULE_END_DATE.plusHours(1),
-                            "Updated Content",
-                            List.of(user1),
-                            Progress.INPROGRESS))
+                            updatedName, SCHEDULE_START_DATE, SCHEDULE_END_DATE, SCHEDULE_CONTENT, updatedState))
                     .doesNotThrowAnyException();
 
-            assertThat(schedule.getName()).isNotEqualTo(SCHEDULE_NAME);
+            assertThat(schedule.getName()).isEqualTo(updatedName);
+            assertThat(schedule.getState()).isEqualTo(updatedState);
         }
+    }
 
-        @Disabled("워크스페이스 로직 수정에 따라 비활성화")
-        @Test
-        void 워크스페이스에_없는_유저를_추가하면_실패한다() {
-            // given
-            Image defaultUserImage = new Image(DEFAULT_USER_PROFILE_URL);
-
-            User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
-            User invalidUser = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
-
-            Workspace workspace = Workspace.create(WORKSPACE_NAME);
-
-            Schedule schedule = Schedule.builder()
-                    .workspace(workspace)
-                    .name(SCHEDULE_NAME)
-                    .startDate(SCHEDULE_START_DATE)
-                    .endDate(SCHEDULE_END_DATE)
-                    .content(SCHEDULE_CONTENT)
-                    .users(List.of(user1))
-                    .state(Progress.TODO)
-                    .build();
-
-            // when & then
-            assertThatThrownBy(() -> schedule.update(
-                            "Updated Schedule",
-                            SCHEDULE_START_DATE.plusHours(1),
-                            SCHEDULE_END_DATE.plusHours(1),
-                            "Updated Content",
-                            List.of(invalidUser),
-                            Progress.INPROGRESS))
-                    .isInstanceOf(PlantException.class)
-                    .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage());
-        }
+    @Nested
+    class 스케줄_상태_수정시 {
 
         @Test
-        void 유저를_중복으로_추가하면_실패한다() {
+        void 성공한다() {
             // given
-            Image defaultUserImage = new Image(DEFAULT_USER_PROFILE_URL);
-
-            User user1 = User.fromOAuth2Attributes(EMAIL + 1, defaultUserImage);
-            User user2 = User.fromOAuth2Attributes(EMAIL + 2, defaultUserImage);
-
             Workspace workspace = Workspace.create(WORKSPACE_NAME);
 
-            Schedule schedule = Schedule.builder()
-                    .workspace(workspace)
-                    .name(SCHEDULE_NAME)
-                    .startDate(SCHEDULE_START_DATE)
-                    .endDate(SCHEDULE_END_DATE)
-                    .content(SCHEDULE_CONTENT)
-                    .users(List.of(user1, user2))
-                    .state(Progress.TODO)
-                    .build();
+            Schedule schedule =
+                    Schedule.create(workspace, SCHEDULE_NAME, SCHEDULE_START_DATE, SCHEDULE_END_DATE, SCHEDULE_CONTENT);
+            Progress updatedState = Progress.INPROGRESS;
 
-            // when & then
-            assertThatThrownBy(() -> schedule.update(
-                            "Updated Schedule",
-                            SCHEDULE_START_DATE.plusHours(1),
-                            SCHEDULE_END_DATE.plusHours(1),
-                            "Updated Content",
-                            List.of(user1, user2, user2),
-                            Progress.INPROGRESS))
-                    .isInstanceOf(PlantException.class)
-                    .hasMessageContaining(ErrorCode.USER_ALREADY_EXIST.getMessage());
+            // when
+            schedule.moveProgress(updatedState);
+
+            assertThat(schedule.getState()).isEqualTo(updatedState);
         }
     }
 }

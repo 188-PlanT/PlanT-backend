@@ -1,16 +1,14 @@
 package project.domain.user.api;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.common.security.jwt.JwtProvider;
-import project.common.util.DateFormatUtil;
 import project.common.util.UserUtil;
 import project.domain.auth.dto.request.EmailSignUpRequest;
 import project.domain.auth.dto.response.AccessTokenResponse;
@@ -82,12 +80,11 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // TODO: 위치 이동
     @Operation(summary = "유저 스케줄 정보 달력 조회", description = "해당 달에 로그인 유저가 속한 스케줄 정보를 조회합니다.")
     @GetMapping("/v1/users/me/schedules")
-    public ResponseEntity<UserSchedulesResponse> readUserSchedules(
-            @Parameter(required = true, description = "yyyyMM") String date) {
-        LocalDateTime dateTime = DateFormatUtil.parseStartOfMonth(date);
-        var response = userService.findSchedules(userUtil.getLoginUserId(), dateTime);
+    public ResponseEntity<UserSchedulesResponse> readUserSchedules(LocalDate date) {
+        var response = userService.findSchedules(date);
         return ResponseEntity.ok(response);
     }
 

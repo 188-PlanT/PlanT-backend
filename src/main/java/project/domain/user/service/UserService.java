@@ -2,6 +2,7 @@ package project.domain.user.service;
 
 import static project.common.constant.UrlConstant.DEFAULT_USER_PROFILE_URL;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,8 +20,8 @@ import project.common.util.UserUtil;
 import project.domain.auth.dto.request.EmailSignUpRequest;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
-import project.domain.schedule.dao.UserScheduleRepository;
-import project.domain.schedule.domain.UserSchedule;
+import project.domain.scheduleUser.dao.ScheduleUserRepository;
+import project.domain.scheduleUser.domain.ScheduleUser;
 import project.domain.user.dao.UserRepository;
 import project.domain.user.domain.User;
 import project.domain.user.dto.UserDto;
@@ -41,7 +42,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
-    private final UserScheduleRepository userScheduleRepository;
+    private final ScheduleUserRepository scheduleUserRepository;
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
@@ -90,12 +91,14 @@ public class UserService {
 
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
-    public UserSchedulesResponse findSchedules(Long userId, LocalDateTime date) {
-        User loginUser = userUtil.getUserById(userId);
-        List<UserSchedule> userSchedules = userScheduleRepository.searchByUser(
-                loginUser.getEmail(), date, date.plusMonths(1).minusSeconds(1));
+    public UserSchedulesResponse findSchedules(LocalDate date) {
+        Long loginUserId = userUtil.getLoginUserId();
+        LocalDateTime startDateTime = date.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endDateTime = date.withDayOfMonth(date.lengthOfMonth()).atTime(23, 59, 59);
+        List<ScheduleUser> scheduleUsers =
+                scheduleUserRepository.searchByUserAndDate(loginUserId, startDateTime, endDateTime);
 
-        return UserSchedulesResponse.of(loginUser, userSchedules);
+        return UserSchedulesResponse.of(loginUserId, scheduleUsers);
     }
 
     // <== 유저 정보 수정 ==>
