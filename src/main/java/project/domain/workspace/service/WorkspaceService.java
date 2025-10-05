@@ -1,9 +1,5 @@
 package project.domain.workspace.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,14 +10,11 @@ import project.common.util.UserUtil;
 import project.common.util.WorkspaceUserUtil;
 import project.domain.image.dao.ImageRepository;
 import project.domain.image.domain.Image;
-import project.domain.schedule.dao.ScheduleRepository;
-import project.domain.schedule.domain.Schedule;
 import project.domain.user.domain.User;
 import project.domain.workspace.dao.WorkspaceRepository;
 import project.domain.workspace.domain.Workspace;
 import project.domain.workspace.dto.request.WorkspaceCreateRequest;
 import project.domain.workspace.dto.request.WorkspaceUpdateRequest;
-import project.domain.workspace.dto.response.CalendarResponse;
 import project.domain.workspaceUser.dao.WorkspaceUserRepository;
 import project.domain.workspaceUser.domain.WorkspaceUser;
 
@@ -31,7 +24,6 @@ import project.domain.workspaceUser.domain.WorkspaceUser;
 public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
-    private final ScheduleRepository scheduleRepository;
     private final ImageRepository imageRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
     private final UserUtil userUtil;
@@ -72,42 +64,6 @@ public class WorkspaceService {
 
     private Image getProfileByUrl(String profileUrl) {
         return imageRepository.findByUrl(profileUrl).orElseThrow(() -> new PlantException(ErrorCode.IMAGE_NOT_FOUND));
-    }
-
-    // <== 캘린더 응답 반환 ==>
-    @Transactional(readOnly = true)
-    public CalendarResponse getCalendar(Long workspaceId, LocalDateTime date) {
-        validateLoginUserInWorkspace(workspaceId);
-        Workspace workspace = findWorkspaceById(workspaceId);
-
-        LocalDateTime startDate = getStartDate(date);
-        LocalDateTime endDate = getEndDate(date);
-
-        List<Schedule> schedules = scheduleRepository.searchByMonth(workspace, startDate, endDate);
-        return CalendarResponse.of(workspace, schedules);
-    }
-
-    // <== 오늘의 일정 반환 ==>
-    @Transactional(readOnly = true)
-    public CalendarResponse getDailySchedules(Long workspaceId, LocalDateTime date) {
-        validateLoginUserInWorkspace(workspaceId);
-        Workspace workspace = findWorkspaceById(workspaceId);
-
-        List<Schedule> schedules = scheduleRepository.searchByDate(
-                workspace, date, date.plusDays(1).minusSeconds(1));
-        return CalendarResponse.of(workspace, schedules);
-    }
-
-    private LocalDateTime getStartDate(LocalDateTime dateTime) {
-        LocalDate date = dateTime.toLocalDate();
-        date = date.withDayOfMonth(1);
-        return date.atStartOfDay();
-    }
-
-    private LocalDateTime getEndDate(LocalDateTime dateTime) {
-        LocalDate date = dateTime.toLocalDate();
-        date = date.withDayOfMonth(date.lengthOfMonth());
-        return date.atTime(LocalTime.MAX);
     }
 
     private Workspace findWorkspaceById(Long id) {
