@@ -5,12 +5,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static project.common.constant.ScheduleConstant.*;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import project.common.helper.ApiIntegrationTest;
 import project.domain.schedule.domain.Progress;
 import project.domain.schedule.dto.request.ScheduleCreateRequest;
+import project.domain.schedule.dto.request.ScheduleSearchByWorkspaceRequest;
 import project.domain.schedule.dto.request.ScheduleUpdateRequest;
 import project.domain.schedule.dto.request.ScheduleUpdateStateRequest;
 
@@ -168,6 +170,47 @@ public class ScheduleApiTest extends ApiIntegrationTest {
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
+                // then
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void 스케줄_워크스페이스별_검색() throws Exception {
+        // given
+        Long workspaceId = 1L;
+        LocalDateTime startDate = LocalDateTime.of(2024, 4, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2024, 5, 1, 0, 0);
+
+        // when
+        mvc.perform(get("/v1/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_USER)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("workspaceId", workspaceId.toString())
+                        .param("startDate", startDate.toString())
+                        .param("endDate", endDate.toString()))
+                // then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.workspaceId").value("1"))
+                .andExpect(jsonPath("$.workspaceName").value("testWorkspace1"))
+                .andExpect(jsonPath("$.schedules[0].scheduleId").value("1"))
+                .andExpect(jsonPath("$.schedules[0].name").value("testSchedule1"))
+                .andExpect(jsonPath("$.schedules[1].scheduleId").value("2"))
+                .andExpect(jsonPath("$.schedules[1].name").value("testSchedule2"))
+                .andExpect(jsonPath("$.schedules[2]").doesNotExist());
+    }
+
+    @Test
+    public void 스케줄_워크스페이스별_검색_외부인() throws Exception {
+        // given
+        var request = new ScheduleSearchByWorkspaceRequest(1L, SCHEDULE_START_DATE, SCHEDULE_END_DATE);
+
+        // when
+        mvc.perform(get("/v1/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_OUTSIDER)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("workspaceId", request.workspaceId().toString())
+                        .param("startDate", request.startDate().toString())
+                        .param("endDate", request.endDate().toString()))
                 // then
                 .andExpect(status().isForbidden());
     }
