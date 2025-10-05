@@ -2,7 +2,6 @@ package project.domain.user.service;
 
 import static project.common.constant.UrlConstant.DEFAULT_USER_PROFILE_URL;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -82,23 +81,20 @@ public class UserService {
 
     // <== 워크스페이스 조회 ==>
     @Transactional(readOnly = true)
-    public UserWorkspacesResponse findWorkspaces(Long userId) {
-        User user = userUtil.getUserById(userId);
-        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByUser(user);
+    public UserWorkspacesResponse findUserWorkspaces() {
+        Long loginUserId = userUtil.getLoginUserId();
+        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.searchByUserId(loginUserId);
 
-        return UserWorkspacesResponse.from(user, workspaceUsers);
+        return UserWorkspacesResponse.from(loginUserId, workspaceUsers);
     }
 
     // <== 스케줄 조회 ==>
     @Transactional(readOnly = true)
-    public UserSchedulesResponse findSchedules(LocalDate date) {
+    public UserSchedulesResponse findUserSchedules(LocalDateTime startDate, LocalDateTime endDate) {
         Long loginUserId = userUtil.getLoginUserId();
-        LocalDateTime startDateTime = date.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endDateTime = date.withDayOfMonth(date.lengthOfMonth()).atTime(23, 59, 59);
-        List<ScheduleUser> scheduleUsers =
-                scheduleUserRepository.searchByUserAndDate(loginUserId, startDateTime, endDateTime);
+        List<ScheduleUser> scheduleUsers = scheduleUserRepository.searchByUserAndDate(loginUserId, startDate, endDate);
 
-        return UserSchedulesResponse.of(loginUserId, scheduleUsers);
+        return UserSchedulesResponse.from(loginUserId, scheduleUsers);
     }
 
     // <== 유저 정보 수정 ==>

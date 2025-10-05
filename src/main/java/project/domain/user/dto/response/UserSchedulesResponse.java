@@ -8,7 +8,7 @@ import project.domain.scheduleUser.domain.ScheduleUser;
 
 public record UserSchedulesResponse(Long userId, ScheduleListDto schedules) {
 
-    public static UserSchedulesResponse of(Long userId, List<ScheduleUser> scheduleUsers) {
+    public static UserSchedulesResponse from(Long userId, List<ScheduleUser> scheduleUsers) {
         return new UserSchedulesResponse(userId, new ScheduleListDto(scheduleUsers));
     }
 

@@ -3,13 +3,12 @@ package project.domain.user.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.common.security.jwt.JwtProvider;
-import project.common.util.UserUtil;
 import project.domain.auth.dto.request.EmailSignUpRequest;
 import project.domain.auth.dto.response.AccessTokenResponse;
 import project.domain.user.domain.User;
@@ -25,7 +24,6 @@ public class UserController {
 
     private final UserService userService;
     private final JwtProvider jwtProvider;
-    private final UserUtil userUtil;
 
     @Operation(summary = "이메일 회원가입", description = "이메일을 이용해 회원가입을 진행합니다.")
     @PostMapping("/v1/sign-up")
@@ -76,15 +74,15 @@ public class UserController {
     @Operation(summary = "유저 워크스페이스 정보 조회", description = "로그인 유저의 워크스페이스 정보를 조회합니다.")
     @GetMapping("/v1/users/me/workspaces")
     public ResponseEntity<UserWorkspacesResponse> readUserWorkspaces() {
-        var response = userService.findWorkspaces(userUtil.getLoginUserId());
+        var response = userService.findUserWorkspaces();
         return ResponseEntity.ok(response);
     }
 
-    // TODO: 위치 이동
     @Operation(summary = "유저 스케줄 정보 달력 조회", description = "해당 달에 로그인 유저가 속한 스케줄 정보를 조회합니다.")
     @GetMapping("/v1/users/me/schedules")
-    public ResponseEntity<UserSchedulesResponse> readUserSchedules(LocalDate date) {
-        var response = userService.findSchedules(date);
+    public ResponseEntity<UserSchedulesResponse> readUserSchedules(
+            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+        var response = userService.findUserSchedules(startDate, endDate);
         return ResponseEntity.ok(response);
     }
 

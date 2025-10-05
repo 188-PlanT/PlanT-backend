@@ -7,7 +7,7 @@ import project.domain.user.domain.User;
 import project.domain.workspace.domain.Workspace;
 import project.domain.workspaceUser.domain.WorkspaceUser;
 
-public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser, Long> {
+public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser, Long>, WorkspaceUserCustomRepository {
 
     List<WorkspaceUser> findAllByWorkspace(Workspace workspace);
 
