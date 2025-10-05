@@ -16,7 +16,9 @@ import project.domain.schedule.domain.Progress;
 import project.domain.schedule.domain.Schedule;
 import project.domain.schedule.dto.ScheduleFullDto;
 import project.domain.schedule.dto.request.ScheduleCreateRequest;
+import project.domain.schedule.dto.request.ScheduleSearchByWorkspaceRequest;
 import project.domain.schedule.dto.request.ScheduleUpdateRequest;
+import project.domain.schedule.dto.response.ScheduleSearchByWorkspaceResponse;
 import project.domain.scheduleUser.dao.ScheduleUserRepository;
 import project.domain.scheduleUser.domain.ScheduleUser;
 import project.domain.user.domain.User;
@@ -95,6 +97,20 @@ public class ScheduleService {
 
         schedule.moveProgress(state);
         scheduleRepository.save(schedule);
+    }
+
+    @Transactional(readOnly = true)
+    public ScheduleSearchByWorkspaceResponse searchScheduleByWorkspace(ScheduleSearchByWorkspaceRequest request) {
+        Long workspaceId = request.workspaceId();
+        Workspace workspace = workspaceRepository
+                .findById(workspaceId)
+                .orElseThrow(() -> new PlantException(ErrorCode.WORKSPACE_NOT_FOUND));
+        validateLoginUserInWorkspace(workspaceId);
+
+        List<Schedule> schedules = scheduleRepository.searchByWorkspaceInAndDateBetween(
+                List.of(workspaceId), request.startDate(), request.endDate());
+
+        return ScheduleSearchByWorkspaceResponse.of(workspace, schedules);
     }
 
     private Schedule findScheduleById(Long id) {
