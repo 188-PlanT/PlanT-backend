@@ -4,13 +4,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.domain.schedule.dto.*;
 import project.domain.schedule.dto.request.ScheduleCreateRequest;
+import project.domain.schedule.dto.request.ScheduleSearchByWorkspaceRequest;
 import project.domain.schedule.dto.request.ScheduleUpdateRequest;
 import project.domain.schedule.dto.request.ScheduleUpdateStateRequest;
+import project.domain.schedule.dto.response.ScheduleSearchByWorkspaceResponse;
 import project.domain.schedule.service.ScheduleService;
 
 @Tag(name = "[Schedule]", description = "스케줄 관리 API")
@@ -56,5 +59,13 @@ public class ScheduleController {
             @PathVariable Long scheduleId, @Valid @RequestBody ScheduleUpdateStateRequest request) {
         scheduleService.moveScheduleState(scheduleId, request.state());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "워크스페이스 별 스케줄 달력 조회", description = "워크스페이스 별 스케줄 달력을 조회합니다.")
+    @GetMapping("/v1/schedules")
+    public ResponseEntity<ScheduleSearchByWorkspaceResponse> searchScheduleByWorkspace(
+            @ParameterObject ScheduleSearchByWorkspaceRequest request) {
+        var response = scheduleService.searchScheduleByWorkspace(request);
+        return ResponseEntity.ok(response);
     }
 }
