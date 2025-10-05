@@ -83,7 +83,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserWorkspacesResponse findUserWorkspaces() {
         Long loginUserId = userUtil.getLoginUserId();
-        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.findAllByUserId(loginUserId);
+        List<WorkspaceUser> workspaceUsers = workspaceUserRepository.searchByUserId(loginUserId);
 
         return UserWorkspacesResponse.from(loginUserId, workspaceUsers);
     }
