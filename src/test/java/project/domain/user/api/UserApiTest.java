@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -147,9 +147,14 @@ public class UserApiTest extends ApiIntegrationTest {
     @Test
     public void 스케줄_조회_시작_겹치게() throws Exception {
         // given
-        LocalDate date = LocalDate.of(2024, 4, 30);
+        LocalDateTime startDate = LocalDateTime.of(2024, 4, 30, 23, 59, 59);
+        LocalDateTime endDate = LocalDateTime.of(2024, 5, 31, 23, 59, 59);
+
         // when
-        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
+        mvc.perform(get("/v1/users/me/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
+                        .param("startDate", startDate.toString())
+                        .param("endDate", endDate.toString()))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
@@ -171,9 +176,14 @@ public class UserApiTest extends ApiIntegrationTest {
     @Test
     public void 스케줄_조회_끝_겹치게() throws Exception {
         // given
-        LocalDate date = LocalDate.of(2024, 5, 1);
+        LocalDateTime startDate = LocalDateTime.of(2024, 5, 1, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2024, 5, 31, 23, 59, 59);
+
         // when
-        mvc.perform(get("/v1/users/me/schedules?date=" + date).header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN))
+        mvc.perform(get("/v1/users/me/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN_ADMIN)
+                        .param("startDate", startDate.toString())
+                        .param("endDate", endDate.toString()))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("1"))
