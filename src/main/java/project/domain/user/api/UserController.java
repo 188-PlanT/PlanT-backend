@@ -9,10 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.common.security.jwt.JwtProvider;
-import project.common.util.UserUtil;
 import project.domain.auth.dto.request.EmailSignUpRequest;
 import project.domain.auth.dto.response.AccessTokenResponse;
-import project.domain.schedule.service.ScheduleService;
 import project.domain.user.domain.User;
 import project.domain.user.dto.UserDto;
 import project.domain.user.dto.request.*;
@@ -25,9 +23,7 @@ import project.domain.user.service.UserService;
 public class UserController {
 
     private final UserService userService;
-    private final ScheduleService scheduleService;
     private final JwtProvider jwtProvider;
-    private final UserUtil userUtil;
 
     @Operation(summary = "이메일 회원가입", description = "이메일을 이용해 회원가입을 진행합니다.")
     @PostMapping("/v1/sign-up")
